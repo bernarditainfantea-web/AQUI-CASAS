@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Aquí Casas – Propiedades en Venta en Chile</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Source+Sans+3:wght@300;400;600;700&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+  <style>
+    :root {
+      --navy:#0F2B5B; --navy2:#0A1F42; --navy3:#163470;
+      --gold:#D4A940; --gold2:#B8902E;
+      --white:#FFFFFF; --offwhite:#F4F1EB; --gray:#8A9AB5;
+      --radius:12px; --shadow:0 10px 50px rgba(15,43,91,.18);
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    html{scroll-behavior:smooth;}
+    body{font-family:'Source Sans 3',sans-serif;background:var(--offwhite);color:var(--navy);overflow-x:hidden;}
+    a{text-decoration:none;color:inherit;}
+    img{display:block;max-width:100%;}
+
+    /* ── NAVBAR ── */
+    nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:center;justify-content:space-between;padding:18px 5vw;background:rgba(10,31,66,.97);backdrop-filter:blur(14px);border-bottom:2px solid var(--gold);}
+    .nav-logo{display:flex;align-items:center;gap:10px;}
+    .nav-logo-text{font-family:'Bebas Neue',sans-serif;font-size:1.65rem;letter-spacing:.06em;color:var(--white);line-height:1;}
+    .nav-logo-text span{color:var(--gold);}
+    .nav-links{display:flex;gap:2rem;align-items:center;}
+    .nav-links a{color:rgba(255,255,255,.65);font-size:.82rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;transition:color .2s;}
+    .nav-links a:hover{color:var(--gold);}
+    .nav-cta{background:var(--gold)!important;color:var(--navy)!important;padding:10px 22px;border-radius:3px;}
+    .nav-cta:hover{background:var(--gold2)!important;color:var(--white)!important;}
+
+    /* ── HERO ── */
+    .hero{min-height:100vh;background:var(--navy2);display:flex;align-items:center;position:relative;overflow:hidden;}
+    .hero-circles::before{content:'';position:absolute;top:-150px;right:-150px;width:700px;height:700px;border-radius:50%;border:1px solid rgba(212,169,64,.07);}
+    .hero-circles::after{content:'';position:absolute;top:80px;right:80px;width:400px;height:400px;border-radius:50%;border:1px solid rgba(212,169,64,.05);}
+    .hero-bar{position:absolute;left:5vw;top:18%;bottom:18%;width:3px;background:linear-gradient(to bottom,transparent,var(--gold) 40%,var(--gold) 60%,transparent);border-radius:2px;}
+    .hero-content{position:relative;z-index:2;padding:130px 5vw 80px calc(5vw + 32px);max-width:760px;}
+    .hero-eyebrow{display:inline-flex;align-items:center;gap:10px;font-size:.72rem;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);margin-bottom:18px;animation:fadeUp .5s ease both;}
+    .hero-eyebrow::before{content:'';width:24px;height:2px;background:var(--gold);display:block;}
+    .hero h1{font-family:'Bebas Neue',sans-serif;font-size:clamp(3.5rem,8vw,6.5rem);line-height:.93;letter-spacing:.03em;color:var(--white);margin-bottom:6px;animation:fadeUp .5s .1s ease both;}
+    .hero h1 .gold{color:var(--gold);}
+    .hero-sub{font-family:'Bebas Neue',sans-serif;font-size:clamp(1.5rem,3vw,2.5rem);letter-spacing:.06em;color:rgba(255,255,255,.3);margin-bottom:26px;animation:fadeUp .5s .15s ease both;}
+    .hero p{color:rgba(255,255,255,.58);font-size:1.08rem;line-height:1.72;max-width:500px;margin-bottom:42px;animation:fadeUp .5s .2s ease both;}
+    .hero-stats{display:flex;gap:40px;padding:26px 0;border-top:1px solid rgba(212,169,64,.18);border-bottom:1px solid rgba(212,169,64,.18);margin-bottom:42px;animation:fadeUp .5s .25s ease both;}
+    .stat-num{font-family:'Bebas Neue',sans-serif;font-size:2.8rem;color:var(--gold);line-height:1;}
+    .stat-label{font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.38);margin-top:4px;}
+    .hero-actions{display:flex;gap:14px;flex-wrap:wrap;animation:fadeUp .5s .3s ease both;}
+    .btn-gold{background:var(--gold);color:var(--navy);padding:15px 36px;border-radius:3px;font-family:'Bebas Neue',sans-serif;font-size:1.05rem;letter-spacing:.1em;cursor:pointer;border:none;transition:background .2s,transform .15s;}
+    .btn-gold:hover{background:var(--gold2);color:var(--white);transform:translateY(-2px);}
+    .btn-outline{background:transparent;color:var(--white);padding:15px 36px;border-radius:3px;font-family:'Bebas Neue',sans-serif;font-size:1.05rem;letter-spacing:.1em;cursor:pointer;border:2px solid rgba(255,255,255,.18);transition:border-color .2s,color .2s;}
+    .btn-outline:hover{border-color:var(--gold);color:var(--gold);}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
+
+    /* ── SECTION LABELS ── */
+    .section-label{font-size:.7rem;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+    .section-label::before{content:'';width:18px;height:2px;background:var(--gold);display:block;}
+    .section-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(2rem,4vw,3.2rem);letter-spacing:.04em;line-height:1;color:var(--navy);margin-bottom:12px;}
+    .section-title.light{color:var(--white);}
+    .section-sub{font-size:1.02rem;line-height:1.7;color:#4A6080;max-width:520px;}
+    .section-sub.light{color:rgba(255,255,255,.5);}
+
+    /* ── FILTER BAR ── */
+    .filter-section{background:var(--navy);padding:28px 5vw;position:sticky;top:62px;z-index:100;border-bottom:2px solid rgba(212,169,64,.2);}
+    .filter-inner{display:flex;gap:14px;flex-wrap:wrap;align-items:flex-end;}
+    .filter-group{display:flex;flex-direction:column;gap:5px;flex:1;min-width:130px;}
+    .filter-group label{font-size:.65rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);}
+    .filter-group select,.filter-group input{padding:9px 12px;border:1.5px solid rgba(255,255,255,.12);border-radius:5px;background:rgba(255,255,255,.07);color:var(--white);font-family:'Source Sans 3',sans-serif;font-size:.88rem;outline:none;transition:border-color .2s;}
+    .filter-group select:focus,.filter-group input:focus{border-color:var(--gold);}
+    .filter-group select option{background:var(--navy2);}
+    .filter-group input::placeholder{color:rgba(255,255,255,.25);}
+    .filter-range{display:flex;gap:6px;align-items:center;}
+    .filter-range input{width:90px;}
+    .filter-range span{color:rgba(255,255,255,.4);font-size:.8rem;}
+    .btn-filter-reset{background:transparent;border:1.5px solid rgba(212,169,64,.4);color:var(--gold);padding:9px 18px;border-radius:5px;font-family:'Bebas Neue',sans-serif;font-size:.9rem;letter-spacing:.1em;cursor:pointer;transition:background .2s;white-space:nowrap;align-self:flex-end;}
+    .btn-filter-reset:hover{background:rgba(212,169,64,.1);}
+    .filter-results{font-size:.78rem;color:rgba(255,255,255,.4);align-self:flex-end;white-space:nowrap;}
+
+    /* ── PROPERTIES ── */
+    .properties{padding:70px 5vw;background:var(--offwhite);}
+    .props-header{margin-bottom:40px;}
+    .props-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:24px;}
+    .prop-card{background:var(--white);border-radius:var(--radius);overflow:hidden;box-shadow:0 2px 20px rgba(15,43,91,.07);transition:transform .25s,box-shadow .25s,border-top-color .25s;border-top:3px solid transparent;cursor:pointer;}
+    .prop-card:hover{transform:translateY(-6px);box-shadow:var(--shadow);border-top-color:var(--gold);}
+    .prop-card.hidden{display:none;}
+    .prop-img{height:210px;position:relative;overflow:hidden;background:var(--navy);}
+    .prop-img img{width:100%;height:100%;object-fit:cover;transition:transform .45s;}
+    .prop-card:hover .prop-img img{transform:scale(1.07);}
+    .prop-badge{position:absolute;top:14px;left:14px;background:var(--gold);color:var(--navy);font-size:.66rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:5px 13px;border-radius:2px;}
+    .prop-body{padding:20px 22px;}
+    .prop-price{font-family:'Bebas Neue',sans-serif;font-size:1.85rem;letter-spacing:.04em;color:var(--navy);margin-bottom:4px;}
+    .prop-price span{color:var(--gold);font-size:1.1rem;}
+    .prop-name{font-size:.95rem;font-weight:700;margin-bottom:5px;color:var(--navy);}
+    .prop-loc{font-size:.8rem;color:var(--gray);margin-bottom:0;display:flex;align-items:center;gap:4px;}
+    .prop-divider{height:1px;background:#EAE6DF;margin:0 22px;}
+    .prop-attrs{display:flex;gap:16px;padding:14px 22px 6px;}
+    .prop-attr{display:flex;align-items:center;gap:5px;font-size:.8rem;color:var(--gray);font-weight:600;}
+    .prop-attr svg{width:14px;height:14px;stroke:var(--gold);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+    .prop-cta-row{display:flex;gap:8px;margin:14px 22px 20px;}
+    .prop-btn-detail{flex:1;text-align:center;padding:10px;background:var(--navy);color:var(--white);font-family:'Bebas Neue',sans-serif;font-size:.88rem;letter-spacing:.1em;border-radius:3px;transition:background .2s,color .2s;border:none;cursor:pointer;}
+    .prop-btn-detail:hover{background:var(--navy3);color:var(--gold);}
+    .prop-btn-contact{flex:1;text-align:center;padding:10px;background:var(--gold);color:var(--navy);font-family:'Bebas Neue',sans-serif;font-size:.88rem;letter-spacing:.1em;border-radius:3px;transition:background .2s;border:none;cursor:pointer;}
+    .prop-btn-contact:hover{background:var(--gold2);color:var(--white);}
+    .no-results{display:none;text-align:center;padding:60px 20px;grid-column:1/-1;}
+    .no-results p{font-family:'Bebas Neue',sans-serif;font-size:1.5rem;letter-spacing:.04em;color:var(--gray);}
+
+    /* ── PROPERTY DETAIL MODAL ── */
+    .modal-overlay{position:fixed;inset:0;background:rgba(10,31,66,.85);z-index:500;display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;pointer-events:none;transition:opacity .3s;}
+    .modal-overlay.open{opacity:1;pointer-events:all;}
+    .modal{background:var(--white);border-radius:16px;max-width:900px;width:100%;max-height:90vh;overflow-y:auto;position:relative;transform:translateY(20px);transition:transform .3s;}
+    .modal-overlay.open .modal{transform:translateY(0);}
+    .modal-close{position:absolute;top:16px;right:16px;z-index:10;width:36px;height:36px;background:rgba(15,43,91,.08);border:none;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .2s;}
+    .modal-close:hover{background:rgba(15,43,91,.15);}
+    .modal-close svg{width:18px;height:18px;stroke:var(--navy);fill:none;stroke-width:2;stroke-linecap:round;}
+    .modal-gallery{height:320px;position:relative;overflow:hidden;border-radius:16px 16px 0 0;}
+    .modal-gallery img{width:100%;height:100%;object-fit:cover;}
+    .modal-gallery-badge{position:absolute;top:18px;left:18px;background:var(--gold);color:var(--navy);font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:6px 16px;border-radius:2px;}
+    .modal-body{padding:32px 36px 36px;}
+    .modal-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:20px;flex-wrap:wrap;gap:14px;}
+    .modal-price{font-family:'Bebas Neue',sans-serif;font-size:2.5rem;letter-spacing:.04em;color:var(--navy);}
+    .modal-price span{color:var(--gold);}
+    .modal-name{font-family:'Bebas Neue',sans-serif;font-size:1.6rem;letter-spacing:.03em;color:var(--navy);margin-bottom:4px;}
+    .modal-loc{font-size:.88rem;color:var(--gray);display:flex;align-items:center;gap:5px;}
+    .modal-attrs{display:flex;gap:20px;padding:18px 0;border-top:1px solid #EAE6DF;border-bottom:1px solid #EAE6DF;margin-bottom:24px;flex-wrap:wrap;}
+    .modal-attr{display:flex;flex-direction:column;align-items:center;gap:6px;min-width:70px;}
+    .modal-attr-icon{width:40px;height:40px;background:rgba(212,169,64,.1);border-radius:8px;display:flex;align-items:center;justify-content:center;}
+    .modal-attr-icon svg{width:20px;height:20px;stroke:var(--gold);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+    .modal-attr-val{font-family:'Bebas Neue',sans-serif;font-size:1.1rem;letter-spacing:.04em;color:var(--navy);}
+    .modal-attr-label{font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--gray);}
+    .modal-desc{font-size:.98rem;line-height:1.75;color:#4A6080;margin-bottom:28px;}
+    .modal-features{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:28px;}
+    .modal-feature{display:flex;align-items:center;gap:8px;font-size:.88rem;color:var(--navy);}
+    .modal-feature::before{content:'';width:8px;height:8px;background:var(--gold);border-radius:50%;flex-shrink:0;}
+    .modal-cta-btn{width:100%;background:var(--gold);color:var(--navy);border:none;padding:16px;border-radius:4px;font-family:'Bebas Neue',sans-serif;font-size:1.15rem;letter-spacing:.1em;cursor:pointer;transition:background .2s;}
+    .modal-cta-btn:hover{background:var(--gold2);color:var(--white);}
+
+    /* ── CONTACT MODAL ── */
+    .contact-overlay{position:fixed;inset:0;background:rgba(10,31,66,.9);z-index:600;display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;pointer-events:none;transition:opacity .3s;}
+    .contact-overlay.open{opacity:1;pointer-events:all;}
+    .contact-modal{background:var(--navy);border-radius:16px;max-width:480px;width:100%;position:relative;padding:40px 36px;transform:translateY(20px);transition:transform .3s;max-height:90vh;overflow-y:auto;}
+    .contact-overlay.open .contact-modal{transform:translateY(0);}
+    .contact-modal::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(to right,var(--gold),var(--gold2));border-radius:16px 16px 0 0;}
+    .contact-close{position:absolute;top:14px;right:14px;width:34px;height:34px;background:rgba(255,255,255,.06);border:none;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+    .contact-close svg{width:16px;height:16px;stroke:rgba(255,255,255,.6);fill:none;stroke-width:2;stroke-linecap:round;}
+    .contact-modal h3{font-family:'Bebas Neue',sans-serif;font-size:1.7rem;letter-spacing:.05em;color:var(--white);margin-bottom:4px;}
+    .contact-prop-name{font-size:.85rem;color:var(--gold);margin-bottom:24px;font-weight:600;}
+    .c-group{margin-bottom:14px;}
+    .c-group label{display:block;font-size:.68rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--gold);margin-bottom:6px;}
+    .c-group input,.c-group textarea{width:100%;padding:11px 14px;border:1.5px solid rgba(255,255,255,.1);border-radius:5px;font-family:'Source Sans 3',sans-serif;font-size:.92rem;background:rgba(255,255,255,.06);color:var(--white);outline:none;transition:border-color .2s;}
+    .c-group input::placeholder,.c-group textarea::placeholder{color:rgba(255,255,255,.22);}
+    .c-group input:focus,.c-group textarea:focus{border-color:var(--gold);}
+    .c-group textarea{resize:vertical;min-height:75px;}
+    .c-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+    .c-submit{width:100%;background:var(--gold);color:var(--navy);border:none;padding:14px;border-radius:3px;font-family:'Bebas Neue',sans-serif;font-size:1.1rem;letter-spacing:.1em;cursor:pointer;transition:background .2s;margin-top:6px;}
+    .c-submit:hover{background:var(--gold2);color:var(--white);}
+    .c-note{text-align:center;font-size:.72rem;color:var(--gray);margin-top:9px;}
+    .c-success{display:none;text-align:center;padding:16px 0;}
+    .c-success-icon{width:56px;height:56px;background:rgba(212,169,64,.12);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;border:2px solid var(--gold);}
+    .c-success-icon svg{width:24px;height:24px;stroke:var(--gold);fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;}
+    .c-success h4{font-family:'Bebas Neue',sans-serif;font-size:1.4rem;letter-spacing:.05em;color:var(--white);margin-bottom:8px;}
+    .c-success p{font-size:.88rem;color:var(--gray);line-height:1.6;}
+
+    /* ── MAP ── */
+    .map-section{background:var(--navy2);padding:88px 5vw;}
+    #map{margin-top:46px;height:500px;border-radius:var(--radius);overflow:hidden;box-shadow:0 24px 80px rgba(0,0,0,.5);border:2px solid rgba(212,169,64,.15);}
+    .leaflet-popup-content-wrapper{border-radius:8px!important;box-shadow:0 8px 30px rgba(0,0,0,.25)!important;overflow:hidden;padding:0!important;}
+    .leaflet-popup-content{margin:0!important;}
+    .map-popup{min-width:185px;font-family:'Source Sans 3',sans-serif;}
+    .map-popup-head{background:var(--navy);padding:12px 16px;}
+    .map-popup-head strong{display:block;font-size:.86rem;color:var(--white);margin-bottom:2px;}
+    .map-popup-head span{font-size:.76rem;color:var(--gray);}
+    .map-popup-body{padding:10px 16px 12px;background:var(--white);}
+    .map-popup-body .pp{font-family:'Bebas Neue',sans-serif;font-size:1.3rem;letter-spacing:.04em;color:var(--navy);display:block;}
+
+    /* ── FOOTER ── */
+    footer{background:var(--navy2);color:rgba(255,255,255,.48);padding:56px 5vw 26px;}
+    .footer-gold-bar{height:3px;background:linear-gradient(to right,var(--gold),transparent);margin-bottom:38px;}
+    .footer-top{display:grid;grid-template-columns:2fr 1fr 1fr;gap:56px;padding-bottom:36px;border-bottom:1px solid rgba(212,169,64,.12);margin-bottom:26px;}
+    .footer-logo{font-family:'Bebas Neue',sans-serif;font-size:1.6rem;letter-spacing:.06em;color:var(--white);margin-bottom:12px;display:flex;align-items:center;gap:8px;}
+    .footer-logo span{color:var(--gold);}
+    .footer-brand p{font-size:.86rem;line-height:1.75;max-width:260px;}
+    .footer-contacts{margin-top:20px;display:flex;flex-direction:column;gap:8px;}
+    .footer-contacts a{font-size:.84rem;color:rgba(255,255,255,.5);transition:color .2s;}
+    .footer-contacts a:hover{color:var(--gold);}
+    .footer-col h4{font-family:'Bebas Neue',sans-serif;font-size:.95rem;letter-spacing:.12em;color:var(--gold);margin-bottom:16px;}
+    .footer-col ul{list-style:none;display:flex;flex-direction:column;gap:9px;}
+    .footer-col ul a{font-size:.84rem;transition:color .2s;}
+    .footer-col ul a:hover{color:var(--white);}
+    .footer-bottom{display:flex;justify-content:space-between;align-items:center;font-size:.76rem;flex-wrap:wrap;gap:10px;}
+
+    /* ── WA ── */
+    .wa-btn{position:fixed;bottom:26px;right:26px;z-index:150;width:56px;height:56px;background:#25D366;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 22px rgba(37,211,102,.45);transition:transform .2s;}
+    .wa-btn:hover{transform:scale(1.1);}
+    .wa-btn svg{width:28px;height:28px;fill:white;}
+
+    /* ── RESPONSIVE ── */
+    @media(max-width:768px){
+      .nav-links{display:none;}
+      .filter-inner{gap:10px;}
+      .filter-range input{width:70px;}
+      .footer-top{grid-template-columns:1fr;gap:32px;}
+      .modal-body{padding:22px;}
+      .modal-features{grid-template-columns:1fr;}
+      .c-row{grid-template-columns:1fr;}
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav>
+  <div class="nav-logo">
+    <svg width="32" height="32" viewBox="0 0 36 36" fill="none"><path d="M5 16L18 4L31 16V32H23V22H13V32H5V16Z" stroke="#D4A940" stroke-width="2.5" stroke-linejoin="round"/></svg>
+    <div class="nav-logo-text">AQUI <span>CASAS</span></div>
+  </div>
+  <div class="nav-links">
+    <a href="#propiedades">Propiedades</a>
+    <a href="#mapa">Ubicaciones</a>
+    <a href="#contacto">Contacto</a>
+    <a href="#contacto" class="nav-cta">Me interesa una casa</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="inicio">
+  <div class="hero-circles"></div>
+  <div class="hero-bar"></div>
+  <div class="hero-content">
+    <div class="hero-eyebrow">Propiedades seleccionadas · Chile</div>
+    <h1>ENCUENTRA<br/>TU <span class="gold">HOGAR</span><br/>IDEAL</h1>
+    <div class="hero-sub">Casas y departamentos disponibles ahora</div>
+    <p>Ofrecemos propiedades cuidadosamente seleccionadas en la Región Metropolitana, Coquimbo y Biobío. Habla con un ejecutivo y te ayudamos a encontrar la indicada.</p>
+    <div class="hero-stats">
+      <div><div class="stat-num">+150</div><div class="stat-label">Propiedades vendidas</div></div>
+      <div><div class="stat-num">3</div><div class="stat-label">Regiones</div></div>
+      <div><div class="stat-num">48H</div><div class="stat-label">Tiempo de respuesta</div></div>
+    </div>
+    <div class="hero-actions">
+      <button class="btn-gold" onclick="document.getElementById('propiedades').scrollIntoView({behavior:'smooth'})">VER PROPIEDADES</button>
+      <button class="btn-outline" onclick="document.getElementById('contacto').scrollIntoView({behavior:'smooth'})">CONTACTAR EJECUTIVO</button>
+    </div>
+  </div>
+</section>
+
+<!-- FILTER BAR -->
+<div class="filter-section" id="propiedades">
+  <div class="filter-inner">
+    <div class="filter-group">
+      <label>Dormitorios</label>
+      <select id="fDorm" onchange="applyFilters()">
+        <option value="">Todos</option>
+        <option value="2">2+</option>
+        <option value="3">3+</option>
+        <option value="4">4+</option>
+      </select>
+    </div>
+    <div class="filter-group">
+      <label>Baños</label>
+      <select id="fBanos" onchange="applyFilters()">
+        <option value="">Todos</option>
+        <option value="1">1+</option>
+        <option value="2">2+</option>
+        <option value="3">3+</option>
+      </select>
+    </div>
+    <div class="filter-group">
+      <label>M² mínimos</label>
+      <input type="number" id="fM2" placeholder="ej: 50" onkeyup="applyFilters()" oninput="applyFilters()"/>
+    </div>
+    <div class="filter-group">
+      <label>Precio (UF)</label>
+      <div class="filter-range">
+        <input type="number" id="fPrecioMin" placeholder="Mín" onkeyup="applyFilters()" oninput="applyFilters()"/>
+        <span>–</span>
+        <input type="number" id="fPrecioMax" placeholder="Máx" onkeyup="applyFilters()" oninput="applyFilters()"/>
+      </div>
+    </div>
+    <div class="filter-group">
+      <label>Región</label>
+      <select id="fRegion" onchange="applyFilters()">
+        <option value="">Todas</option>
+        <option value="RM">R. Metropolitana</option>
+        <option value="IV">IV Coquimbo</option>
+        <option value="VIII">VIII Biobío</option>
+      </select>
+    </div>
+    <button class="btn-filter-reset" onclick="resetFilters()">LIMPIAR</button>
+    <span class="filter-results" id="filterCount"></span>
+  </div>
+</div>
+
+<!-- PROPERTIES -->
+<section class="properties">
+  <div class="props-header">
+    <div class="section-label">Disponibles ahora</div>
+    <div class="section-title">PROPIEDADES EN VENTA</div>
+    <p class="section-sub">¿Te interesa alguna? Un ejecutivo te contacta en menos de 48 horas.</p>
+  </div>
+  <div class="props-grid" id="propsGrid">
+
+    <div class="prop-card" data-id="1" data-dorm="3" data-banos="3" data-m2="108" data-precio="5450" data-region="IV">
+      <div class="prop-img"><img src="https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=600&q=80" alt="Casa Coquimbo"/><span class="prop-badge">En venta</span></div>
+      <div class="prop-body">
+        <div class="prop-price"><span>UF</span> 5.450</div>
+        <div class="prop-name">Conjunto Montemar</div>
+        <div class="prop-loc"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>Coquimbo, IV Región</div>
+      </div>
+      <div class="prop-divider"></div>
+      <div class="prop-attrs">
+        <div class="prop-attr"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>3 dorm.</div>
+        <div class="prop-attr"><svg viewBox="0 0 24 24"><path d="M4 12h16M4 6h16M4 18h16"/></svg>3 baños</div>
+        <div class="prop-attr"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>108 m²</div>
+      </div>
+      <div class="prop-cta-row">
+        <button class="prop-btn-detail" onclick="openDetail(1)">VER FICHA</button>
+        <button class="prop-btn-contact" onclick="openContact(1,event)">ME INTERESA</button>
+      </div>
+    </div>
+
+    <div class="prop-card" data-id="2" data-dorm="3" data-banos="2" data-m2="54" data-precio="2450" data-region="RM">
+      <div class="prop-img"><img src="https://images.unsplash.com/photo-1570129477492-45c003edd2be?w=600&q=80" alt="Casa Puente Alto"/><span class="prop-badge">En venta</span></div>
+      <div class="prop-body">
+        <div class="prop-price"><span>UF</span> 2.450</div>
+        <div class="prop-name">Casa 2 Pisos Nuevo Parque San Francisco</div>
+        <div class="prop-loc"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>Puente Alto, R.M.</div>
+      </div>
+      <div class="prop-divider"></div>
+      <div class="prop-attrs">
+        <div class="prop-attr"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>3 dorm.</div>
+        <div class="prop-attr"><svg viewBox="0 0 24 24"><path d="M4 12h16M4 6h16M4 18h16"/></svg>2 baños</div>
+        <div class="prop-attr"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>54 m²</div>
+      </div>
+      <div class="prop-cta-row">
+        <button class="prop-btn-detail" onclick="openDetail(2)">VER FICHA</button>
+        <button class="prop-btn-contact" onclick="openContact(2,event)">ME INTERESA</button>
+      </div>
+    </div>
+
+    <div class="prop-card" data-id="3" data-dorm="3" data-banos="2" data-m2="60" data-precio="2699" data-region="RM">
+      <div class="prop-img"><img src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=600&q=80" alt="Casa Peñaflor"/><span class="prop-badge">En venta</span></div>
+      <div class="prop-body">
+        <div class="prop-price"><span>UF</span> 2.699</div>
+        <div class="prop-name">Casa 2 Pisos Las Vertientes</div>
+        <div class="prop-loc"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>Peñaflor, R.M.</div>
+      </div>
+      <div class="prop-divider"></div>
+      <div class="prop-attrs">
+        <div class="prop-attr"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>3 dorm.</div>
+        <div class="prop-attr"><svg viewBox="0 0 24 24"><path d="M4 12h16M4 6h16M4 18h16"/></svg>2 baños</div>
+        <div class="prop-attr"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>60 m²</div>
+      </div>
+      <div class="prop-cta-row">
+        <button class="prop-btn-detail" onclick="openDetail(3)">VER FICHA</button>
+        <button class="prop-btn-contact" onclick="openContact(3,event)">ME INTERESA</button>
+      </div>
+    </div>
+
+    <div class="prop-card" data-id="4" data-dorm="2" data-banos="1" data-m2="51" data-precio="2149" data-region="RM">
+      <div class="prop-img"><img src="https://images.unsplash.com/photo-1583608205776-bfd35f0d9f83?w=600&q=80" alt="Condominio Lampa"/><span class="prop-badge">En venta</span></div>
+      <div class="prop-body">
+        <div class="prop-price"><span>UF</span> 2.149</div>
+        <div class="prop-name">Condominio El Mañío</div>
+        <div class="prop-loc"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>Lampa, R.M.</div>
+      </div>
+      <div class="prop-divider"></div>
+      <div class="prop-attrs">
+        <div class="prop-attr"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>2 dorm.</div>
+        <div class="prop-attr"><svg viewBox="0 0 24 24"><path d="M4 12h16M4 6h16M4 18h16"/></svg>1 baño</div>
+        <div class="prop-attr"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>51 m²</div>
+      </div>
+      <div class="prop-cta-row">
+        <button class="prop-btn-detail" onclick="openDetail(4)">VER FICHA</button>
+        <button class="prop-btn-contact" onclick="openContact(4,event)">ME INTERESA</button>
+      </div>
+    </div>
+
+    <div class="prop-card" data-id="5" data-dorm="3" data-banos="3" data-m2="75" data-precio="4299" data-region="RM">
+      <div class="prop-img"><img src="https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=600&q=80" alt="Casa con piscina"/><span class="prop-badge">En venta</span></div>
+      <div class="prop-body">
+        <div class="prop-price"><span>UF</span> 4.299</div>
+        <div class="prop-name">Estupenda Casa con Piscina</div>
+        <div class="prop-loc"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>Puente Alto, R.M.</div>
+      </div>
+      <div class="prop-divider"></div>
+      <div class="prop-attrs">
+        <div class="prop-attr"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>3 dorm.</div>
+        <div class="prop-attr"><svg viewBox="0 0 24 24"><path d="M4 12h16M4 6h16M4 18h16"/></svg>3 baños</div>
+        <div class="prop-attr"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>75 m²</div>
+      </div>
+      <div class="prop-cta-row">
+        <button class="prop-btn-detail" onclick="openDetail(5)">VER FICHA</button>
+        <button class="prop-btn-contact" onclick="openContact(5,event)">ME INTERESA</button>
+      </div>
+    </div>
+
+    <div class="prop-card" data-id="6" data-dorm="3" data-banos="2" data-m2="60" data-precio="3250" data-region="RM">
+      <div class="prop-img"><img src="https://images.unsplash.com/photo-1598228723793-52759bba239c?w=600&q=80" alt="Casa Hacienda"/><span class="prop-badge">En venta</span></div>
+      <div class="prop-body">
+        <div class="prop-price"><span>UF</span> 3.250</div>
+        <div class="prop-name">Casa Hacienda Los Conquistadores</div>
+        <div class="prop-loc"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>Puente Alto, R.M.</div>
+      </div>
+      <div class="prop-divider"></div>
+      <div class="prop-attrs">
+        <div class="prop-attr"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>3 dorm.</div>
+        <div class="prop-attr"><svg viewBox="0 0 24 24"><path d="M4 12h16M4 6h16M4 18h16"/></svg>2 baños</div>
+        <div class="prop-attr"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>60 m²</div>
+      </div>
+      <div class="prop-cta-row">
+        <button class="prop-btn-detail" onclick="openDetail(6)">VER FICHA</button>
+        <button class="prop-btn-contact" onclick="openContact(6,event)">ME INTERESA</button>
+      </div>
+    </div>
+
+    <div class="no-results" id="noResults"><p>No se encontraron propiedades con esos filtros.</p></div>
+  </div>
+</section>
+
+<!-- MAP -->
+<section class="map-section" id="mapa">
+  <div class="section-label">Cobertura</div>
+  <div class="section-title light">DÓNDE ESTAMOS</div>
+  <p class="section-sub light">Propiedades en la Región Metropolitana, Coquimbo y Biobío.</p>
+  <div id="map"></div>
+</section>
+
+<!-- GENERAL CONTACT -->
+<section style="background:var(--white);padding:88px 5vw;" id="contacto">
+  <div style="max-width:560px;margin:0 auto;text-align:center;">
+    <div class="section-label" style="justify-content:center;">Habla con nosotros</div>
+    <div class="section-title">¿TIENES ALGUNA CONSULTA?</div>
+    <p class="section-sub" style="margin:0 auto 36px;text-align:center;">Déjanos tus datos y un ejecutivo de Aquí Casas te contactará en menos de 48 horas.</p>
+    <button class="btn-gold" style="font-size:1.1rem;padding:18px 48px;" onclick="openContact(0,event)">CONTACTAR EJECUTIVO</button>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-gold-bar"></div>
+  <div class="footer-top">
+    <div class="footer-brand">
+      <div class="footer-logo">
+        <svg width="26" height="26" viewBox="0 0 36 36" fill="none"><path d="M5 16L18 4L31 16V32H23V22H13V32H5V16Z" stroke="#D4A940" stroke-width="2.5" stroke-linejoin="round"/></svg>
+        AQUI <span>CASAS</span>
+      </div>
+      <p>Propiedades seleccionadas en Chile. Comprometidos con ayudarte a encontrar el hogar que buscas.</p>
+      <div class="footer-contacts">
+        <a href="tel:+56991776069">📞 +56 9 9177 6069</a>
+        <a href="mailto:ventas@aquicasas.cl">✉️ ventas@aquicasas.cl</a>
+        <span style="font-size:.84rem">📍 Teatinos 251 of 1008, Santiago</span>
+      </div>
+    </div>
+    <div class="footer-col">
+      <h4>Navegación</h4>
+      <ul>
+        <li><a href="#inicio">Inicio</a></li>
+        <li><a href="#propiedades">Propiedades</a></li>
+        <li><a href="#mapa">Ubicaciones</a></li>
+        <li><a href="#contacto">Contacto</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Regiones</h4>
+      <ul>
+        <li><a href="#mapa">Región Metropolitana</a></li>
+        <li><a href="#mapa">IV Coquimbo</a></li>
+        <li><a href="#mapa">VIII Biobío</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2026 Aquí Casas. Todos los derechos reservados.</span>
+    <span style="color:rgba(255,255,255,.2)">Santiago, Chile</span>
+  </div>
+</footer>
+
+<!-- WHATSAPP -->
+<a class="wa-btn" href="https://wa.me/56991776069" target="_blank" aria-label="WhatsApp">
+  <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413z"/></svg>
+</a>
+
+<!-- DETAIL MODAL -->
+<div class="modal-overlay" id="detailOverlay" onclick="closeDetailOutside(event)">
+  <div class="modal" id="detailModal">
+    <button class="modal-close" onclick="closeDetail()"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    <div class="modal-gallery"><img id="mImg" src="" alt=""/><span class="modal-gallery-badge">En venta</span></div>
+    <div class="modal-body">
+      <div class="modal-top">
+        <div>
+          <div class="modal-name" id="mName"></div>
+          <div class="modal-loc" id="mLoc"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg><span id="mLocText"></span></div>
+        </div>
+        <div class="modal-price" id="mPrice"></div>
+      </div>
+      <div class="modal-attrs">
+        <div class="modal-attr">
+          <div class="modal-attr-icon"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>
+          <div class="modal-attr-val" id="mDorm"></div>
+          <div class="modal-attr-label">Dormitorios</div>
+        </div>
+        <div class="modal-attr">
+          <div class="modal-attr-icon"><svg viewBox="0 0 24 24"><path d="M4 12h16M4 6h16M4 18h16"/></svg></div>
+          <div class="modal-attr-val" id="mBanos"></div>
+          <div class="modal-attr-label">Baños</div>
+        </div>
+        <div class="modal-attr">
+          <div class="modal-attr-icon"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/></svg></div>
+          <div class="modal-attr-val" id="mM2"></div>
+          <div class="modal-attr-label">M² construidos</div>
+        </div>
+        <div class="modal-attr">
+          <div class="modal-attr-icon"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" stroke-dasharray="4 2"/></svg></div>
+          <div class="modal-attr-val" id="mTerreno"></div>
+          <div class="modal-attr-label">M² terreno</div>
+        </div>
+      </div>
+      <div class="modal-desc" id="mDesc"></div>
+      <div class="modal-features" id="mFeatures"></div>
+      <button class="modal-cta-btn" id="mCtaBtn">ME INTERESA ESTA PROPIEDAD →</button>
+    </div>
+  </div>
+</div>
+
+<!-- CONTACT MODAL -->
+<div class="contact-overlay" id="contactOverlay" onclick="closeContactOutside(event)">
+  <div class="contact-modal">
+    <button class="contact-close" onclick="closeContact()"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    <h3>ME INTERESA</h3>
+    <div class="contact-prop-name" id="cPropName"></div>
+    <div id="cForm">
+      <div class="c-row">
+        <div class="c-group"><label>Nombre</label><input type="text" id="cNombre" placeholder="Juan Pérez"/></div>
+        <div class="c-group"><label>Teléfono</label><input type="tel" id="cTelefono" placeholder="+56 9 xxxx xxxx"/></div>
+      </div>
+      <div class="c-group"><label>Email</label><input type="email" id="cEmail" placeholder="juan@email.com"/></div>
+      <div class="c-group"><label>Mensaje (opcional)</label><textarea id="cMensaje" placeholder="¿Alguna consulta específica?"></textarea></div>
+      <button class="c-submit" onclick="submitContact()">QUIERO QUE ME CONTACTEN →</button>
+      <p class="c-note">🔒 Tus datos son confidenciales.</p>
+    </div>
+    <div class="c-success" id="cSuccess">
+      <div class="c-success-icon"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+      <h4>¡MENSAJE RECIBIDO!</h4>
+      <p>Un ejecutivo de Aquí Casas te contactará en menos de 48 horas hábiles.</p>
+    </div>
+  </div>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+// ── PROPERTY DATA ──────────────────────────────────────────────
+const PROPS = {
+  1:{name:"Conjunto Montemar",loc:"Coquimbo, IV Región",precio:"UF 5.450",dorm:3,banos:3,m2:108,terreno:188,img:"https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=900&q=80",desc:"Amplia casa en conjunto cerrado ubicado en Coquimbo. Excelente distribución con amplio living-comedor, cocina equipada y patio trasero. Conjunto cuenta con áreas verdes y estacionamiento.",features:["Conjunto cerrado","Áreas verdes","2 estacionamientos","Patio trasero","Cocina equipada","Cerca de colegios"]},
+  2:{name:"Casa 2 Pisos Nuevo Parque San Francisco",loc:"Puente Alto, R.M.",precio:"UF 2.450",dorm:3,banos:2,m2:54,terreno:75,img:"https://images.unsplash.com/photo-1570129477492-45c003edd2be?w=900&q=80",desc:"Casa de 2 pisos en pasaje cerrado con buena seguridad. Planta baja con living, comedor y cocina. Planta alta con 3 dormitorios y 2 baños completos. Cerca de Mall Plaza Vespucio y Metro.",features:["Pasaje cerrado","2 pisos","Cerca del Metro","3 dormitorios","Cocina americana","Estacionamiento"]},
+  3:{name:"Casa 2 Pisos Las Vertientes",loc:"Peñaflor, R.M.",precio:"UF 2.699",dorm:3,banos:2,m2:60,terreno:115,img:"https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=900&q=80",desc:"Casa en condominio Las Vertientes de Peñaflor con excelente conectividad. Terreno de 115 m² con jardín frontal y patio trasero. Acceso rápido a Ruta 78.",features:["Condominio privado","Jardín y patio","Acceso Ruta 78","3 dormitorios","2 baños completos","Estacionamiento cubierto"]},
+  4:{name:"Condominio El Mañío",loc:"Lampa, R.M.",precio:"UF 2.149",dorm:2,banos:1,m2:51,terreno:115,img:"https://images.unsplash.com/photo-1583608205776-bfd35f0d9f83?w=900&q=80",desc:"Casa en condominio El Mañío en Lampa. Ideal para primera vivienda o inversión. Living-comedor, cocina, 2 dormitorios y 1 baño. Terreno con posibilidad de ampliación.",features:["Condominio El Mañío","Terreno amplio","2 dormitorios","Posibilidad ampliación","Zona residencial tranquila","Estacionamiento"]},
+  5:{name:"Estupenda Casa con Piscina",loc:"Puente Alto, R.M.",precio:"UF 4.299",dorm:3,banos:3,m2:75,terreno:164,img:"https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=900&q=80",desc:"Destacada casa con piscina privada en Puente Alto. Amplio terreno de 164 m² con jardín, piscina y zona de asado. Interior con 3 dormitorios, 3 baños y cocina amplia.",features:["Piscina privada","Zona de asado","Jardín 164 m²","3 baños completos","Living amplio","2 estacionamientos"]},
+  6:{name:"Casa Hacienda Los Conquistadores",loc:"Puente Alto, R.M.",precio:"UF 3.250",dorm:3,banos:2,m2:60,terreno:104,img:"https://images.unsplash.com/photo-1598228723793-52759bba239c?w=900&q=80",desc:"Casa en condominio Hacienda Los Conquistadores, Puente Alto. Condominio con vigilancia 24/7 y áreas verdes. Casa de 2 pisos con buena distribución y terreno de 104 m².",features:["Vigilancia 24/7","Áreas verdes","2 pisos","Terreno 104 m²","Cerca colegio","Estacionamiento"]}
+};
+
+// ── FILTER LOGIC ───────────────────────────────────────────────
+function applyFilters() {
+  const dorm    = parseInt(document.getElementById('fDorm').value)||0;
+  const banos   = parseInt(document.getElementById('fBanos').value)||0;
+  const m2      = parseFloat(document.getElementById('fM2').value)||0;
+  const pMin    = parseFloat(document.getElementById('fPrecioMin').value)||0;
+  const pMax    = parseFloat(document.getElementById('fPrecioMax').value)||Infinity;
+  const region  = document.getElementById('fRegion').value;
+  const cards   = document.querySelectorAll('.prop-card');
+  let visible   = 0;
+  cards.forEach(c => {
+    const d  = parseInt(c.dataset.dorm);
+    const b  = parseInt(c.dataset.banos);
+    const m  = parseFloat(c.dataset.m2);
+    const p  = parseFloat(c.dataset.precio);
+    const r  = c.dataset.region;
+    const ok = d>=dorm && b>=banos && m>=m2 && p>=pMin && p<=pMax && (!region||r===region);
+    c.classList.toggle('hidden',!ok);
+    if(ok) visible++;
+  });
+  document.getElementById('noResults').style.display = visible===0?'block':'none';
+  document.getElementById('filterCount').textContent = visible>0?`${visible} propiedad${visible>1?'es':''}`:'' ;
+}
+
+function resetFilters() {
+  ['fDorm','fBanos','fRegion'].forEach(id=>document.getElementById(id).value='');
+  ['fM2','fPrecioMin','fPrecioMax'].forEach(id=>document.getElementById(id).value='');
+  document.querySelectorAll('.prop-card').forEach(c=>c.classList.remove('hidden'));
+  document.getElementById('noResults').style.display='none';
+  document.getElementById('filterCount').textContent='';
+}
+
+// ── DETAIL MODAL ───────────────────────────────────────────────
+function openDetail(id) {
+  const p = PROPS[id];
+  document.getElementById('mImg').src    = p.img;
+  document.getElementById('mImg').alt    = p.name;
+  document.getElementById('mName').textContent = p.name;
+  document.getElementById('mLocText').textContent = p.loc;
+  document.getElementById('mPrice').innerHTML = `<span>UF</span> ${p.precio.replace('UF ','')}`;
+  document.getElementById('mDorm').textContent   = p.dorm;
+  document.getElementById('mBanos').textContent  = p.banos;
+  document.getElementById('mM2').textContent     = p.m2+' m²';
+  document.getElementById('mTerreno').textContent= p.terreno+' m²';
+  document.getElementById('mDesc').textContent   = p.desc;
+  document.getElementById('mFeatures').innerHTML = p.features.map(f=>`<div class="modal-feature">${f}</div>`).join('');
+  document.getElementById('mCtaBtn').onclick = ()=>{ closeDetail(); openContact(id,null); };
+  document.getElementById('detailOverlay').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+function closeDetail() {
+  document.getElementById('detailOverlay').classList.remove('open');
+  document.body.style.overflow='';
+}
+function closeDetailOutside(e) { if(e.target===document.getElementById('detailOverlay')) closeDetail(); }
+
+// ── CONTACT MODAL ──────────────────────────────────────────────
+let currentContactProp = 0;
+function openContact(id, e) {
+  if(e) e.stopPropagation();
+  currentContactProp = id;
+  const label = id===0 ? 'Consulta general' : `${PROPS[id].name} – ${PROPS[id].precio}`;
+  document.getElementById('cPropName').textContent = label;
+  document.getElementById('cForm').style.display='block';
+  document.getElementById('cSuccess').style.display='none';
+  document.getElementById('cNombre').value='';
+  document.getElementById('cTelefono').value='';
+  document.getElementById('cEmail').value='';
+  document.getElementById('cMensaje').value='';
+  document.getElementById('contactOverlay').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+function closeContact() {
+  document.getElementById('contactOverlay').classList.remove('open');
+  document.body.style.overflow='';
+}
+function closeContactOutside(e) { if(e.target===document.getElementById('contactOverlay')) closeContact(); }
+function submitContact() {
+  const n = document.getElementById('cNombre').value.trim();
+  const t = document.getElementById('cTelefono').value.trim();
+  if(!n||!t){ alert('Por favor ingresa tu nombre y teléfono.'); return; }
+  // → Conectar a CRM / Zapier / WhatsApp API aquí
+  console.log('Lead:', { prop: currentContactProp, nombre:n, telefono:t, email:document.getElementById('cEmail').value, msg:document.getElementById('cMensaje').value });
+  document.getElementById('cForm').style.display='none';
+  document.getElementById('cSuccess').style.display='block';
+}
+
+// Escape key closes modals
+document.addEventListener('keydown', e => { if(e.key==='Escape'){ closeDetail(); closeContact(); }});
+
+// ── MAP ────────────────────────────────────────────────────────
+const map = L.map('map',{scrollWheelZoom:false}).setView([-33.55,-70.8],8);
+L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',{attribution:'© OpenStreetMap © CARTO',maxZoom:19}).addTo(map);
+const goldIcon = L.divIcon({className:'',html:`<div style="width:28px;height:28px;background:#D4A940;border-radius:50% 50% 50% 0;transform:rotate(-45deg);border:3px solid #0A1F42;box-shadow:0 4px 12px rgba(0,0,0,.4)"></div>`,iconSize:[28,28],iconAnchor:[14,28],popupAnchor:[0,-32]});
+[
+  {lat:-29.9533,lng:-71.3395,id:1},
+  {lat:-33.6167,lng:-70.5806,id:2},
+  {lat:-33.5953,lng:-70.8783,id:3},
+  {lat:-33.5847,lng:-70.9086,id:4},
+  {lat:-33.525, lng:-70.615, id:5},
+  {lat:-33.601, lng:-70.575, id:6},
+].forEach(({lat,lng,id})=>{
+  const p=PROPS[id];
+  L.marker([lat,lng],{icon:goldIcon}).addTo(map).bindPopup(`<div class="map-popup"><div class="map-popup-head"><strong>${p.name}</strong><span>${p.loc}</span></div><div class="map-popup-body"><span class="pp">${p.precio}</span></div></div>`);
+});
+</script>
+
+<!-- META PIXEL — pega tu código aquí -->
+<!-- GOOGLE TAG — pega tu código aquí -->
+</body>
+</html>
