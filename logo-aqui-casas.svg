@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="937" height="404" viewBox="0 0 937 404" role="img" aria-labelledby="title desc">
+  <title id="title">AQUI CASAS</title>
+  <desc id="desc">Logotipo de AQUI CASAS con casa en dorado y texto blanco sobre fondo azul.</desc>
+  <rect width="937" height="404" fill="#09255A"/>
+  <path
+    d="M93 288V171l142-118c14-12 35-12 49 0l143 120M93 288h423M93 171h53"
+    fill="none"
+    stroke="#D4A940"
+    stroke-width="23"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  />
+  <text
+    x="188"
+    y="248"
+    fill="#F5F7FA"
+    font-size="108"
+    font-family="Montserrat, Poppins, 'Source Sans 3', Arial, sans-serif"
+    font-weight="700"
+    letter-spacing="-1.5"
+  >
+    AQUI CASAS
+  </text>
+</svg>
