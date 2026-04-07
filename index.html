@@ -248,6 +248,24 @@
 <div class="filter-section" id="propiedades">
   <div class="filter-inner">
     <div class="filter-group">
+      <label>Operación</label>
+      <select id="fOperacion" onchange="applyFilters()">
+        <option value="">Todas</option>
+      </select>
+    </div>
+    <div class="filter-group">
+      <label>Tipo</label>
+      <select id="fTipo" onchange="applyFilters()">
+        <option value="">Todos</option>
+      </select>
+    </div>
+    <div class="filter-group">
+      <label>Comuna</label>
+      <select id="fComuna" onchange="applyFilters()">
+        <option value="">Todas</option>
+      </select>
+    </div>
+    <div class="filter-group">
       <label>Dormitorios</label>
       <select id="fDorm" onchange="applyFilters()">
         <option value="">Todos</option>
@@ -298,124 +316,9 @@
     <div class="section-title">PROPIEDADES EN VENTA</div>
     <p class="section-sub">¿Te interesa alguna? Un ejecutivo te contacta en menos de 48 horas.</p>
   </div>
-  <div class="props-grid" id="propsGrid">
-
-    <div class="prop-card" data-id="1" data-dorm="3" data-banos="3" data-m2="108" data-precio="5450" data-region="IV">
-      <div class="prop-img"><img src="https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=600&q=80" alt="Casa Coquimbo"/><span class="prop-badge">En venta</span></div>
-      <div class="prop-body">
-        <div class="prop-price"><span>UF</span> 5.450</div>
-        <div class="prop-name">Conjunto Montemar</div>
-        <div class="prop-loc"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>Coquimbo, IV Región</div>
-      </div>
-      <div class="prop-divider"></div>
-      <div class="prop-attrs">
-        <div class="prop-attr"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>3 dorm.</div>
-        <div class="prop-attr"><svg viewBox="0 0 24 24"><path d="M4 12h16M4 6h16M4 18h16"/></svg>3 baños</div>
-        <div class="prop-attr"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>108 m²</div>
-      </div>
-      <div class="prop-cta-row">
-        <button class="prop-btn-detail" onclick="openDetail(1)">VER FICHA</button>
-        <button class="prop-btn-contact" onclick="openContact(1,event)">ME INTERESA</button>
-      </div>
-    </div>
-
-    <div class="prop-card" data-id="2" data-dorm="3" data-banos="2" data-m2="54" data-precio="2450" data-region="RM">
-      <div class="prop-img"><img src="https://images.unsplash.com/photo-1570129477492-45c003edd2be?w=600&q=80" alt="Casa Puente Alto"/><span class="prop-badge">En venta</span></div>
-      <div class="prop-body">
-        <div class="prop-price"><span>UF</span> 2.450</div>
-        <div class="prop-name">Casa 2 Pisos Nuevo Parque San Francisco</div>
-        <div class="prop-loc"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>Puente Alto, R.M.</div>
-      </div>
-      <div class="prop-divider"></div>
-      <div class="prop-attrs">
-        <div class="prop-attr"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>3 dorm.</div>
-        <div class="prop-attr"><svg viewBox="0 0 24 24"><path d="M4 12h16M4 6h16M4 18h16"/></svg>2 baños</div>
-        <div class="prop-attr"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>54 m²</div>
-      </div>
-      <div class="prop-cta-row">
-        <button class="prop-btn-detail" onclick="openDetail(2)">VER FICHA</button>
-        <button class="prop-btn-contact" onclick="openContact(2,event)">ME INTERESA</button>
-      </div>
-    </div>
-
-    <div class="prop-card" data-id="3" data-dorm="3" data-banos="2" data-m2="60" data-precio="2699" data-region="RM">
-      <div class="prop-img"><img src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=600&q=80" alt="Casa Peñaflor"/><span class="prop-badge">En venta</span></div>
-      <div class="prop-body">
-        <div class="prop-price"><span>UF</span> 2.699</div>
-        <div class="prop-name">Casa 2 Pisos Las Vertientes</div>
-        <div class="prop-loc"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>Peñaflor, R.M.</div>
-      </div>
-      <div class="prop-divider"></div>
-      <div class="prop-attrs">
-        <div class="prop-attr"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>3 dorm.</div>
-        <div class="prop-attr"><svg viewBox="0 0 24 24"><path d="M4 12h16M4 6h16M4 18h16"/></svg>2 baños</div>
-        <div class="prop-attr"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>60 m²</div>
-      </div>
-      <div class="prop-cta-row">
-        <button class="prop-btn-detail" onclick="openDetail(3)">VER FICHA</button>
-        <button class="prop-btn-contact" onclick="openContact(3,event)">ME INTERESA</button>
-      </div>
-    </div>
-
-    <div class="prop-card" data-id="4" data-dorm="2" data-banos="1" data-m2="51" data-precio="2149" data-region="RM">
-      <div class="prop-img"><img src="https://images.unsplash.com/photo-1583608205776-bfd35f0d9f83?w=600&q=80" alt="Condominio Lampa"/><span class="prop-badge">En venta</span></div>
-      <div class="prop-body">
-        <div class="prop-price"><span>UF</span> 2.149</div>
-        <div class="prop-name">Condominio El Mañío</div>
-        <div class="prop-loc"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>Lampa, R.M.</div>
-      </div>
-      <div class="prop-divider"></div>
-      <div class="prop-attrs">
-        <div class="prop-attr"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>2 dorm.</div>
-        <div class="prop-attr"><svg viewBox="0 0 24 24"><path d="M4 12h16M4 6h16M4 18h16"/></svg>1 baño</div>
-        <div class="prop-attr"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>51 m²</div>
-      </div>
-      <div class="prop-cta-row">
-        <button class="prop-btn-detail" onclick="openDetail(4)">VER FICHA</button>
-        <button class="prop-btn-contact" onclick="openContact(4,event)">ME INTERESA</button>
-      </div>
-    </div>
-
-    <div class="prop-card" data-id="5" data-dorm="3" data-banos="3" data-m2="75" data-precio="4299" data-region="RM">
-      <div class="prop-img"><img src="https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=600&q=80" alt="Casa con piscina"/><span class="prop-badge">En venta</span></div>
-      <div class="prop-body">
-        <div class="prop-price"><span>UF</span> 4.299</div>
-        <div class="prop-name">Estupenda Casa con Piscina</div>
-        <div class="prop-loc"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>Puente Alto, R.M.</div>
-      </div>
-      <div class="prop-divider"></div>
-      <div class="prop-attrs">
-        <div class="prop-attr"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>3 dorm.</div>
-        <div class="prop-attr"><svg viewBox="0 0 24 24"><path d="M4 12h16M4 6h16M4 18h16"/></svg>3 baños</div>
-        <div class="prop-attr"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>75 m²</div>
-      </div>
-      <div class="prop-cta-row">
-        <button class="prop-btn-detail" onclick="openDetail(5)">VER FICHA</button>
-        <button class="prop-btn-contact" onclick="openContact(5,event)">ME INTERESA</button>
-      </div>
-    </div>
-
-    <div class="prop-card" data-id="6" data-dorm="3" data-banos="2" data-m2="60" data-precio="3250" data-region="RM">
-      <div class="prop-img"><img src="https://images.unsplash.com/photo-1598228723793-52759bba239c?w=600&q=80" alt="Casa Hacienda"/><span class="prop-badge">En venta</span></div>
-      <div class="prop-body">
-        <div class="prop-price"><span>UF</span> 3.250</div>
-        <div class="prop-name">Casa Hacienda Los Conquistadores</div>
-        <div class="prop-loc"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>Puente Alto, R.M.</div>
-      </div>
-      <div class="prop-divider"></div>
-      <div class="prop-attrs">
-        <div class="prop-attr"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>3 dorm.</div>
-        <div class="prop-attr"><svg viewBox="0 0 24 24"><path d="M4 12h16M4 6h16M4 18h16"/></svg>2 baños</div>
-        <div class="prop-attr"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>60 m²</div>
-      </div>
-      <div class="prop-cta-row">
-        <button class="prop-btn-detail" onclick="openDetail(6)">VER FICHA</button>
-        <button class="prop-btn-contact" onclick="openContact(6,event)">ME INTERESA</button>
-      </div>
-    </div>
-
-    <div class="no-results" id="noResults"><p>No se encontraron propiedades con esos filtros.</p></div>
-  </div>
+  <p class="section-sub" id="apiStatus" style="max-width:none;margin-bottom:24px;"></p>
+  <div class="props-grid" id="propsGrid"></div>
+  <div class="no-results" id="noResults"><p>No se encontraron propiedades con esos filtros.</p></div>
 </section>
 
 <!-- MAP -->
@@ -467,6 +370,7 @@
         <li><a href="#mapa">IV Coquimbo</a></li>
         <li><a href="#mapa">VIII Biobío</a></li>
       </ul>
+      <a href="https://www.aquicasas.cl/intranet.asp" target="_blank" rel="noopener noreferrer" class="btn-gold" style="display:inline-flex;align-items:center;justify-content:center;margin-top:18px;padding:12px 24px;font-size:.95rem;">ADMINISTRADOR</a>
     </div>
   </div>
   <div class="footer-bottom">
@@ -547,122 +451,646 @@
 </div>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<!--
+  Activa la API real definiendo esto antes del script principal:
+  <script>
+    window.OFINET_CONFIG = {
+      useMockData: false,
+      baseUrl: '/api/ofinet',
+      token: '',
+      endpoints: {
+        comunas: 'comunas',
+        tipos: 'tipos',
+        operaciones: 'operaciones',
+        propiedades: 'propiedades',
+        detallePropiedad: 'propiedades/{id}'
+      }
+    };
+  </script>
+
+  O bien, para pruebas temporales desde consola en un hosting estatico:
+  localStorage.setItem('OFINET_CONFIG', JSON.stringify({
+    useMockData: false,
+    baseUrl: '/api/ofinet',
+    token: 'TU_TOKEN_BEARER',
+    endpoints: {
+      comunas: 'comunas',
+      tipos: 'tipos',
+      operaciones: 'operaciones',
+      propiedades: 'propiedades',
+      detallePropiedad: 'propiedades/{id}'
+    }
+  }));
+  location.reload();
+-->
 <script>
-// ── PROPERTY DATA ──────────────────────────────────────────────
-const PROPS = {
-  1:{name:"Conjunto Montemar",loc:"Coquimbo, IV Región",precio:"UF 5.450",dorm:3,banos:3,m2:108,terreno:188,img:"https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=900&q=80",desc:"Amplia casa en conjunto cerrado ubicado en Coquimbo. Excelente distribución con amplio living-comedor, cocina equipada y patio trasero. Conjunto cuenta con áreas verdes y estacionamiento.",features:["Conjunto cerrado","Áreas verdes","2 estacionamientos","Patio trasero","Cocina equipada","Cerca de colegios"]},
-  2:{name:"Casa 2 Pisos Nuevo Parque San Francisco",loc:"Puente Alto, R.M.",precio:"UF 2.450",dorm:3,banos:2,m2:54,terreno:75,img:"https://images.unsplash.com/photo-1570129477492-45c003edd2be?w=900&q=80",desc:"Casa de 2 pisos en pasaje cerrado con buena seguridad. Planta baja con living, comedor y cocina. Planta alta con 3 dormitorios y 2 baños completos. Cerca de Mall Plaza Vespucio y Metro.",features:["Pasaje cerrado","2 pisos","Cerca del Metro","3 dormitorios","Cocina americana","Estacionamiento"]},
-  3:{name:"Casa 2 Pisos Las Vertientes",loc:"Peñaflor, R.M.",precio:"UF 2.699",dorm:3,banos:2,m2:60,terreno:115,img:"https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=900&q=80",desc:"Casa en condominio Las Vertientes de Peñaflor con excelente conectividad. Terreno de 115 m² con jardín frontal y patio trasero. Acceso rápido a Ruta 78.",features:["Condominio privado","Jardín y patio","Acceso Ruta 78","3 dormitorios","2 baños completos","Estacionamiento cubierto"]},
-  4:{name:"Condominio El Mañío",loc:"Lampa, R.M.",precio:"UF 2.149",dorm:2,banos:1,m2:51,terreno:115,img:"https://images.unsplash.com/photo-1583608205776-bfd35f0d9f83?w=900&q=80",desc:"Casa en condominio El Mañío en Lampa. Ideal para primera vivienda o inversión. Living-comedor, cocina, 2 dormitorios y 1 baño. Terreno con posibilidad de ampliación.",features:["Condominio El Mañío","Terreno amplio","2 dormitorios","Posibilidad ampliación","Zona residencial tranquila","Estacionamiento"]},
-  5:{name:"Estupenda Casa con Piscina",loc:"Puente Alto, R.M.",precio:"UF 4.299",dorm:3,banos:3,m2:75,terreno:164,img:"https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=900&q=80",desc:"Destacada casa con piscina privada en Puente Alto. Amplio terreno de 164 m² con jardín, piscina y zona de asado. Interior con 3 dormitorios, 3 baños y cocina amplia.",features:["Piscina privada","Zona de asado","Jardín 164 m²","3 baños completos","Living amplio","2 estacionamientos"]},
-  6:{name:"Casa Hacienda Los Conquistadores",loc:"Puente Alto, R.M.",precio:"UF 3.250",dorm:3,banos:2,m2:60,terreno:104,img:"https://images.unsplash.com/photo-1598228723793-52759bba239c?w=900&q=80",desc:"Casa en condominio Hacienda Los Conquistadores, Puente Alto. Condominio con vigilancia 24/7 y áreas verdes. Casa de 2 pisos con buena distribución y terreno de 104 m².",features:["Vigilancia 24/7","Áreas verdes","2 pisos","Terreno 104 m²","Cerca colegio","Estacionamiento"]}
+function getStoredOfinetConfig() {
+  try {
+    const raw = window.localStorage.getItem('OFINET_CONFIG');
+    return raw ? JSON.parse(raw) : {};
+  } catch (error) {
+    console.warn('No se pudo leer OFINET_CONFIG desde localStorage.', error);
+    return {};
+  }
+}
+
+const DEFAULT_API_CONFIG = {
+  useMockData: false,
+  baseUrl: '/api/ofinet',
+  token: '',
+  endpoints: {
+    comunas: 'comunas',
+    tipos: 'tipos',
+    operaciones: 'operaciones',
+    propiedades: 'propiedades',
+    detallePropiedad: 'propiedades/{id}'
+  }
 };
 
-// ── FILTER LOGIC ───────────────────────────────────────────────
-function applyFilters() {
-  const dorm    = parseInt(document.getElementById('fDorm').value)||0;
-  const banos   = parseInt(document.getElementById('fBanos').value)||0;
-  const m2      = parseFloat(document.getElementById('fM2').value)||0;
-  const pMin    = parseFloat(document.getElementById('fPrecioMin').value)||0;
-  const pMax    = parseFloat(document.getElementById('fPrecioMax').value)||Infinity;
-  const region  = document.getElementById('fRegion').value;
-  const cards   = document.querySelectorAll('.prop-card');
-  let visible   = 0;
-  cards.forEach(c => {
-    const d  = parseInt(c.dataset.dorm);
-    const b  = parseInt(c.dataset.banos);
-    const m  = parseFloat(c.dataset.m2);
-    const p  = parseFloat(c.dataset.precio);
-    const r  = c.dataset.region;
-    const ok = d>=dorm && b>=banos && m>=m2 && p>=pMin && p<=pMax && (!region||r===region);
-    c.classList.toggle('hidden',!ok);
-    if(ok) visible++;
+const STORED_API_CONFIG = getStoredOfinetConfig();
+
+const API_CONFIG = {
+  ...DEFAULT_API_CONFIG,
+  ...STORED_API_CONFIG,
+  ...(window.OFINET_CONFIG || {}),
+  endpoints: {
+    ...DEFAULT_API_CONFIG.endpoints,
+    ...((STORED_API_CONFIG && STORED_API_CONFIG.endpoints) || {}),
+    ...((window.OFINET_CONFIG && window.OFINET_CONFIG.endpoints) || {})
+  }
+};
+
+const SAMPLE_PROPERTIES = [
+  {
+    id: 1,
+    code: 'AC-001',
+    name: 'Conjunto Montemar',
+    loc: 'Coquimbo, IV Región',
+    comuna: 'Coquimbo',
+    region: 'IV',
+    tipo: 'Casa',
+    operacion: 'Venta',
+    precio: 5450,
+    moneda: 'UF',
+    dorm: 3,
+    banos: 3,
+    m2: 108,
+    terreno: 188,
+    lat: -29.9533,
+    lng: -71.3395,
+    img: 'https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=900&q=80',
+    desc: 'Amplia casa en conjunto cerrado ubicado en Coquimbo. Excelente distribución con amplio living-comedor, cocina equipada y patio trasero.',
+    features: ['Conjunto cerrado', 'Áreas verdes', '2 estacionamientos', 'Patio trasero', 'Cocina equipada', 'Cerca de colegios']
+  },
+  {
+    id: 2,
+    code: 'AC-002',
+    name: 'Casa 2 Pisos Nuevo Parque San Francisco',
+    loc: 'Puente Alto, R.M.',
+    comuna: 'Puente Alto',
+    region: 'RM',
+    tipo: 'Casa',
+    operacion: 'Venta',
+    precio: 2450,
+    moneda: 'UF',
+    dorm: 3,
+    banos: 2,
+    m2: 54,
+    terreno: 75,
+    lat: -33.6167,
+    lng: -70.5806,
+    img: 'https://images.unsplash.com/photo-1570129477492-45c003edd2be?w=900&q=80',
+    desc: 'Casa de 2 pisos en pasaje cerrado con buena seguridad. Planta baja con living, comedor y cocina. Planta alta con 3 dormitorios y 2 baños completos.',
+    features: ['Pasaje cerrado', '2 pisos', 'Cerca del Metro', '3 dormitorios', 'Cocina americana', 'Estacionamiento']
+  },
+  {
+    id: 3,
+    code: 'AC-003',
+    name: 'Casa 2 Pisos Las Vertientes',
+    loc: 'Peñaflor, R.M.',
+    comuna: 'Peñaflor',
+    region: 'RM',
+    tipo: 'Casa',
+    operacion: 'Venta',
+    precio: 2699,
+    moneda: 'UF',
+    dorm: 3,
+    banos: 2,
+    m2: 60,
+    terreno: 115,
+    lat: -33.5953,
+    lng: -70.8783,
+    img: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=900&q=80',
+    desc: 'Casa en condominio Las Vertientes de Peñaflor con excelente conectividad. Terreno de 115 m² con jardín frontal y patio trasero.',
+    features: ['Condominio privado', 'Jardín y patio', 'Acceso Ruta 78', '3 dormitorios', '2 baños completos', 'Estacionamiento cubierto']
+  },
+  {
+    id: 4,
+    code: 'AC-004',
+    name: 'Condominio El Mañío',
+    loc: 'Lampa, R.M.',
+    comuna: 'Lampa',
+    region: 'RM',
+    tipo: 'Casa',
+    operacion: 'Venta',
+    precio: 2149,
+    moneda: 'UF',
+    dorm: 2,
+    banos: 1,
+    m2: 51,
+    terreno: 115,
+    lat: -33.5847,
+    lng: -70.9086,
+    img: 'https://images.unsplash.com/photo-1583608205776-bfd35f0d9f83?w=900&q=80',
+    desc: 'Casa en condominio El Mañío en Lampa. Ideal para primera vivienda o inversión.',
+    features: ['Condominio El Mañío', 'Terreno amplio', '2 dormitorios', 'Posibilidad ampliación', 'Zona residencial tranquila', 'Estacionamiento']
+  },
+  {
+    id: 5,
+    code: 'AC-005',
+    name: 'Estupenda Casa con Piscina',
+    loc: 'Puente Alto, R.M.',
+    comuna: 'Puente Alto',
+    region: 'RM',
+    tipo: 'Casa',
+    operacion: 'Venta',
+    precio: 4299,
+    moneda: 'UF',
+    dorm: 3,
+    banos: 3,
+    m2: 75,
+    terreno: 164,
+    lat: -33.525,
+    lng: -70.615,
+    img: 'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=900&q=80',
+    desc: 'Destacada casa con piscina privada en Puente Alto. Amplio terreno de 164 m² con jardín, piscina y zona de asado.',
+    features: ['Piscina privada', 'Zona de asado', 'Jardín 164 m²', '3 baños completos', 'Living amplio', '2 estacionamientos']
+  },
+  {
+    id: 6,
+    code: 'AC-006',
+    name: 'Casa Hacienda Los Conquistadores',
+    loc: 'Puente Alto, R.M.',
+    comuna: 'Puente Alto',
+    region: 'RM',
+    tipo: 'Casa',
+    operacion: 'Venta',
+    precio: 3250,
+    moneda: 'UF',
+    dorm: 3,
+    banos: 2,
+    m2: 60,
+    terreno: 104,
+    lat: -33.601,
+    lng: -70.575,
+    img: 'https://images.unsplash.com/photo-1598228723793-52759bba239c?w=900&q=80',
+    desc: 'Casa en condominio Hacienda Los Conquistadores, Puente Alto. Condominio con vigilancia 24/7 y áreas verdes.',
+    features: ['Vigilancia 24/7', 'Áreas verdes', '2 pisos', 'Terreno 104 m²', 'Cerca colegio', 'Estacionamiento']
+  }
+];
+
+const STATE = {
+  properties: [],
+  propertyMap: {},
+  markers: [],
+  catalogs: {
+    comunas: [],
+    tipos: [],
+    operaciones: []
+  }
+};
+
+function escapeHtml(value) {
+  return String(value ?? '').replace(/[&<>"']/g, char => ({
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#39;'
+  })[char]);
+}
+
+function formatPrice(value, currency = 'UF') {
+  if (!Number.isFinite(Number(value))) return `${currency} --`;
+  return `${currency} ${Number(value).toLocaleString('es-CL')}`;
+}
+
+function setApiStatus(message, isError = false) {
+  const el = document.getElementById('apiStatus');
+  el.textContent = message;
+  el.style.color = isError ? '#A33A32' : '#4A6080';
+}
+
+function getApiBaseUrl() {
+  return API_CONFIG.baseUrl.replace(/\/$/, '');
+}
+
+function buildEndpoint(endpoint, params = {}) {
+  return endpoint.replace(/\{(\w+)\}/g, (_, key) => encodeURIComponent(params[key] ?? ''));
+}
+
+function getCollection(payload) {
+  const candidates = [
+    payload?.data,
+    payload?.Data,
+    payload?.datos,
+    payload?.Datos,
+    payload?.items,
+    payload?.Items,
+    payload?.propiedades,
+    payload?.Propiedades,
+    payload?.comunas,
+    payload?.Comunas,
+    payload?.tipos,
+    payload?.Tipos,
+    payload?.operaciones,
+    payload?.Operaciones
+  ];
+
+  const match = candidates.find(Array.isArray);
+  if (match) return match;
+  if (Array.isArray(payload)) return payload;
+  return [];
+}
+
+function normalizeOption(raw, fallbackType) {
+  const value = String(
+    raw?.value ??
+    raw?.codigo ??
+    raw?.Codigo ??
+    raw?.CodigoTipo ??
+    raw?.CodTipo ??
+    raw?.CodigoOperacion ??
+    raw?.CodOperacion ??
+    raw?.id ??
+    raw?.Id ??
+    raw?.nombre ??
+    raw?.Nombre ??
+    raw?.descripcion ??
+    raw?.Descripcion ??
+    ''
+  ).trim();
+
+  const label = String(
+    raw?.label ??
+    raw?.nombre ??
+    raw?.Nombre ??
+    raw?.descripcion ??
+    raw?.Descripcion ??
+    raw?.detalle ??
+    raw?.Detalle ??
+    value
+  ).trim();
+
+  return {
+    type: fallbackType,
+    value,
+    label
+  };
+}
+
+function fillSelectOptions(selectId, options, emptyLabel) {
+  const select = document.getElementById(selectId);
+  const currentValue = select.value;
+  const uniqueOptions = options
+    .filter(option => option.value && option.label)
+    .filter((option, index, list) => list.findIndex(item => item.value === option.value) === index)
+    .sort((a, b) => a.label.localeCompare(b.label, 'es'));
+
+  select.innerHTML = [
+    `<option value="">${escapeHtml(emptyLabel)}</option>`,
+    ...uniqueOptions.map(option => `<option value="${escapeHtml(option.value)}">${escapeHtml(option.label)}</option>`)
+  ].join('');
+  select.value = uniqueOptions.some(option => option.value === currentValue) ? currentValue : '';
+}
+
+function normalizeProperty(raw) {
+  const comuna = raw.comuna ?? raw.ComunaNombre ?? raw.Comuna ?? '';
+  const region = raw.region ?? raw.RegionCodigo ?? raw.Region ?? '';
+  const direccion = raw.loc ?? raw.Ubicacion ?? raw.Direccion ?? raw.DireccionCorta ?? '';
+
+  return {
+    id: raw.id ?? raw.Id ?? raw.idPropiedad ?? raw.CodPropiedad ?? raw.code,
+    code: raw.code ?? raw.CodPropiedad ?? raw.Codigo ?? '',
+    name: raw.name ?? raw.Titulo ?? raw.Nombre ?? raw.NombrePropiedad ?? 'Propiedad sin nombre',
+    loc: [direccion, comuna, region].filter(Boolean).join(', ') || comuna || 'Ubicación por confirmar',
+    comuna,
+    region,
+    tipo: raw.tipo ?? raw.TipoInmuebleNombre ?? raw.TipoInmueble ?? '',
+    operacion: raw.operacion ?? raw.OperacionNombre ?? raw.Operacion ?? 'Venta',
+    precio: Number(raw.precio ?? raw.ValorUF ?? raw.PrecioUF ?? raw.Precio ?? 0),
+    moneda: raw.moneda ?? (raw.ValorUF || raw.PrecioUF ? 'UF' : 'CLP'),
+    dorm: Number(raw.dorm ?? raw.Dormitorios ?? raw.Habitaciones ?? 0),
+    banos: Number(raw.banos ?? raw.Banos ?? raw.Baños ?? 0),
+    m2: Number(raw.m2 ?? raw.M2Construidos ?? raw.SuperficieConstruida ?? raw.Superficie ?? 0),
+    terreno: Number(raw.terreno ?? raw.M2Terreno ?? raw.SuperficieTerreno ?? 0),
+    lat: Number(raw.lat ?? raw.Latitud ?? 0),
+    lng: Number(raw.lng ?? raw.Longitud ?? 0),
+    img: raw.img ?? raw.ImagenPrincipal ?? raw.FotoPrincipal ?? raw.UrlImagen ?? 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=900&q=80',
+    desc: raw.desc ?? raw.Descripcion ?? raw.DescripcionCorta ?? 'Sin descripción disponible.',
+    features: Array.isArray(raw.features) ? raw.features : []
+  };
+}
+
+async function fetchJson(endpoint) {
+  const response = await fetch(`${getApiBaseUrl()}/${endpoint}`, {
+    headers: {
+      'Authorization': `Bearer ${API_CONFIG.token}`,
+      'Accept': 'application/json'
+    }
   });
-  document.getElementById('noResults').style.display = visible===0?'block':'none';
-  document.getElementById('filterCount').textContent = visible>0?`${visible} propiedad${visible>1?'es':''}`:'' ;
+
+  let data;
+  try {
+    data = await response.json();
+  } catch (error) {
+    throw new Error(`La API respondió con un formato inválido (${response.status}).`);
+  }
+
+  if (!response.ok) {
+    throw new Error(data?.ErrorMensaje || `Error HTTP ${response.status}`);
+  }
+
+  if (data.responseCode !== 0) {
+    throw new Error(data.ErrorMensaje || 'La API devolvió un error.');
+  }
+  return data;
+}
+
+async function loadCatalog(endpointKey, fallbackType) {
+  if (API_CONFIG.useMockData) return [];
+  const payload = await fetchJson(API_CONFIG.endpoints[endpointKey]);
+  return getCollection(payload).map(item => normalizeOption(item, fallbackType));
+}
+
+function useSampleCatalogs() {
+  const comunas = [...new Set(SAMPLE_PROPERTIES.map(property => property.comuna))].map(value => ({ value, label: value }));
+  const tipos = [...new Set(SAMPLE_PROPERTIES.map(property => property.tipo))].map(value => ({ value, label: value }));
+  const operaciones = [...new Set(SAMPLE_PROPERTIES.map(property => property.operacion))].map(value => ({ value, label: value }));
+
+  STATE.catalogs = { comunas, tipos, operaciones };
+}
+
+async function loadCatalogs() {
+  if (API_CONFIG.useMockData) {
+    useSampleCatalogs();
+    return;
+  }
+
+  const [comunas, tipos, operaciones] = await Promise.all([
+    loadCatalog('comunas', 'comuna'),
+    loadCatalog('tipos', 'tipo'),
+    loadCatalog('operaciones', 'operacion')
+  ]);
+
+  STATE.catalogs = { comunas, tipos, operaciones };
+}
+
+function syncCatalogFilters() {
+  fillSelectOptions('fComuna', STATE.catalogs.comunas, 'Todas');
+  fillSelectOptions('fTipo', STATE.catalogs.tipos, 'Todos');
+  fillSelectOptions('fOperacion', STATE.catalogs.operaciones, 'Todas');
+}
+
+async function loadProperties() {
+  if (API_CONFIG.useMockData) {
+    setApiStatus('Mostrando propiedades de ejemplo. Cuando tengamos dominio y token OFINET, cambiamos a datos reales.');
+    return SAMPLE_PROPERTIES.map(normalizeProperty);
+  }
+
+  if (!API_CONFIG.baseUrl || !API_CONFIG.token) {
+    throw new Error('Falta configurar baseUrl y token de OFINET.');
+  }
+
+  const payload = await fetchJson(API_CONFIG.endpoints.propiedades);
+  return getCollection(payload).map(normalizeProperty);
+}
+
+async function loadPropertyDetail(id) {
+  if (API_CONFIG.useMockData) return STATE.propertyMap[id];
+
+  const detailEndpoint = API_CONFIG.endpoints.detallePropiedad;
+  if (!detailEndpoint) return STATE.propertyMap[id];
+
+  const payload = await fetchJson(buildEndpoint(detailEndpoint, { id }));
+  const detail = payload.data || payload.Data || payload.propiedad || payload.Propiedad || payload;
+  const normalized = normalizeProperty({ ...STATE.propertyMap[id], ...detail });
+  STATE.propertyMap[String(normalized.id)] = normalized;
+  STATE.properties = STATE.properties.map(property => String(property.id) === String(normalized.id) ? normalized : property);
+  return normalized;
+}
+
+function renderProperties(properties) {
+  const grid = document.getElementById('propsGrid');
+  grid.innerHTML = properties.map(property => `
+    <div class="prop-card" data-id="${escapeHtml(property.id)}">
+      <div class="prop-img"><img src="${escapeHtml(property.img)}" alt="${escapeHtml(property.name)}"/><span class="prop-badge">${escapeHtml(property.operacion || 'Disponible')}</span></div>
+      <div class="prop-body">
+        <div class="prop-price"><span>${escapeHtml(property.moneda)}</span> ${escapeHtml(Number(property.precio || 0).toLocaleString('es-CL'))}</div>
+        <div class="prop-name">${escapeHtml(property.name)}</div>
+        <div class="prop-loc"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>${escapeHtml(property.loc)}</div>
+      </div>
+      <div class="prop-divider"></div>
+      <div class="prop-attrs">
+        <div class="prop-attr"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>${escapeHtml(property.dorm)} dorm.</div>
+        <div class="prop-attr"><svg viewBox="0 0 24 24"><path d="M4 12h16M4 6h16M4 18h16"/></svg>${escapeHtml(property.banos)} baños</div>
+        <div class="prop-attr"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>${escapeHtml(property.m2)} m²</div>
+      </div>
+      <div class="prop-cta-row">
+        <button class="prop-btn-detail" onclick="openDetail('${escapeHtml(property.id)}')">VER FICHA</button>
+        <button class="prop-btn-contact" onclick="openContact('${escapeHtml(property.id)}',event)">ME INTERESA</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function applyFilters() {
+  const operacion = document.getElementById('fOperacion').value;
+  const tipo = document.getElementById('fTipo').value;
+  const comuna = document.getElementById('fComuna').value;
+  const dorm = parseInt(document.getElementById('fDorm').value) || 0;
+  const banos = parseInt(document.getElementById('fBanos').value) || 0;
+  const m2 = parseFloat(document.getElementById('fM2').value) || 0;
+  const pMin = parseFloat(document.getElementById('fPrecioMin').value) || 0;
+  const pMax = parseFloat(document.getElementById('fPrecioMax').value) || Infinity;
+  const region = document.getElementById('fRegion').value;
+
+  const filtered = STATE.properties.filter(property => (
+    (!operacion || property.operacion === operacion) &&
+    (!tipo || property.tipo === tipo) &&
+    (!comuna || property.comuna === comuna) &&
+    property.dorm >= dorm &&
+    property.banos >= banos &&
+    property.m2 >= m2 &&
+    property.precio >= pMin &&
+    property.precio <= pMax &&
+    (!region || property.region === region)
+  ));
+
+  renderProperties(filtered);
+  updateMap(filtered);
+  document.getElementById('noResults').style.display = filtered.length === 0 ? 'block' : 'none';
+  document.getElementById('filterCount').textContent = filtered.length > 0 ? `${filtered.length} propiedad${filtered.length > 1 ? 'es' : ''}` : '';
 }
 
 function resetFilters() {
-  ['fDorm','fBanos','fRegion'].forEach(id=>document.getElementById(id).value='');
-  ['fM2','fPrecioMin','fPrecioMax'].forEach(id=>document.getElementById(id).value='');
-  document.querySelectorAll('.prop-card').forEach(c=>c.classList.remove('hidden'));
-  document.getElementById('noResults').style.display='none';
-  document.getElementById('filterCount').textContent='';
+  ['fOperacion', 'fTipo', 'fComuna', 'fDorm', 'fBanos', 'fRegion'].forEach(id => { document.getElementById(id).value = ''; });
+  ['fM2', 'fPrecioMin', 'fPrecioMax'].forEach(id => { document.getElementById(id).value = ''; });
+  applyFilters();
 }
 
-// ── DETAIL MODAL ───────────────────────────────────────────────
-function openDetail(id) {
-  const p = PROPS[id];
-  document.getElementById('mImg').src    = p.img;
-  document.getElementById('mImg').alt    = p.name;
-  document.getElementById('mName').textContent = p.name;
-  document.getElementById('mLocText').textContent = p.loc;
-  document.getElementById('mPrice').innerHTML = `<span>UF</span> ${p.precio.replace('UF ','')}`;
-  document.getElementById('mDorm').textContent   = p.dorm;
-  document.getElementById('mBanos').textContent  = p.banos;
-  document.getElementById('mM2').textContent     = p.m2+' m²';
-  document.getElementById('mTerreno').textContent= p.terreno+' m²';
-  document.getElementById('mDesc').textContent   = p.desc;
-  document.getElementById('mFeatures').innerHTML = p.features.map(f=>`<div class="modal-feature">${f}</div>`).join('');
-  document.getElementById('mCtaBtn').onclick = ()=>{ closeDetail(); openContact(id,null); };
+async function openDetail(id) {
+  let property = STATE.propertyMap[id];
+  if (!property) return;
+
+  try {
+    property = await loadPropertyDetail(id);
+  } catch (error) {
+    console.error(error);
+    setApiStatus(`No se pudo cargar el detalle de la propiedad ${id}: ${error.message}`, true);
+  }
+
+  document.getElementById('mImg').src = property.img;
+  document.getElementById('mImg').alt = property.name;
+  document.getElementById('mName').textContent = property.name;
+  document.getElementById('mLocText').textContent = property.loc;
+  document.getElementById('mPrice').innerHTML = `<span>${property.moneda}</span> ${Number(property.precio || 0).toLocaleString('es-CL')}`;
+  document.getElementById('mDorm').textContent = property.dorm;
+  document.getElementById('mBanos').textContent = property.banos;
+  document.getElementById('mM2').textContent = `${property.m2} m²`;
+  document.getElementById('mTerreno').textContent = `${property.terreno || 0} m²`;
+  document.getElementById('mDesc').textContent = property.desc;
+  document.getElementById('mFeatures').innerHTML = (property.features || []).map(feature => `<div class="modal-feature">${escapeHtml(feature)}</div>`).join('');
+  document.getElementById('mCtaBtn').onclick = () => { closeDetail(); openContact(id, null); };
   document.getElementById('detailOverlay').classList.add('open');
-  document.body.style.overflow='hidden';
+  document.body.style.overflow = 'hidden';
 }
+
 function closeDetail() {
   document.getElementById('detailOverlay').classList.remove('open');
-  document.body.style.overflow='';
+  document.body.style.overflow = '';
 }
-function closeDetailOutside(e) { if(e.target===document.getElementById('detailOverlay')) closeDetail(); }
 
-// ── CONTACT MODAL ──────────────────────────────────────────────
-let currentContactProp = 0;
-function openContact(id, e) {
-  if(e) e.stopPropagation();
-  currentContactProp = id;
-  const label = id===0 ? 'Consulta general' : `${PROPS[id].name} – ${PROPS[id].precio}`;
-  document.getElementById('cPropName').textContent = label;
-  document.getElementById('cForm').style.display='block';
-  document.getElementById('cSuccess').style.display='none';
-  document.getElementById('cNombre').value='';
-  document.getElementById('cTelefono').value='';
-  document.getElementById('cEmail').value='';
-  document.getElementById('cMensaje').value='';
-  document.getElementById('contactOverlay').classList.add('open');
-  document.body.style.overflow='hidden';
+function closeDetailOutside(e) {
+  if (e.target === document.getElementById('detailOverlay')) closeDetail();
 }
+
+let currentContactProp = 0;
+
+function openContact(id, e) {
+  if (e) e.stopPropagation();
+  currentContactProp = id;
+  const property = STATE.propertyMap[id];
+  const label = id === 0 || !property ? 'Consulta general' : `${property.name} - ${formatPrice(property.precio, property.moneda)}`;
+  document.getElementById('cPropName').textContent = label;
+  document.getElementById('cForm').style.display = 'block';
+  document.getElementById('cSuccess').style.display = 'none';
+  document.getElementById('cNombre').value = '';
+  document.getElementById('cTelefono').value = '';
+  document.getElementById('cEmail').value = '';
+  document.getElementById('cMensaje').value = '';
+  document.getElementById('contactOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
 function closeContact() {
   document.getElementById('contactOverlay').classList.remove('open');
-  document.body.style.overflow='';
+  document.body.style.overflow = '';
 }
-function closeContactOutside(e) { if(e.target===document.getElementById('contactOverlay')) closeContact(); }
+
+function closeContactOutside(e) {
+  if (e.target === document.getElementById('contactOverlay')) closeContact();
+}
+
 function submitContact() {
-  const n = document.getElementById('cNombre').value.trim();
-  const t = document.getElementById('cTelefono').value.trim();
-  if(!n||!t){ alert('Por favor ingresa tu nombre y teléfono.'); return; }
-  // → Conectar a CRM / Zapier / WhatsApp API aquí
-  console.log('Lead:', { prop: currentContactProp, nombre:n, telefono:t, email:document.getElementById('cEmail').value, msg:document.getElementById('cMensaje').value });
-  document.getElementById('cForm').style.display='none';
-  document.getElementById('cSuccess').style.display='block';
+  const nombre = document.getElementById('cNombre').value.trim();
+  const telefono = document.getElementById('cTelefono').value.trim();
+  if (!nombre || !telefono) {
+    alert('Por favor ingresa tu nombre y teléfono.');
+    return;
+  }
+
+  console.log('Lead:', {
+    prop: currentContactProp,
+    property: STATE.propertyMap[currentContactProp] || null,
+    nombre,
+    telefono,
+    email: document.getElementById('cEmail').value.trim(),
+    msg: document.getElementById('cMensaje').value.trim()
+  });
+
+  document.getElementById('cForm').style.display = 'none';
+  document.getElementById('cSuccess').style.display = 'block';
 }
 
-// Escape key closes modals
-document.addEventListener('keydown', e => { if(e.key==='Escape'){ closeDetail(); closeContact(); }});
-
-// ── MAP ────────────────────────────────────────────────────────
-const map = L.map('map',{scrollWheelZoom:false}).setView([-33.55,-70.8],8);
-L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',{attribution:'© OpenStreetMap © CARTO',maxZoom:19}).addTo(map);
-const goldIcon = L.divIcon({className:'',html:`<div style="width:28px;height:28px;background:#D4A940;border-radius:50% 50% 50% 0;transform:rotate(-45deg);border:3px solid #0A1F42;box-shadow:0 4px 12px rgba(0,0,0,.4)"></div>`,iconSize:[28,28],iconAnchor:[14,28],popupAnchor:[0,-32]});
-[
-  {lat:-29.9533,lng:-71.3395,id:1},
-  {lat:-33.6167,lng:-70.5806,id:2},
-  {lat:-33.5953,lng:-70.8783,id:3},
-  {lat:-33.5847,lng:-70.9086,id:4},
-  {lat:-33.525, lng:-70.615, id:5},
-  {lat:-33.601, lng:-70.575, id:6},
-].forEach(({lat,lng,id})=>{
-  const p=PROPS[id];
-  L.marker([lat,lng],{icon:goldIcon}).addTo(map).bindPopup(`<div class="map-popup"><div class="map-popup-head"><strong>${p.name}</strong><span>${p.loc}</span></div><div class="map-popup-body"><span class="pp">${p.precio}</span></div></div>`);
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    closeDetail();
+    closeContact();
+  }
 });
+
+const map = L.map('map', { scrollWheelZoom: false }).setView([-33.55, -70.8], 8);
+L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+  attribution: '© OpenStreetMap © CARTO',
+  maxZoom: 19
+}).addTo(map);
+
+const goldIcon = L.divIcon({
+  className: '',
+  html: `<div style="width:28px;height:28px;background:#D4A940;border-radius:50% 50% 50% 0;transform:rotate(-45deg);border:3px solid #0A1F42;box-shadow:0 4px 12px rgba(0,0,0,.4)"></div>`,
+  iconSize: [28, 28],
+  iconAnchor: [14, 28],
+  popupAnchor: [0, -32]
+});
+
+function updateMap(properties) {
+  STATE.markers.forEach(marker => map.removeLayer(marker));
+  STATE.markers = [];
+
+  const located = properties.filter(property => Number.isFinite(property.lat) && Number.isFinite(property.lng) && property.lat && property.lng);
+  located.forEach(property => {
+    const marker = L.marker([property.lat, property.lng], { icon: goldIcon }).addTo(map).bindPopup(
+      `<div class="map-popup"><div class="map-popup-head"><strong>${escapeHtml(property.name)}</strong><span>${escapeHtml(property.loc)}</span></div><div class="map-popup-body"><span class="pp">${escapeHtml(formatPrice(property.precio, property.moneda))}</span></div></div>`
+    );
+    STATE.markers.push(marker);
+  });
+
+  if (located.length === 1) {
+    map.setView([located[0].lat, located[0].lng], 13);
+  } else if (located.length > 1) {
+    map.fitBounds(located.map(property => [property.lat, property.lng]), { padding: [30, 30] });
+  } else {
+    map.setView([-33.55, -70.8], 8);
+  }
+}
+
+async function bootstrap() {
+  try {
+    setApiStatus('Cargando catálogos y propiedades...');
+    await loadCatalogs();
+    syncCatalogFilters();
+    STATE.properties = await loadProperties();
+    STATE.propertyMap = Object.fromEntries(STATE.properties.map(property => [String(property.id), property]));
+    applyFilters();
+
+    if (API_CONFIG.useMockData) {
+      setApiStatus('La vitrina ya está preparada para OFINET. En Heroku solo falta definir `OFINET_BASE_URL` y `OFINET_TOKEN` como variables de entorno.');
+    } else {
+      setApiStatus(`Propiedades cargadas correctamente desde OFINET: ${STATE.properties.length}.`);
+    }
+  } catch (error) {
+    console.error(error);
+    STATE.properties = SAMPLE_PROPERTIES.map(normalizeProperty);
+    STATE.propertyMap = Object.fromEntries(STATE.properties.map(property => [String(property.id), property]));
+    useSampleCatalogs();
+    syncCatalogFilters();
+    applyFilters();
+    setApiStatus(`No se pudo cargar la API: ${error.message}. Se muestran propiedades de ejemplo para seguir trabajando.`, true);
+  }
+}
+
+bootstrap();
 </script>
 
 <!-- META PIXEL — pega tu código aquí -->

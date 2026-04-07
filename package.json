@@ -1,0 +1,15 @@
+{
+  "name": "aqui-casas",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Frontend y proxy OFINET para Aqui Casas",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.21.2"
+  }
+}
