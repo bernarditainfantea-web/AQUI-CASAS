@@ -689,6 +689,28 @@ function buildEndpoint(endpoint, params = {}) {
   return endpoint.replace(/\{(\w+)\}/g, (_, key) => encodeURIComponent(params[key] ?? ''));
 }
 
+function normalizeRegionCode(value, regionName = '') {
+  const regionCode = String(value ?? '').trim();
+  const name = String(regionName || '').toLowerCase();
+
+  if (regionCode === '13' || name.includes('metropolitana')) return 'RM';
+  if (regionCode === '4' || regionCode === '04' || name.includes('coquimbo')) return 'IV';
+  if (regionCode === '8' || regionCode === '08' || name.includes('biob') || name.includes('b[oí]o')) return 'VIII';
+  return regionCode;
+}
+
+function normalizeOperationLabel(value) {
+  const operation = String(value ?? '').trim().toUpperCase();
+  const operationMap = {
+    VE: 'VENTA',
+    AT: 'ARRIENDO',
+    1: 'VENTA',
+    2: 'ARRIENDO'
+  };
+
+  return operationMap[operation] || String(value ?? '').trim();
+}
+
 function getCollection(payload) {
   const candidates = [
     payload?.data,
@@ -773,18 +795,20 @@ function fillSelectOptions(selectId, options, emptyLabel) {
 
 function normalizeProperty(raw) {
   const comuna = raw.comuna ?? raw.ComunaNombre ?? raw.Comuna ?? '';
-  const region = raw.region ?? raw.RegionCodigo ?? raw.CodigoRegion ?? raw.Region ?? '';
+  const regionName = raw.Region ?? raw.RegionNombre ?? '';
+  const region = normalizeRegionCode(raw.region ?? raw.RegionCodigo ?? raw.CodigoRegion ?? raw.Region ?? '', regionName);
   const direccion = raw.loc ?? raw.Ubicacion ?? raw.Direccion ?? raw.DireccionCorta ?? raw.Entre ?? '';
   const imageList = Array.isArray(raw.Imagenes) ? raw.Imagenes : [];
   const primaryImage = imageList.find(item => item?.Imagen)?.Imagen;
   const tipo = raw.tipo ?? raw.TipoInmuebleNombre ?? raw.TipoInmueble ?? raw.Tipo ?? '';
-  const operacion = raw.operacion ?? raw.OperacionNombre ?? raw.Operacion ?? 'Venta';
+  const operacion = normalizeOperationLabel(raw.operacion ?? raw.OperacionNombre ?? raw.Operacion ?? 'Venta');
   const precioPesos = Number(raw.ValorPesos ?? 0);
   const precioUf = Number(raw.ValorUf ?? 0);
   const monedaBase = raw.moneda ?? raw.Pactado ?? (precioUf ? 'UF' : 'CLP');
   const precio = monedaBase === 'PESOS' || monedaBase === 'CLP'
     ? precioPesos
     : (precioUf || precioPesos);
+  const gallery = imageList.map(item => item?.Imagen).filter(Boolean);
 
   return {
     id: raw.id ?? raw.Id ?? raw.idPropiedad ?? raw.CodPropiedad ?? raw.NroProp ?? raw.code,
@@ -800,11 +824,12 @@ function normalizeProperty(raw) {
     dorm: Number(raw.dorm ?? raw.Dormitorios ?? raw.Habitaciones ?? 0),
     banos: Number(raw.banos ?? raw.Banos ?? raw.Baños ?? raw.Bathroom ?? 0),
     m2: Number(raw.m2 ?? raw.M2Construidos ?? raw.SuperficieConstruida ?? raw.M2 ?? raw.Superficie ?? 0),
-    terreno: Number(raw.terreno ?? raw.M2Terreno ?? raw.SuperficieTerreno ?? 0),
+    terreno: Number(raw.terreno ?? raw.M2Terreno ?? raw.SuperficieTerreno ?? raw.Superficie ?? 0),
     lat: Number(raw.lat ?? raw.Latitud ?? 0),
     lng: Number(raw.lng ?? raw.Longitud ?? 0),
     img: raw.img ?? raw.ImagenPrincipal ?? raw.FotoPrincipal ?? raw.UrlImagen ?? primaryImage ?? 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=900&q=80',
     desc: raw.desc ?? raw.Descripcion ?? raw.DescripcionCorta ?? 'Sin descripción disponible.',
+    gallery,
     features: Array.isArray(raw.features) ? raw.features : [
       raw.Estacionamientos ? `${raw.Estacionamientos} estacionamiento${raw.Estacionamientos > 1 ? 's' : ''}` : '',
       raw.Bodegas ? `${raw.Bodegas} bodega${raw.Bodegas > 1 ? 's' : ''}` : '',
@@ -815,12 +840,12 @@ function normalizeProperty(raw) {
 }
 
 async function fetchJson(endpoint) {
-  const response = await fetch(`${getApiBaseUrl()}/${endpoint}`, {
-    headers: {
-      'Authorization': `Bearer ${API_CONFIG.token}`,
-      'Accept': 'application/json'
-    }
-  });
+  const headers = { 'Accept': 'application/json' };
+  if (API_CONFIG.token) {
+    headers.Authorization = `Bearer ${API_CONFIG.token}`;
+  }
+
+  const response = await fetch(`${getApiBaseUrl()}/${endpoint}`, { headers });
 
   let data;
   try {
@@ -880,8 +905,8 @@ async function loadProperties() {
     return SAMPLE_PROPERTIES.map(normalizeProperty);
   }
 
-  if (!API_CONFIG.baseUrl || !API_CONFIG.token) {
-    throw new Error('Falta configurar baseUrl y token de OFINET.');
+  if (!API_CONFIG.baseUrl) {
+    throw new Error('Falta configurar la URL base del proxy/API.');
   }
 
   const payload = await fetchJson(API_CONFIG.endpoints.propiedades);
@@ -895,7 +920,11 @@ async function loadPropertyDetail(id) {
   if (!detailEndpoint) return STATE.propertyMap[id];
 
   const payload = await fetchJson(buildEndpoint(detailEndpoint, { id }));
-  const detail = payload.data || payload.Data || payload.propiedad || payload.Propiedad || payload;
+  const detail = {
+    ...(payload.data || payload.Data || payload.propiedad || payload.Propiedad || payload),
+    Imagenes: payload.Imagenes || payload.imagenes || [],
+    Agente: payload.Agente || payload.agente || null
+  };
   const normalized = normalizeProperty({ ...STATE.propertyMap[id], ...detail });
   STATE.propertyMap[String(normalized.id)] = normalized;
   STATE.properties = STATE.properties.map(property => String(property.id) === String(normalized.id) ? normalized : property);
@@ -938,7 +967,7 @@ function applyFilters() {
   const region = document.getElementById('fRegion').value;
 
   const filtered = STATE.properties.filter(property => (
-    (!operacion || property.operacion === operacion) &&
+    (!operacion || property.operacion === normalizeOperationLabel(operacion)) &&
     (!tipo || property.tipo === tipo) &&
     (!comuna || property.comuna === comuna) &&
     property.dorm >= dorm &&
