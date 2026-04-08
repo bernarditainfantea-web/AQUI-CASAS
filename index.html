@@ -704,7 +704,8 @@ function getCollection(payload) {
     payload?.tipos,
     payload?.Tipos,
     payload?.operaciones,
-    payload?.Operaciones
+    payload?.Operaciones,
+    payload?.Lista
   ];
 
   const match = candidates.find(Array.isArray);
@@ -733,6 +734,12 @@ function normalizeOption(raw, fallbackType) {
 
   const label = String(
     raw?.label ??
+    raw?.Comuna ??
+    raw?.comuna ??
+    raw?.Inmueble ??
+    raw?.inmueble ??
+    raw?.Operacion ??
+    raw?.operacion ??
     raw?.nombre ??
     raw?.Nombre ??
     raw?.descripcion ??
@@ -766,29 +773,44 @@ function fillSelectOptions(selectId, options, emptyLabel) {
 
 function normalizeProperty(raw) {
   const comuna = raw.comuna ?? raw.ComunaNombre ?? raw.Comuna ?? '';
-  const region = raw.region ?? raw.RegionCodigo ?? raw.Region ?? '';
-  const direccion = raw.loc ?? raw.Ubicacion ?? raw.Direccion ?? raw.DireccionCorta ?? '';
+  const region = raw.region ?? raw.RegionCodigo ?? raw.CodigoRegion ?? raw.Region ?? '';
+  const direccion = raw.loc ?? raw.Ubicacion ?? raw.Direccion ?? raw.DireccionCorta ?? raw.Entre ?? '';
+  const imageList = Array.isArray(raw.Imagenes) ? raw.Imagenes : [];
+  const primaryImage = imageList.find(item => item?.Imagen)?.Imagen;
+  const tipo = raw.tipo ?? raw.TipoInmuebleNombre ?? raw.TipoInmueble ?? raw.Tipo ?? '';
+  const operacion = raw.operacion ?? raw.OperacionNombre ?? raw.Operacion ?? 'Venta';
+  const precioPesos = Number(raw.ValorPesos ?? 0);
+  const precioUf = Number(raw.ValorUf ?? 0);
+  const monedaBase = raw.moneda ?? raw.Pactado ?? (precioUf ? 'UF' : 'CLP');
+  const precio = monedaBase === 'PESOS' || monedaBase === 'CLP'
+    ? precioPesos
+    : (precioUf || precioPesos);
 
   return {
-    id: raw.id ?? raw.Id ?? raw.idPropiedad ?? raw.CodPropiedad ?? raw.code,
+    id: raw.id ?? raw.Id ?? raw.idPropiedad ?? raw.CodPropiedad ?? raw.NroProp ?? raw.code,
     code: raw.code ?? raw.CodPropiedad ?? raw.Codigo ?? '',
-    name: raw.name ?? raw.Titulo ?? raw.Nombre ?? raw.NombrePropiedad ?? 'Propiedad sin nombre',
+    name: raw.name ?? raw.Titulo ?? raw.Nombre ?? raw.NombrePropiedad ?? `${tipo || 'Propiedad'} en ${comuna || 'ubicación por confirmar'}`,
     loc: [direccion, comuna, region].filter(Boolean).join(', ') || comuna || 'Ubicación por confirmar',
     comuna,
     region,
-    tipo: raw.tipo ?? raw.TipoInmuebleNombre ?? raw.TipoInmueble ?? '',
-    operacion: raw.operacion ?? raw.OperacionNombre ?? raw.Operacion ?? 'Venta',
-    precio: Number(raw.precio ?? raw.ValorUF ?? raw.PrecioUF ?? raw.Precio ?? 0),
-    moneda: raw.moneda ?? (raw.ValorUF || raw.PrecioUF ? 'UF' : 'CLP'),
+    tipo,
+    operacion,
+    precio,
+    moneda: monedaBase === 'PESOS' ? 'CLP' : monedaBase,
     dorm: Number(raw.dorm ?? raw.Dormitorios ?? raw.Habitaciones ?? 0),
-    banos: Number(raw.banos ?? raw.Banos ?? raw.Baños ?? 0),
-    m2: Number(raw.m2 ?? raw.M2Construidos ?? raw.SuperficieConstruida ?? raw.Superficie ?? 0),
+    banos: Number(raw.banos ?? raw.Banos ?? raw.Baños ?? raw.Bathroom ?? 0),
+    m2: Number(raw.m2 ?? raw.M2Construidos ?? raw.SuperficieConstruida ?? raw.M2 ?? raw.Superficie ?? 0),
     terreno: Number(raw.terreno ?? raw.M2Terreno ?? raw.SuperficieTerreno ?? 0),
     lat: Number(raw.lat ?? raw.Latitud ?? 0),
     lng: Number(raw.lng ?? raw.Longitud ?? 0),
-    img: raw.img ?? raw.ImagenPrincipal ?? raw.FotoPrincipal ?? raw.UrlImagen ?? 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=900&q=80',
+    img: raw.img ?? raw.ImagenPrincipal ?? raw.FotoPrincipal ?? raw.UrlImagen ?? primaryImage ?? 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=900&q=80',
     desc: raw.desc ?? raw.Descripcion ?? raw.DescripcionCorta ?? 'Sin descripción disponible.',
-    features: Array.isArray(raw.features) ? raw.features : []
+    features: Array.isArray(raw.features) ? raw.features : [
+      raw.Estacionamientos ? `${raw.Estacionamientos} estacionamiento${raw.Estacionamientos > 1 ? 's' : ''}` : '',
+      raw.Bodegas ? `${raw.Bodegas} bodega${raw.Bodegas > 1 ? 's' : ''}` : '',
+      tipo || '',
+      operacion || ''
+    ].filter(Boolean)
   };
 }
 
