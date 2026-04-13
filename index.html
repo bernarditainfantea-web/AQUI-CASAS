@@ -63,7 +63,14 @@
       border-bottom:1px solid rgba(212,169,64,.25);
     }
     .nav-logo{display:flex;align-items:center}
-    .logo-mark{display:block;width:240px;height:auto}
+    .logo-mark{
+      display:block;
+      width:auto;
+      height:48px;
+      max-width:min(320px, 42vw);
+      object-fit:contain;
+      object-position:left center;
+    }
     .nav-links{display:flex;align-items:center;gap:28px}
     .nav-links a{
       color:rgba(255,255,255,.72);
@@ -1368,7 +1375,10 @@
     @media (max-width:768px){
       :root{--nav-height:80px}
       nav{padding:14px 4vw}
-      .logo-mark{width:190px}
+      .logo-mark{
+        height:40px;
+        max-width:min(250px, 58vw);
+      }
       .nav-links{display:none}
       .mobile-menu-toggle{display:inline-flex}
       .hero{padding:calc(var(--nav-height) + 24px) 4vw 60px}
