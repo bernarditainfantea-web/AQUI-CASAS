@@ -1381,7 +1381,12 @@
       }
       .nav-links{display:none}
       .mobile-menu-toggle{display:inline-flex}
-      .hero{padding:calc(var(--nav-height) + 24px) 4vw 60px}
+      .hero{
+        padding:calc(var(--nav-height) + 24px) 4vw 60px;
+        background:
+          linear-gradient(180deg, rgba(10,31,66,.94) 0%, rgba(10,31,66,.88) 48%, rgba(10,31,66,.82) 100%),
+          url('https://images.unsplash.com/photo-1600585154526-990dced4db0d?auto=format&fit=crop&w=1800&q=80') center/cover;
+      }
       .hero-points{grid-template-columns:1fr}
       .hero-card{max-width:none}
       .trust-detail-grid,
@@ -1507,7 +1512,6 @@
         <div class="section-label">Propiedades destacadas</div>
         <h2 class="section-title">OPORTUNIDADES POR COMUNA</h2>
       </div>
-      <p class="section-sub">Explora comunas destacadas en un recorrido horizontal con imágenes más representativas y acceso rápido a sus propiedades.</p>
     </div>
     <div class="featured-showcase">
       <div class="featured-menu" id="featuredMenu"></div>
