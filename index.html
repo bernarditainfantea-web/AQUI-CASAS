@@ -6,7 +6,7 @@
   <title>Aquí Casas – Propiedades en Venta en Chile</title>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Source+Sans+3:wght@300;400;600;700&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Oswald:wght@400;500;600;700&family=Source+Sans+3:wght@300;400;600;700&display=swap" rel="stylesheet"/>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
   <style>
     :root{
@@ -25,6 +25,7 @@
       --shadow-soft:0 10px 30px rgba(15,43,91,.08);
       --radius:16px;
       --nav-height:88px;
+      --display-font:'Bebas Neue','Oswald',sans-serif;
     }
 
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -132,7 +133,7 @@
     }
     .hero h1{
       margin-top:18px;
-      font-family:'Bebas Neue',sans-serif;
+      font-family:var(--display-font);
       font-size:clamp(3.35rem,8vw,6.4rem);
       line-height:.92;
       letter-spacing:.03em;
@@ -159,7 +160,7 @@
     }
     .hero-point strong{
       display:block;
-      font-family:'Bebas Neue',sans-serif;
+      font-family:var(--display-font);
       font-size:2rem;
       line-height:1;
       color:var(--gold);
@@ -185,7 +186,7 @@
       color:var(--navy);
       padding:15px 30px;
       border-radius:999px;
-      font-family:'Bebas Neue',sans-serif;
+      font-family:var(--display-font);
       font-size:1.02rem;
       letter-spacing:.11em;
     }
@@ -196,7 +197,7 @@
       padding:15px 30px;
       border:1px solid rgba(255,255,255,.18);
       border-radius:999px;
-      font-family:'Bebas Neue',sans-serif;
+      font-family:var(--display-font);
       font-size:1.02rem;
       letter-spacing:.11em;
     }
@@ -207,7 +208,7 @@
       border:1px solid var(--border);
       padding:13px 22px;
       border-radius:999px;
-      font-family:'Bebas Neue',sans-serif;
+      font-family:var(--display-font);
       font-size:.96rem;
       letter-spacing:.1em;
     }
@@ -224,7 +225,7 @@
     .hero-card img{height:230px;width:100%;object-fit:cover}
     .hero-card-body{padding:24px}
     .hero-card h2{
-      font-family:'Bebas Neue',sans-serif;
+      font-family:var(--display-font);
       font-size:1.9rem;
       letter-spacing:.04em;
       margin-bottom:12px;
@@ -262,7 +263,7 @@
       margin-bottom:30px;
     }
     .section-title{
-      font-family:'Bebas Neue',sans-serif;
+      font-family:var(--display-font);
       font-size:clamp(2.2rem,4vw,3.4rem);
       letter-spacing:.04em;
       line-height:.96;
@@ -276,35 +277,6 @@
       max-width:620px;
     }
     .section-sub.light{color:rgba(255,255,255,.72)}
-
-    .trust-strip{
-      margin-top:-38px;
-      padding:0 5vw;
-      position:relative;
-      z-index:3;
-    }
-    .trust-grid{
-      max-width:1260px;
-      margin:0 auto;
-      display:grid;
-      grid-template-columns:repeat(4,minmax(0,1fr));
-      gap:18px;
-    }
-    .trust-card{
-      background:var(--white);
-      border-radius:20px;
-      padding:24px 22px;
-      box-shadow:var(--shadow-soft);
-      border:1px solid rgba(15,43,91,.06);
-    }
-    .trust-card strong{
-      display:block;
-      font-family:'Bebas Neue',sans-serif;
-      font-size:1.6rem;
-      letter-spacing:.04em;
-      margin-bottom:8px;
-    }
-    .trust-card p{color:var(--ink);line-height:1.65;font-size:.95rem}
 
     .filter-anchor{scroll-margin-top:calc(var(--nav-height) + 20px)}
     .filter-section{
@@ -335,7 +307,7 @@
       flex-wrap:wrap;
     }
     .filter-title{
-      font-family:'Bebas Neue',sans-serif;
+      font-family:var(--display-font);
       font-size:1.55rem;
       letter-spacing:.05em;
     }
@@ -441,7 +413,7 @@
     .featured-card img{width:100%;height:220px;object-fit:cover}
     .featured-card-body{padding:22px}
     .featured-card h3{
-      font-family:'Bebas Neue',sans-serif;
+      font-family:var(--display-font);
       font-size:1.55rem;
       letter-spacing:.04em;
       margin-bottom:8px;
@@ -481,7 +453,7 @@
     .value-card{padding:20px}
     .value-card strong{
       display:block;
-      font-family:'Bebas Neue',sans-serif;
+      font-family:var(--display-font);
       font-size:1.35rem;
       letter-spacing:.05em;
       margin-bottom:8px;
@@ -509,7 +481,7 @@
     }
     .about-visual-card strong{
       display:block;
-      font-family:'Bebas Neue',sans-serif;
+      font-family:var(--display-font);
       font-size:1.65rem;
       letter-spacing:.05em;
       margin-bottom:8px;
@@ -526,7 +498,7 @@
     }
     .trust-detail-card strong{
       display:block;
-      font-family:'Bebas Neue',sans-serif;
+      font-family:var(--display-font);
       font-size:1.7rem;
       letter-spacing:.05em;
       color:var(--gold);
@@ -605,7 +577,7 @@
     .prop-tag{right:16px;background:rgba(10,31,66,.82);color:var(--white)}
     .prop-body{padding:20px 20px 16px}
     .prop-price{
-      font-family:'Bebas Neue',sans-serif;
+      font-family:var(--display-font);
       font-size:1.95rem;
       letter-spacing:.04em;
       line-height:1;
@@ -646,7 +618,7 @@
     }
     .prop-attr strong{
       display:block;
-      font-family:'Bebas Neue',sans-serif;
+      font-family:var(--display-font);
       font-size:1.2rem;
       letter-spacing:.04em;
     }
@@ -664,7 +636,7 @@
       border:none;
       border-radius:999px;
       cursor:pointer;
-      font-family:'Bebas Neue',sans-serif;
+      font-family:var(--display-font);
       font-size:.95rem;
       letter-spacing:.1em;
     }
@@ -682,7 +654,7 @@
       text-align:center;
     }
     .no-results h3{
-      font-family:'Bebas Neue',sans-serif;
+      font-family:var(--display-font);
       font-size:2rem;
       letter-spacing:.05em;
       margin-bottom:8px;
@@ -753,7 +725,7 @@
       align-content:start;
     }
     .contact-side strong{
-      font-family:'Bebas Neue',sans-serif;
+      font-family:var(--display-font);
       font-size:1.7rem;
       letter-spacing:.05em;
       color:var(--gold);
@@ -779,7 +751,7 @@
     .footer-brand p{margin-top:14px;max-width:320px;line-height:1.75}
     .footer-contacts{margin-top:18px;display:grid;gap:8px}
     .footer-col h4{
-      font-family:'Bebas Neue',sans-serif;
+      font-family:var(--display-font);
       font-size:1.05rem;
       letter-spacing:.14em;
       color:var(--gold);
@@ -955,7 +927,7 @@
       border-bottom:1px solid rgba(15,43,91,.08);
     }
     .modal-section-head strong{
-      font-family:'Bebas Neue',sans-serif;
+      font-family:var(--display-font);
       font-size:1.15rem;
       letter-spacing:.08em;
     }
@@ -968,7 +940,11 @@
       font-size:.9rem;
     }
 
-    .modal-body{padding:30px}
+    .modal-body{
+      padding:30px;
+      display:flex;
+      flex-direction:column;
+    }
     .modal-top{display:flex;justify-content:space-between;gap:18px;flex-wrap:wrap;align-items:flex-start}
     .modal-name{
       font-family:'Bebas Neue',sans-serif;
@@ -1049,6 +1025,14 @@
       background:var(--gold);
       flex-shrink:0;
       margin-top:7px;
+    }
+    .modal-cta-wrap{
+      position:sticky;
+      bottom:-1px;
+      margin-top:auto;
+      padding-top:18px;
+      padding-bottom:4px;
+      background:linear-gradient(180deg, rgba(255,255,255,0) 0%, rgba(255,255,255,.92) 18%, rgba(255,255,255,1) 100%);
     }
     .modal-cta-btn{
       width:100%;
@@ -1149,7 +1133,6 @@
       .modal-grid{grid-template-columns:1fr}
       .hero-card{justify-self:start;max-width:480px}
       .featured-grid,
-      .trust-grid,
       .trust-detail-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
       .filter-grid{grid-template-columns:repeat(4,minmax(0,1fr))}
       .filter-actions{grid-column:span 4;justify-content:stretch}
@@ -1166,8 +1149,6 @@
       .hero{padding:calc(var(--nav-height) + 24px) 4vw 60px}
       .hero-points{grid-template-columns:1fr}
       .hero-card{max-width:none}
-      .trust-strip{margin-top:-18px;padding:0 4vw}
-      .trust-grid,
       .featured-grid,
       .trust-detail-grid,
       .value-grid,
@@ -1205,7 +1186,6 @@
     @media (max-width:480px){
       .hero h1{font-size:3.05rem}
       .section-title{font-size:2.35rem}
-      .trust-card,
       .value-card,
       .trust-detail-card{padding:20px}
       .results-bar{align-items:flex-start}
@@ -1238,11 +1218,11 @@
         <p class="hero-sub">En Aquí Casas conectamos personas con oportunidades inmobiliarias bien seleccionadas. Te acompañamos desde la búsqueda hasta el contacto comercial con una experiencia clara, rápida y confiable.</p>
         <div class="hero-points">
           <div class="hero-point">
-            <strong>3 regiones</strong>
+            <strong>Múltiples regiones</strong>
             <span>Cobertura activa en Región Metropolitana, Coquimbo y Biobío.</span>
           </div>
           <div class="hero-point">
-            <strong>Atención humana</strong>
+            <strong>Atención cercana</strong>
             <span>Orientación comercial y acompañamiento en cada consulta.</span>
           </div>
           <div class="hero-point">
@@ -1256,7 +1236,7 @@
         </div>
       </div>
       <div class="hero-card">
-        <img src="https://images.unsplash.com/photo-1605146769289-440113cc3d00?auto=format&fit=crop&w=1200&q=80" alt="Interior cálido de una propiedad"/>
+        <img src="https://images.unsplash.com/photo-1511895426328-dc8714191300?auto=format&fit=crop&w=1200&q=80" alt="Familia feliz en su hogar"/>
         <div class="hero-card-body">
           <h2>Una búsqueda más clara</h2>
           <p>Organizamos la información para que encuentres propiedades disponibles de forma coherente, con comunas asociadas a su región y fichas más útiles en mobile y desktop.</p>
@@ -1269,27 +1249,6 @@
       </div>
     </div>
   </section>
-
-  <div class="trust-strip">
-    <div class="trust-grid">
-      <article class="trust-card">
-        <strong>Selección curada</strong>
-        <p>Mostramos propiedades con información comercial ordenada para comparar mejor y avanzar con mayor confianza.</p>
-      </article>
-      <article class="trust-card">
-        <strong>Respuesta rápida</strong>
-        <p>El sitio está pensado para captar interés y facilitar el contacto con un ejecutivo sin fricción innecesaria.</p>
-      </article>
-      <article class="trust-card">
-        <strong>Cobertura regional</strong>
-        <p>Integramos oportunidades en distintas zonas con una navegación más lógica para evitar búsquedas confusas.</p>
-      </article>
-      <article class="trust-card">
-        <strong>Experiencia consistente</strong>
-        <p>Priorizamos mobile first para que filtros, fichas, mapa y CTA funcionen bien desde el teléfono.</p>
-      </article>
-    </div>
-  </div>
 
   <section class="section alt">
     <div class="section-header">
@@ -1582,7 +1541,9 @@
           </div>
           <div class="modal-desc" id="mDesc"></div>
           <div class="modal-features" id="mFeatures"></div>
-          <button class="modal-cta-btn" id="mCtaBtn" type="button">Me interesa esta propiedad</button>
+          <div class="modal-cta-wrap">
+            <button class="modal-cta-btn" id="mCtaBtn" type="button">Me interesa esta propiedad</button>
+          </div>
         </div>
       </div>
     </div>
@@ -1994,6 +1955,22 @@ function normalizeOption(raw, fallbackType) {
 
 function getImageCandidates(raw) {
   const candidates = [];
+  const imageKeyPattern = /(imagen|image|foto|photo|archivo|adjunto|galeria|gallery)/i;
+  const imageValuePattern = /^https?:\/\/.+\.(jpg|jpeg|png|webp|gif)(\?.*)?$/i;
+
+  function pushImageCandidate(value) {
+    if (typeof value !== 'string') return;
+    const trimmed = value.trim();
+    if (!trimmed) return;
+
+    const parts = trimmed.split(/[|,;]/).map(item => item.trim()).filter(Boolean);
+    parts.forEach(part => {
+      if (part.startsWith('http://') || part.startsWith('https://') || imageValuePattern.test(part)) {
+        candidates.push(part);
+      }
+    });
+  }
+
   const direct = [
     raw?.img,
     raw?.ImagenPrincipal,
@@ -2001,10 +1978,20 @@ function getImageCandidates(raw) {
     raw?.UrlImagen,
     raw?.UrlFoto,
     raw?.Imagen,
-    raw?.Foto
+    raw?.Foto,
+    raw?.Imagen1,
+    raw?.Imagen2,
+    raw?.Imagen3,
+    raw?.Imagen4,
+    raw?.Imagen5,
+    raw?.Foto1,
+    raw?.Foto2,
+    raw?.Foto3,
+    raw?.Foto4,
+    raw?.Foto5
   ];
   direct.forEach(item => {
-    if (typeof item === 'string' && item.trim()) candidates.push(item.trim());
+    pushImageCandidate(item);
   });
 
   const imageBuckets = [
@@ -2021,15 +2008,35 @@ function getImageCandidates(raw) {
   imageBuckets.forEach(bucket => {
     if (Array.isArray(bucket)) {
       bucket.forEach(entry => {
-        const imageValue = entry?.Imagen ?? entry?.imagen ?? entry?.Url ?? entry?.url ?? entry?.Foto ?? entry?.foto ?? entry;
-        if (typeof imageValue === 'string' && imageValue.trim()) candidates.push(imageValue.trim());
+        if (entry && typeof entry === 'object') {
+          Object.entries(entry).forEach(([key, value]) => {
+            if (imageKeyPattern.test(key)) {
+              pushImageCandidate(value);
+            }
+          });
+        }
+        const imageValue = entry?.Imagen ?? entry?.imagen ?? entry?.Url ?? entry?.url ?? entry?.Foto ?? entry?.foto ?? entry?.archivo ?? entry;
+        pushImageCandidate(imageValue);
       });
     } else if (typeof bucket === 'string' && bucket.trim()) {
-      bucket.split('|').forEach(item => {
-        const candidate = item.trim();
-        if (candidate) candidates.push(candidate);
-      });
+      pushImageCandidate(bucket);
     }
+  });
+
+  Object.entries(raw || {}).forEach(([key, value]) => {
+    if (!imageKeyPattern.test(key)) return;
+
+    if (Array.isArray(value)) {
+      value.forEach(pushImageCandidate);
+      return;
+    }
+
+    if (value && typeof value === 'object') {
+      Object.values(value).forEach(pushImageCandidate);
+      return;
+    }
+
+    pushImageCandidate(value);
   });
 
   return uniqueBy(candidates.filter(Boolean), item => item);
@@ -2445,12 +2452,27 @@ function updateResultsUI(properties, filters) {
   document.getElementById('noResults').style.display = properties.length ? 'none' : 'block';
 }
 
-function applyFilters() {
+function scrollToCatalog() {
+  const target = document.querySelector('.properties');
+  if (!target) return;
+
+  const navHeight = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--nav-height')) || 0;
+  const offset = navHeight + 24;
+  const top = target.getBoundingClientRect().top + window.scrollY - offset;
+  window.scrollTo({ top, behavior: 'smooth' });
+}
+
+function applyFilters(options = {}) {
+  const { scrollToResults = false } = options;
   const filters = collectFiltersFromUI();
   STATE.appliedFilters = { ...filters };
   const filtered = filterProperties(filters);
   updateResultsUI(filtered, filters);
   markPendingFilters();
+
+  if (scrollToResults) {
+    scrollToCatalog();
+  }
 }
 
 function resetFilters() {
@@ -2481,7 +2503,7 @@ function hydrateFilterEvents() {
   });
 
   document.getElementById('fRegion').addEventListener('change', handleRegionChange);
-  document.getElementById('searchButton').addEventListener('click', applyFilters);
+  document.getElementById('searchButton').addEventListener('click', () => applyFilters({ scrollToResults: true }));
   document.getElementById('resetButton').addEventListener('click', resetFilters);
 }
 
@@ -2553,14 +2575,22 @@ function getEmbedVideoUrl(url) {
 function renderGallery(property) {
   STATE.activeGallery = property.gallery && property.gallery.length ? property.gallery : [property.img];
   STATE.activeGalleryIndex = 0;
-  updateGalleryImage();
-
+  const hasMultipleImages = STATE.activeGallery.length > 1;
+  const prevButton = document.getElementById('galleryPrev');
+  const nextButton = document.getElementById('galleryNext');
+  const count = document.getElementById('galleryCount');
   const thumbs = document.getElementById('modalThumbs');
+
+  prevButton.style.display = hasMultipleImages ? 'inline-flex' : 'none';
+  nextButton.style.display = hasMultipleImages ? 'inline-flex' : 'none';
+  count.style.display = hasMultipleImages ? 'inline-flex' : 'inline-flex';
+  updateGalleryImage();
   thumbs.innerHTML = STATE.activeGallery.map((image, index) => `
     <button class="modal-thumb ${index === 0 ? 'active' : ''}" type="button" onclick="setGalleryIndex(${index})">
       <img src="${escapeHtml(image)}" alt="Foto ${index + 1} de ${escapeHtml(property.name)}"/>
     </button>
   `).join('');
+  thumbs.style.display = hasMultipleImages ? 'grid' : 'none';
 }
 
 function updateGalleryImage() {
