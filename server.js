@@ -32,6 +32,7 @@ const LEGACY_DEFAULT_PARAMS = {
   propiedades: process.env.LEGACY_PARAMS_PROPIEDADES || '',
   detallePropiedad: process.env.LEGACY_PARAMS_DETALLE || ''
 };
+const LEGACY_PUBLIC_SITE_URL = (process.env.LEGACY_PUBLIC_SITE_URL || 'https://www.aquicasas.cl').replace(/\/$/, '');
 
 function resolveEndpoint(template, params = {}) {
   return template.replace(/\{(\w+)\}/g, (_, key) => encodeURIComponent(params[key] ?? ''));
@@ -154,6 +155,31 @@ async function requestOfinetPost(endpoint, payload) {
   }
 
   return data;
+}
+
+async function requestLegacyPublicPropertyImages(id) {
+  const response = await fetch(`${LEGACY_PUBLIC_SITE_URL}/property.asp?idPro=${encodeURIComponent(id)}`, {
+    headers: {
+      Accept: 'text/html,application/xhtml+xml'
+    }
+  });
+
+  if (!response.ok) {
+    throw new Error(`No se pudo consultar la ficha publica legacy (${response.status}).`);
+  }
+
+  const html = await response.text();
+  const matches = [...html.matchAll(/<img[^>]+src=["']([^"']*fotos\/[^"']+)["']/gi)];
+  const images = [...new Set(matches
+    .map(match => match[1])
+    .filter(Boolean)
+    .map(src => src.startsWith('http') ? src : `${LEGACY_PUBLIC_SITE_URL}/${src.replace(/^\/+/, '')}`))];
+
+  return {
+    responseCode: 0,
+    id,
+    images
+  };
 }
 
 function parseInteger(value, fallback) {
@@ -319,6 +345,17 @@ app.get('/api/ofinet/propiedades', async (req, res) => {
 
 app.get('/api/ofinet/propiedades/:id', async (req, res) => {
   await handleProviderRequest(res, 'detallePropiedad', req.query, { id: req.params.id });
+});
+
+app.get('/api/ofinet/propiedades/:id/legacy-images', async (req, res) => {
+  try {
+    res.json(await requestLegacyPublicPropertyImages(req.params.id));
+  } catch (error) {
+    makeErrorResponse(res, error.message, 502, {
+      provider: 'legacy_public_site',
+      resource: 'legacy_images'
+    });
+  }
 });
 
 app.get('*', (_req, res) => {

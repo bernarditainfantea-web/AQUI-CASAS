@@ -2198,6 +2198,13 @@ async function fetchJson(endpoint) {
   return data;
 }
 
+function mergeGalleryImages(...collections) {
+  return uniqueBy(
+    collections.flat().filter(Boolean).map(item => String(item).trim()).filter(Boolean),
+    item => item
+  );
+}
+
 async function loadCatalog(endpointKey, fallbackType) {
   if (API_CONFIG.useMockData) return [];
   const payload = await fetchJson(API_CONFIG.endpoints[endpointKey]);
@@ -2248,6 +2255,21 @@ async function loadPropertyDetail(id) {
     Imagenes: detail?.Imagenes || payload?.Imagenes || detail?.imagenes || payload?.imagenes || STATE.propertyMap[id]?.gallery || [],
     video: getVideoUrl(detail) || getVideoUrl(payload) || STATE.propertyMap[id]?.video || ''
   });
+
+  if ((enriched.gallery || []).length <= 1) {
+    try {
+      const legacyPayload = await fetchJson(`${buildEndpoint(detailEndpoint, { id })}/legacy-images`);
+      const legacyImages = legacyPayload?.images || legacyPayload?.data || [];
+      const mergedGallery = mergeGalleryImages(enriched.gallery || [], legacyImages);
+
+      if (mergedGallery.length > (enriched.gallery || []).length) {
+        enriched.gallery = mergedGallery;
+        enriched.img = mergedGallery[0] || enriched.img;
+      }
+    } catch (error) {
+      console.warn(`No se pudieron recuperar imagenes legacy para la propiedad ${id}.`, error);
+    }
+  }
 
   STATE.propertyMap[String(enriched.id)] = enriched;
   STATE.properties = STATE.properties.map(property => String(property.id) === String(enriched.id) ? enriched : property);
