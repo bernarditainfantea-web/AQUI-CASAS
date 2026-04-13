@@ -80,6 +80,70 @@
       padding:11px 20px;
       border-radius:999px;
     }
+    .mobile-menu-toggle{
+      display:none;
+      width:46px;
+      height:46px;
+      border:none;
+      border-radius:50%;
+      background:rgba(255,255,255,.08);
+      color:var(--white);
+      cursor:pointer;
+      align-items:center;
+      justify-content:center;
+      flex-direction:column;
+      gap:4px;
+    }
+    .mobile-menu-toggle span{
+      width:18px;
+      height:2px;
+      border-radius:999px;
+      background:currentColor;
+      display:block;
+      transition:transform .18s, opacity .18s;
+    }
+    .mobile-nav{
+      position:fixed;
+      top:var(--nav-height);
+      left:0;
+      right:0;
+      z-index:315;
+      padding:14px 4vw 18px;
+      background:rgba(10,31,66,.98);
+      border-bottom:1px solid rgba(212,169,64,.25);
+      transform:translateY(-120%);
+      opacity:0;
+      pointer-events:none;
+      transition:transform .22s, opacity .22s;
+    }
+    .mobile-nav.open{
+      transform:translateY(0);
+      opacity:1;
+      pointer-events:auto;
+    }
+    .mobile-nav-links{
+      display:grid;
+      gap:10px;
+    }
+    .mobile-nav-links a{
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      min-height:52px;
+      border-radius:16px;
+      color:rgba(255,255,255,.86);
+      background:rgba(255,255,255,.05);
+      font-size:.95rem;
+      font-weight:700;
+      letter-spacing:.12em;
+      text-transform:uppercase;
+      border:1px solid rgba(255,255,255,.06);
+    }
+    .mobile-nav-links .mobile-nav-cta{
+      background:var(--gold);
+      color:var(--navy);
+      border-color:transparent;
+    }
 
     .hero{
       position:relative;
@@ -804,6 +868,76 @@
     .contact-overlay{z-index:520;background:rgba(10,31,66,.9)}
     .modal-overlay.open,
     .contact-overlay.open{opacity:1;pointer-events:auto}
+    .image-lightbox{
+      position:fixed;
+      inset:0;
+      z-index:540;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:22px;
+      background:rgba(10,31,66,.92);
+      opacity:0;
+      pointer-events:none;
+      transition:opacity .22s;
+    }
+    .image-lightbox.open{opacity:1;pointer-events:auto}
+    .lightbox-shell{
+      position:relative;
+      width:min(1180px,100%);
+      display:grid;
+      gap:14px;
+      justify-items:center;
+    }
+    .lightbox-image{
+      width:100%;
+      max-height:78vh;
+      object-fit:contain;
+      border-radius:24px;
+      background:#08172f;
+    }
+    .lightbox-close,
+    .lightbox-nav{
+      border:none;
+      cursor:pointer;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      color:var(--white);
+      background:rgba(255,255,255,.12);
+      backdrop-filter:blur(8px);
+      box-shadow:0 10px 24px rgba(0,0,0,.24);
+    }
+    .lightbox-close{
+      position:absolute;
+      top:10px;
+      right:10px;
+      width:46px;
+      height:46px;
+      border-radius:50%;
+      z-index:2;
+    }
+    .lightbox-nav{
+      position:absolute;
+      top:50%;
+      transform:translateY(-50%);
+      width:58px;
+      height:58px;
+      border-radius:50%;
+      font-size:2rem;
+      font-weight:700;
+    }
+    .lightbox-prev{left:10px}
+    .lightbox-next{right:10px}
+    .lightbox-caption{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:16px;
+      width:100%;
+      color:var(--white);
+      font-weight:700;
+    }
 
     .modal{
       width:min(1140px,100%);
@@ -861,6 +995,14 @@
       background:var(--navy-2);
       min-height:360px;
     }
+    .modal-gallery-main{
+      width:100%;
+      height:100%;
+      border:none;
+      padding:0;
+      background:transparent;
+      cursor:zoom-in;
+    }
     .modal-gallery img{width:100%;height:100%;object-fit:cover}
     .modal-gallery-nav{
       position:absolute;
@@ -872,15 +1014,22 @@
     }
     .modal-gallery-nav button{
       pointer-events:auto;
-      width:42px;
-      height:42px;
+      width:54px;
+      height:54px;
       border:none;
       border-radius:50%;
-      background:rgba(10,31,66,.72);
+      background:rgba(10,31,66,.88);
+      box-shadow:0 10px 25px rgba(0,0,0,.28);
       color:var(--white);
       cursor:pointer;
-      font-size:1.1rem;
+      font-size:1.8rem;
+      font-weight:700;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      transition:transform .18s,background .18s;
     }
+    .modal-gallery-nav button:hover{background:rgba(10,31,66,.96);transform:scale(1.05)}
     .modal-gallery-count{
       position:absolute;
       left:14px;
@@ -909,6 +1058,33 @@
     }
     .modal-thumb.active{border-color:var(--gold)}
     .modal-thumb img{width:100%;height:72px;object-fit:cover}
+    .modal-gallery-zoom{
+      position:absolute;
+      top:14px;
+      right:14px;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      min-height:40px;
+      padding:0 14px;
+      border:none;
+      border-radius:999px;
+      background:rgba(10,31,66,.82);
+      color:var(--white);
+      font-weight:700;
+      font-size:.82rem;
+      letter-spacing:.06em;
+      text-transform:uppercase;
+      cursor:pointer;
+      box-shadow:0 10px 24px rgba(0,0,0,.24);
+    }
+    .modal-gallery-zoom svg{
+      width:16px;
+      height:16px;
+      stroke:currentColor;
+      fill:none;
+      stroke-width:2;
+    }
     .modal-video,
     .modal-map-block{
       margin-top:18px;
@@ -1146,6 +1322,7 @@
       nav{padding:14px 4vw}
       .logo-mark{width:190px}
       .nav-links{display:none}
+      .mobile-menu-toggle{display:inline-flex}
       .hero{padding:calc(var(--nav-height) + 24px) 4vw 60px}
       .hero-points{grid-template-columns:1fr}
       .hero-card{max-width:none}
@@ -1180,7 +1357,10 @@
       .modal-name{font-size:1.7rem}
       .modal-price{font-size:2rem}
       #detailMap{height:240px}
-      .modal-gallery-nav button{width:38px;height:38px}
+      .modal-gallery-nav button{width:48px;height:48px;font-size:1.55rem}
+      .modal-gallery-zoom{min-height:36px;padding:0 12px;font-size:.75rem}
+      .lightbox-nav{width:50px;height:50px;font-size:1.65rem}
+      .lightbox-caption{font-size:.92rem}
     }
 
     @media (max-width:480px){
@@ -1208,14 +1388,28 @@
       <a href="#mapa">Cobertura</a>
       <a href="#contacto" class="nav-cta">Contactar</a>
     </div>
+    <button class="mobile-menu-toggle" id="mobileMenuToggle" type="button" aria-label="Abrir menú" aria-expanded="false" onclick="toggleMobileMenu()">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
   </nav>
+  <div class="mobile-nav" id="mobileNav">
+    <div class="mobile-nav-links">
+      <a href="#inicio" onclick="closeMobileMenu()">Inicio</a>
+      <a href="#propiedades" onclick="closeMobileMenu()">Propiedades</a>
+      <a href="#empresa" onclick="closeMobileMenu()">Empresa</a>
+      <a href="#mapa" onclick="closeMobileMenu()">Cobertura</a>
+      <a href="#contacto" class="mobile-nav-cta" onclick="closeMobileMenu()">Contactar</a>
+    </div>
+  </div>
 
   <section class="hero" id="inicio">
     <div class="hero-grid">
       <div class="hero-copy">
         <div class="eyebrow">Asesoría inmobiliaria cercana y clara</div>
         <h1>ENCUENTRA TU <span>PRÓXIMA PROPIEDAD</span> CON RESPALDO REAL</h1>
-        <p class="hero-sub">En Aquí Casas conectamos personas con oportunidades inmobiliarias bien seleccionadas. Te acompañamos desde la búsqueda hasta el contacto comercial con una experiencia clara, rápida y confiable.</p>
+        <p class="hero-sub">Propiedades bien presentadas, búsqueda clara y acompañamiento cercano para avanzar con confianza.</p>
         <div class="hero-points">
           <div class="hero-point">
             <strong>Múltiples regiones</strong>
@@ -1239,11 +1433,11 @@
         <img src="https://images.unsplash.com/photo-1511895426328-dc8714191300?auto=format&fit=crop&w=1200&q=80" alt="Familia feliz en su hogar"/>
         <div class="hero-card-body">
           <h2>Una búsqueda más clara</h2>
-          <p>Organizamos la información para que encuentres propiedades disponibles de forma coherente, con comunas asociadas a su región y fichas más útiles en mobile y desktop.</p>
+          <p>Ordenamos la búsqueda para que encontrar, comparar y contactar sea más simple.</p>
           <div class="hero-card-list">
             <div>Resultados alineados con los filtros elegidos</div>
-            <div>Galería completa, video y mapa cuando existen datos</div>
-            <div>Secciones con más contexto y mayor peso corporativo</div>
+            <div>Galería, video y mapa cuando existan datos</div>
+            <div>Un sitio más claro y más confiable</div>
           </div>
         </div>
       </div>
@@ -1256,7 +1450,7 @@
         <div class="section-label">Propiedades destacadas</div>
         <h2 class="section-title">OPORTUNIDADES PARA EMPEZAR A EXPLORAR</h2>
       </div>
-      <p class="section-sub">Una selección inicial para que el usuario llegue rápido a propiedades con buena presentación, datos clave visibles y acceso inmediato a la ficha completa.</p>
+      <p class="section-sub">Una selección inicial para revisar oportunidades destacadas con acceso rápido a su ficha.</p>
     </div>
     <div class="featured-grid" id="featuredGrid"></div>
   </section>
@@ -1334,7 +1528,7 @@
         <div class="section-label">Disponibles ahora</div>
         <h2 class="section-title">PROPIEDADES LISTAS PARA REVISAR</h2>
       </div>
-      <p class="section-sub">Resultados claros, ordenados y coherentes con la búsqueda aplicada. Si no encuentras lo que buscas, puedes ajustar o limpiar los filtros fácilmente.</p>
+      <p class="section-sub">Resultados claros y coherentes con tu búsqueda, con acceso directo a ficha y contacto.</p>
     </div>
 
     <div class="results-bar">
@@ -1359,31 +1553,31 @@
           <div class="section-label">Quiénes somos</div>
           <h2 class="section-title">UNA INMOBILIARIA CERCANA, SERIA Y ENFOCADA EN ACOMPAÑAR</h2>
         </div>
-        <p>Aquí Casas busca que la experiencia digital se sienta tan clara como una buena atención comercial. Organizamos la información para que cada propiedad tenga contexto, datos útiles y un camino simple hacia el contacto.</p>
-        <p>Trabajamos con un enfoque práctico: orientar, responder y acompañar con cercanía. La búsqueda online es el primer paso, pero la confianza se construye con consistencia, seguimiento y criterio comercial.</p>
+        <p>En Aquí Casas buscamos que la experiencia digital sea simple, clara y confiable.</p>
+        <p>Mostramos propiedades con mejor contexto y un camino directo hacia el contacto comercial.</p>
         <div class="value-grid">
           <article class="value-card">
             <strong>Qué hacemos</strong>
-            <p>Conectamos oportunidades inmobiliarias con personas que necesitan una búsqueda más ordenada y asesoría directa.</p>
+            <p>Conectamos oportunidades inmobiliarias con una búsqueda más ordenada.</p>
           </article>
           <article class="value-card">
             <strong>Cómo acompañamos</strong>
-            <p>Reducimos fricción en la exploración y facilitamos el paso desde el interés digital al contacto con un ejecutivo.</p>
+            <p>Hacemos más fácil pasar desde la búsqueda al contacto.</p>
           </article>
           <article class="value-card">
             <strong>Nuestra visión</strong>
-            <p>Ser una vitrina inmobiliaria confiable, útil y cercana, con una presencia digital que transmita respaldo real.</p>
+            <p>Ser una vitrina inmobiliaria cercana, útil y confiable.</p>
           </article>
           <article class="value-card">
             <strong>Nuestra misión</strong>
-            <p>Presentar propiedades de forma clara y profesional para ayudar a tomar mejores decisiones desde cualquier dispositivo.</p>
+            <p>Presentar propiedades de forma clara y profesional.</p>
           </article>
         </div>
       </div>
       <div class="about-visual">
         <div class="about-visual-card">
           <strong>Confianza desde el primer vistazo</strong>
-          <p>Más aire entre secciones, mejor jerarquía visual y contenidos con tono institucional para que el sitio se perciba sólido sin perder foco comercial.</p>
+          <p>Más claridad visual, mejor jerarquía y una presencia más sólida.</p>
         </div>
       </div>
     </div>
@@ -1395,20 +1589,20 @@
         <div class="section-label">Respaldo</div>
         <h2 class="section-title light">RAZONES PARA CONFIAR EN AQUÍ CASAS</h2>
       </div>
-      <p class="section-sub light">Una presencia más corporativa también necesita transmitir experiencia, cobertura y acompañamiento. Esta sección refuerza ese mensaje de forma breve y clara.</p>
+      <p class="section-sub light">Una señal breve de experiencia, cobertura y acompañamiento.</p>
     </div>
     <div class="trust-detail-grid">
       <article class="trust-detail-card">
         <strong>Experiencia comercial</strong>
-        <p>Fichas mejor estructuradas, llamados a la acción visibles y una navegación que ayuda a avanzar sin dudas innecesarias.</p>
+        <p>Fichas más claras y llamados a la acción visibles.</p>
       </article>
       <article class="trust-detail-card">
         <strong>Cobertura y contexto</strong>
-        <p>Mostramos propiedades con ubicación, atributos y medios de apoyo para que el usuario entienda mejor cada oportunidad.</p>
+        <p>Ubicación, atributos y apoyo visual para decidir mejor.</p>
       </article>
       <article class="trust-detail-card">
         <strong>Acompañamiento cercano</strong>
-        <p>El foco sigue siendo comercial: captar interés, responder consultas y convertir la visita en una conversación útil.</p>
+        <p>Contacto más simple y una experiencia más cercana.</p>
       </article>
     </div>
   </section>
@@ -1419,7 +1613,7 @@
         <div class="section-label">Cobertura</div>
         <h2 class="section-title light">DÓNDE ESTAMOS PRESENTES</h2>
       </div>
-      <p class="section-sub light">El mapa general resume las zonas con propiedades activas y ayuda a ubicar la oferta de forma más rápida, tanto en mobile como en desktop.</p>
+      <p class="section-sub light">Ubica rápidamente las zonas con propiedades activas.</p>
     </div>
     <div id="map"></div>
   </section>
@@ -1429,11 +1623,11 @@
       <div>
         <div class="section-label">Contacto</div>
         <h2 class="section-title">CONVERSEMOS SOBRE TU PRÓXIMA PROPIEDAD</h2>
-        <p>Si viste una propiedad que te interesa o quieres que te orientemos según tu búsqueda, podemos ayudarte. Déjanos tus datos y un ejecutivo se pondrá en contacto contigo.</p>
+        <p>Si viste una propiedad que te interesa, déjanos tus datos y te contactamos.</p>
         <div class="contact-bullets">
-          <div>Atención enfocada en entender tu necesidad antes de ofrecer alternativas.</div>
-          <div>Seguimiento claro para avanzar desde la consulta hasta la visita o evaluación comercial.</div>
-          <div>Respuesta pensada para funcionar bien desde el celular, sin formularios confusos ni pasos extra.</div>
+          <div>Atención cercana y orientación comercial.</div>
+          <div>Contacto simple desde cualquier dispositivo.</div>
+          <div>Respuesta rápida para seguir avanzando.</div>
         </div>
         <div style="margin-top:24px">
           <button class="btn-primary" type="button" onclick="openContact(0)">Contactar ejecutivo</button>
@@ -1441,7 +1635,7 @@
       </div>
       <aside class="contact-side">
         <strong>Atención Aquí Casas</strong>
-        <span>Estamos disponibles para orientar tu búsqueda y responder consultas sobre disponibilidad, ubicación y características.</span>
+        <span>Te ayudamos a resolver dudas sobre disponibilidad, ubicación y características.</span>
         <a href="tel:+56991776069">+56 9 9177 6069</a>
         <a href="mailto:ventas@aquicasas.cl">ventas@aquicasas.cl</a>
         <span>Teatinos 251, oficina 1008, Santiago</span>
@@ -1455,7 +1649,7 @@
         <div class="footer-logo">
           <img class="logo-mark" src="LOGO AQUI CASAS.png" alt="Aquí Casas"/>
         </div>
-        <p>Propiedades seleccionadas con una experiencia de búsqueda más clara, cercana y profesional para usuarios que navegan desde desktop y mobile.</p>
+        <p>Propiedades seleccionadas con una experiencia de búsqueda más clara, cercana y profesional.</p>
         <div class="footer-contacts">
           <a href="tel:+56991776069">+56 9 9177 6069</a>
           <a href="mailto:ventas@aquicasas.cl">ventas@aquicasas.cl</a>
@@ -1499,12 +1693,18 @@
       <div class="modal-grid">
         <div class="modal-media">
           <div class="modal-gallery" id="modalGallery">
-            <img id="mImg" src="" alt=""/>
+            <button class="modal-gallery-main" type="button" onclick="openImageLightbox()" aria-label="Ver foto en grande">
+              <img id="mImg" src="" alt=""/>
+            </button>
             <div class="modal-gallery-nav">
               <button type="button" id="galleryPrev" aria-label="Imagen anterior">‹</button>
               <button type="button" id="galleryNext" aria-label="Imagen siguiente">›</button>
             </div>
             <div class="modal-gallery-count" id="galleryCount">1 / 1</div>
+            <button class="modal-gallery-zoom" type="button" onclick="openImageLightbox()" aria-label="Ampliar foto">
+              <svg viewBox="0 0 24 24"><path d="M15 3h6v6"/><path d="M9 21H3v-6"/><path d="M21 3l-7 7"/><path d="M3 21l7-7"/></svg>
+              <span>Ver grande</span>
+            </button>
           </div>
           <div class="modal-thumbs" id="modalThumbs"></div>
           <div class="modal-video" id="videoBlock" style="display:none">
@@ -1581,6 +1781,19 @@
       <div class="c-success" id="cSuccess">
         <h4>Mensaje recibido</h4>
         <p>Un ejecutivo de Aquí Casas te contactará a la brevedad para continuar con tu consulta.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="image-lightbox" id="imageLightbox" onclick="closeImageLightboxOutside(event)">
+    <div class="lightbox-shell">
+      <button class="lightbox-close" type="button" onclick="closeImageLightbox()" aria-label="Cerrar imagen">×</button>
+      <button class="lightbox-nav lightbox-prev" type="button" onclick="changeGallery(-1)" aria-label="Foto anterior">‹</button>
+      <img class="lightbox-image" id="lightboxImg" src="" alt=""/>
+      <button class="lightbox-nav lightbox-next" type="button" onclick="changeGallery(1)" aria-label="Foto siguiente">›</button>
+      <div class="lightbox-caption">
+        <span id="lightboxTitle"></span>
+        <span id="lightboxCount">1 / 1</span>
       </div>
     </div>
   </div>
@@ -1793,6 +2006,7 @@ const STATE = {
   activePropertyId: null,
   activeGallery: [],
   activeGalleryIndex: 0,
+  isLightboxOpen: false,
   mainMap: null,
   detailMap: null,
   detailMarker: null
@@ -2712,6 +2926,20 @@ function renderGallery(property) {
   thumbs.style.display = hasMultipleImages ? 'grid' : 'none';
 }
 
+function toggleMobileMenu() {
+  const nav = document.getElementById('mobileNav');
+  const toggle = document.getElementById('mobileMenuToggle');
+  const isOpen = nav.classList.toggle('open');
+  toggle.setAttribute('aria-expanded', String(isOpen));
+}
+
+function closeMobileMenu() {
+  const nav = document.getElementById('mobileNav');
+  const toggle = document.getElementById('mobileMenuToggle');
+  nav.classList.remove('open');
+  toggle.setAttribute('aria-expanded', 'false');
+}
+
 function updateGalleryImage() {
   const image = STATE.activeGallery[STATE.activeGalleryIndex] || '';
   document.getElementById('mImg').src = image;
@@ -2719,6 +2947,11 @@ function updateGalleryImage() {
   document.querySelectorAll('.modal-thumb').forEach((thumb, index) => {
     thumb.classList.toggle('active', index === STATE.activeGalleryIndex);
   });
+  if (STATE.isLightboxOpen) {
+    document.getElementById('lightboxImg').src = image;
+    document.getElementById('lightboxTitle').textContent = document.getElementById('mName').textContent || 'Galería de propiedad';
+    document.getElementById('lightboxCount').textContent = `${STATE.activeGalleryIndex + 1} / ${STATE.activeGallery.length}`;
+  }
 }
 
 function setGalleryIndex(index) {
@@ -2730,6 +2963,24 @@ function changeGallery(step) {
   if (!STATE.activeGallery.length) return;
   STATE.activeGalleryIndex = (STATE.activeGalleryIndex + step + STATE.activeGallery.length) % STATE.activeGallery.length;
   updateGalleryImage();
+}
+
+function openImageLightbox() {
+  if (!STATE.activeGallery.length) return;
+  STATE.isLightboxOpen = true;
+  updateGalleryImage();
+  document.getElementById('imageLightbox').classList.add('open');
+}
+
+function closeImageLightbox() {
+  STATE.isLightboxOpen = false;
+  document.getElementById('imageLightbox').classList.remove('open');
+}
+
+function closeImageLightboxOutside(event) {
+  if (event.target === document.getElementById('imageLightbox')) {
+    closeImageLightbox();
+  }
 }
 
 function attachGalleryEvents() {
@@ -2842,6 +3093,7 @@ async function openDetail(id) {
 
 function closeDetail() {
   document.getElementById('detailOverlay').classList.remove('open');
+  closeImageLightbox();
   document.body.style.overflow = '';
 }
 
@@ -2905,8 +3157,22 @@ function submitContact() {
 function bindGlobalEvents() {
   document.addEventListener('keydown', event => {
     if (event.key === 'Escape') {
+      closeMobileMenu();
+      closeImageLightbox();
       closeDetail();
       closeContact();
+    }
+    if (STATE.isLightboxOpen && event.key === 'ArrowLeft') {
+      changeGallery(-1);
+    }
+    if (STATE.isLightboxOpen && event.key === 'ArrowRight') {
+      changeGallery(1);
+    }
+  });
+
+  window.addEventListener('resize', () => {
+    if (window.innerWidth > 768) {
+      closeMobileMenu();
     }
   });
 }
