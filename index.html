@@ -9,480 +9,1623 @@
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Source+Sans+3:wght@300;400;600;700&display=swap" rel="stylesheet"/>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
   <style>
-    :root {
-      --navy:#0F2B5B; --navy2:#0A1F42; --navy3:#163470;
-      --gold:#D4A940; --gold2:#B8902E;
-      --white:#FFFFFF; --offwhite:#F4F1EB; --gray:#8A9AB5;
-      --radius:12px; --shadow:0 10px 50px rgba(15,43,91,.18);
+    :root{
+      --navy:#0f2b5b;
+      --navy-2:#0a1f42;
+      --navy-3:#163470;
+      --gold:#d4a940;
+      --gold-2:#b8902e;
+      --white:#ffffff;
+      --offwhite:#f4f1eb;
+      --sand:#ebe4d7;
+      --ink:#24416d;
+      --muted:#6f829f;
+      --border:rgba(15,43,91,.12);
+      --shadow:0 20px 60px rgba(15,43,91,.12);
+      --shadow-soft:0 10px 30px rgba(15,43,91,.08);
+      --radius:16px;
+      --nav-height:88px;
     }
-    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-    html{scroll-behavior:smooth;}
-    body{font-family:'Source Sans 3',sans-serif;background:var(--offwhite);color:var(--navy);overflow-x:hidden;}
-    a{text-decoration:none;color:inherit;}
-    img{display:block;max-width:100%;}
 
-    /* ── NAVBAR ── */
-    nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:center;justify-content:space-between;padding:18px 5vw;background:rgba(10,31,66,.97);backdrop-filter:blur(14px);border-bottom:2px solid var(--gold);}
-    .nav-logo{display:flex;align-items:center;}
-    .logo-mark{display:block;width:260px;height:auto;}
-    .nav-links{display:flex;gap:2rem;align-items:center;}
-    .nav-links a{color:rgba(255,255,255,.65);font-size:.82rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;transition:color .2s;}
-    .nav-links a:hover{color:var(--gold);}
-    .nav-cta{background:var(--gold)!important;color:var(--navy)!important;padding:10px 22px;border-radius:3px;}
-    .nav-cta:hover{background:var(--gold2)!important;color:var(--white)!important;}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html{scroll-behavior:smooth}
+    body{font-family:'Source Sans 3',sans-serif;background:var(--offwhite);color:var(--navy);overflow-x:hidden}
+    a{text-decoration:none;color:inherit}
+    img{display:block;max-width:100%}
+    button,input,select,textarea{font:inherit}
 
-    /* ── HERO ── */
-    .hero{min-height:100vh;background:var(--navy2);display:flex;align-items:center;position:relative;overflow:hidden;}
-    .hero-circles::before{content:'';position:absolute;top:-150px;right:-150px;width:700px;height:700px;border-radius:50%;border:1px solid rgba(212,169,64,.07);}
-    .hero-circles::after{content:'';position:absolute;top:80px;right:80px;width:400px;height:400px;border-radius:50%;border:1px solid rgba(212,169,64,.05);}
-    .hero-bar{position:absolute;left:5vw;top:18%;bottom:18%;width:3px;background:linear-gradient(to bottom,transparent,var(--gold) 40%,var(--gold) 60%,transparent);border-radius:2px;}
-    .hero-content{position:relative;z-index:2;padding:130px 5vw 80px calc(5vw + 32px);max-width:760px;}
-    .hero-eyebrow{display:inline-flex;align-items:center;gap:10px;font-size:.72rem;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);margin-bottom:18px;animation:fadeUp .5s ease both;}
-    .hero-eyebrow::before{content:'';width:24px;height:2px;background:var(--gold);display:block;}
-    .hero h1{font-family:'Bebas Neue',sans-serif;font-size:clamp(3.5rem,8vw,6.5rem);line-height:.93;letter-spacing:.03em;color:var(--white);margin-bottom:6px;animation:fadeUp .5s .1s ease both;}
-    .hero h1 .gold{color:var(--gold);}
-    .hero-sub{font-family:'Bebas Neue',sans-serif;font-size:clamp(1.5rem,3vw,2.5rem);letter-spacing:.06em;color:rgba(255,255,255,.3);margin-bottom:26px;animation:fadeUp .5s .15s ease both;}
-    .hero p{color:rgba(255,255,255,.58);font-size:1.08rem;line-height:1.72;max-width:500px;margin-bottom:42px;animation:fadeUp .5s .2s ease both;}
-    .hero-stats{display:flex;gap:40px;padding:26px 0;border-top:1px solid rgba(212,169,64,.18);border-bottom:1px solid rgba(212,169,64,.18);margin-bottom:42px;animation:fadeUp .5s .25s ease both;}
-    .stat-num{font-family:'Bebas Neue',sans-serif;font-size:2.8rem;color:var(--gold);line-height:1;}
-    .stat-label{font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.38);margin-top:4px;}
-    .hero-actions{display:flex;gap:14px;flex-wrap:wrap;animation:fadeUp .5s .3s ease both;}
-    .btn-gold{background:var(--gold);color:var(--navy);padding:15px 36px;border-radius:3px;font-family:'Bebas Neue',sans-serif;font-size:1.05rem;letter-spacing:.1em;cursor:pointer;border:none;transition:background .2s,transform .15s;}
-    .btn-gold:hover{background:var(--gold2);color:var(--white);transform:translateY(-2px);}
-    .btn-outline{background:transparent;color:var(--white);padding:15px 36px;border-radius:3px;font-family:'Bebas Neue',sans-serif;font-size:1.05rem;letter-spacing:.1em;cursor:pointer;border:2px solid rgba(255,255,255,.18);transition:border-color .2s,color .2s;}
-    .btn-outline:hover{border-color:var(--gold);color:var(--gold);}
-    @keyframes fadeUp{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
+    .page-shell{position:relative;overflow:hidden}
+    .page-shell::before{
+      content:'';
+      position:absolute;
+      inset:0 0 auto 0;
+      height:920px;
+      background:
+        radial-gradient(circle at top right, rgba(212,169,64,.18), transparent 26%),
+        linear-gradient(180deg, rgba(255,255,255,.45) 0%, rgba(244,241,235,0) 50%);
+      pointer-events:none;
+      z-index:0;
+    }
 
-    /* ── SECTION LABELS ── */
-    .section-label{font-size:.7rem;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);display:flex;align-items:center;gap:10px;margin-bottom:10px;}
-    .section-label::before{content:'';width:18px;height:2px;background:var(--gold);display:block;}
-    .section-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(2rem,4vw,3.2rem);letter-spacing:.04em;line-height:1;color:var(--navy);margin-bottom:12px;}
-    .section-title.light{color:var(--white);}
-    .section-sub{font-size:1.02rem;line-height:1.7;color:#4A6080;max-width:520px;}
-    .section-sub.light{color:rgba(255,255,255,.5);}
+    nav{
+      position:fixed;
+      top:0;left:0;right:0;
+      z-index:320;
+      height:var(--nav-height);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:20px;
+      padding:18px 5vw;
+      background:rgba(10,31,66,.96);
+      backdrop-filter:blur(14px);
+      border-bottom:1px solid rgba(212,169,64,.25);
+    }
+    .nav-logo{display:flex;align-items:center}
+    .logo-mark{display:block;width:240px;height:auto}
+    .nav-links{display:flex;align-items:center;gap:28px}
+    .nav-links a{
+      color:rgba(255,255,255,.72);
+      font-size:.82rem;
+      font-weight:700;
+      letter-spacing:.1em;
+      text-transform:uppercase;
+      transition:color .2s,opacity .2s;
+    }
+    .nav-links a:hover{color:var(--gold)}
+    .nav-cta{
+      background:var(--gold);
+      color:var(--navy);
+      padding:11px 20px;
+      border-radius:999px;
+    }
 
-    /* ── FILTER BAR ── */
-    .filter-section{background:var(--navy);padding:28px 5vw;position:sticky;top:62px;z-index:100;border-bottom:2px solid rgba(212,169,64,.2);}
-    .filter-inner{display:flex;gap:14px;flex-wrap:wrap;align-items:flex-end;}
-    .filter-group{display:flex;flex-direction:column;gap:5px;flex:1;min-width:130px;}
-    .filter-group label{font-size:.65rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);}
-    .filter-group select,.filter-group input{padding:9px 12px;border:1.5px solid rgba(255,255,255,.12);border-radius:5px;background:rgba(255,255,255,.07);color:var(--white);font-family:'Source Sans 3',sans-serif;font-size:.88rem;outline:none;transition:border-color .2s;}
-    .filter-group select:focus,.filter-group input:focus{border-color:var(--gold);}
-    .filter-group select option{background:var(--navy2);}
-    .filter-group input::placeholder{color:rgba(255,255,255,.25);}
-    .filter-range{display:flex;gap:6px;align-items:center;}
-    .filter-range input{width:90px;}
-    .filter-range span{color:rgba(255,255,255,.4);font-size:.8rem;}
-    .btn-filter-reset{background:transparent;border:1.5px solid rgba(212,169,64,.4);color:var(--gold);padding:9px 18px;border-radius:5px;font-family:'Bebas Neue',sans-serif;font-size:.9rem;letter-spacing:.1em;cursor:pointer;transition:background .2s;white-space:nowrap;align-self:flex-end;}
-    .btn-filter-reset:hover{background:rgba(212,169,64,.1);}
-    .filter-results{font-size:.78rem;color:rgba(255,255,255,.4);align-self:flex-end;white-space:nowrap;}
+    .hero{
+      position:relative;
+      min-height:100vh;
+      padding:calc(var(--nav-height) + 42px) 5vw 72px;
+      background:
+        linear-gradient(118deg, rgba(10,31,66,.96) 0%, rgba(10,31,66,.88) 48%, rgba(10,31,66,.72) 100%),
+        url('https://images.unsplash.com/photo-1600585154526-990dced4db0d?auto=format&fit=crop&w=1800&q=80') center/cover;
+      color:var(--white);
+      overflow:hidden;
+    }
+    .hero::before,
+    .hero::after{
+      content:'';
+      position:absolute;
+      border-radius:50%;
+      border:1px solid rgba(212,169,64,.1);
+      pointer-events:none;
+    }
+    .hero::before{width:620px;height:620px;top:-220px;right:-180px}
+    .hero::after{width:320px;height:320px;bottom:20px;right:12vw}
+    .hero-grid{
+      position:relative;
+      z-index:1;
+      display:grid;
+      grid-template-columns:minmax(0,1.15fr) minmax(320px,.85fr);
+      align-items:end;
+      gap:42px;
+      max-width:1260px;
+      margin:0 auto;
+    }
+    .hero-copy{max-width:720px}
+    .eyebrow,
+    .section-label{
+      display:inline-flex;
+      align-items:center;
+      gap:10px;
+      font-size:.72rem;
+      font-weight:700;
+      letter-spacing:.2em;
+      text-transform:uppercase;
+      color:var(--gold);
+    }
+    .eyebrow::before,
+    .section-label::before{
+      content:'';
+      width:22px;
+      height:2px;
+      background:currentColor;
+      display:block;
+    }
+    .hero h1{
+      margin-top:18px;
+      font-family:'Bebas Neue',sans-serif;
+      font-size:clamp(3.35rem,8vw,6.4rem);
+      line-height:.92;
+      letter-spacing:.03em;
+    }
+    .hero h1 span{color:var(--gold)}
+    .hero-sub{
+      margin:16px 0 20px;
+      font-size:1.08rem;
+      line-height:1.75;
+      color:rgba(255,255,255,.78);
+      max-width:560px;
+    }
+    .hero-points{
+      display:grid;
+      grid-template-columns:repeat(3,minmax(0,1fr));
+      gap:16px;
+      margin:26px 0 34px;
+    }
+    .hero-point{
+      padding:18px;
+      border-radius:18px;
+      background:rgba(255,255,255,.08);
+      border:1px solid rgba(255,255,255,.08);
+    }
+    .hero-point strong{
+      display:block;
+      font-family:'Bebas Neue',sans-serif;
+      font-size:2rem;
+      line-height:1;
+      color:var(--gold);
+      letter-spacing:.04em;
+    }
+    .hero-point span{
+      display:block;
+      margin-top:8px;
+      font-size:.82rem;
+      letter-spacing:.05em;
+      color:rgba(255,255,255,.72);
+    }
+    .hero-actions{display:flex;gap:14px;flex-wrap:wrap}
+    .btn-primary,
+    .btn-secondary,
+    .btn-ghost{
+      border:none;
+      cursor:pointer;
+      transition:transform .18s,background .2s,color .2s,border-color .2s;
+    }
+    .btn-primary{
+      background:var(--gold);
+      color:var(--navy);
+      padding:15px 30px;
+      border-radius:999px;
+      font-family:'Bebas Neue',sans-serif;
+      font-size:1.02rem;
+      letter-spacing:.11em;
+    }
+    .btn-primary:hover{background:var(--gold-2);color:var(--white);transform:translateY(-1px)}
+    .btn-secondary{
+      background:rgba(255,255,255,.08);
+      color:var(--white);
+      padding:15px 30px;
+      border:1px solid rgba(255,255,255,.18);
+      border-radius:999px;
+      font-family:'Bebas Neue',sans-serif;
+      font-size:1.02rem;
+      letter-spacing:.11em;
+    }
+    .btn-secondary:hover{border-color:var(--gold);color:var(--gold)}
+    .btn-ghost{
+      background:transparent;
+      color:var(--navy);
+      border:1px solid var(--border);
+      padding:13px 22px;
+      border-radius:999px;
+      font-family:'Bebas Neue',sans-serif;
+      font-size:.96rem;
+      letter-spacing:.1em;
+    }
+    .btn-ghost:hover{border-color:var(--gold);color:var(--gold-2)}
+    .hero-card{
+      justify-self:end;
+      width:min(100%,380px);
+      background:linear-gradient(180deg, rgba(255,255,255,.96), rgba(255,255,255,.9));
+      color:var(--navy);
+      border-radius:24px;
+      overflow:hidden;
+      box-shadow:0 30px 70px rgba(0,0,0,.28);
+    }
+    .hero-card img{height:230px;width:100%;object-fit:cover}
+    .hero-card-body{padding:24px}
+    .hero-card h2{
+      font-family:'Bebas Neue',sans-serif;
+      font-size:1.9rem;
+      letter-spacing:.04em;
+      margin-bottom:12px;
+    }
+    .hero-card p{color:var(--ink);line-height:1.7;margin-bottom:18px}
+    .hero-card-list{display:grid;gap:10px}
+    .hero-card-list div{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      color:var(--ink);
+      font-size:.95rem;
+    }
+    .hero-card-list div::before{
+      content:'';
+      width:8px;height:8px;
+      border-radius:50%;
+      background:var(--gold);
+      flex-shrink:0;
+    }
 
-    /* ── PROPERTIES ── */
-    .properties{padding:70px 5vw;background:var(--offwhite);}
-    .props-header{margin-bottom:40px;}
-    .props-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:24px;}
-    .prop-card{background:var(--white);border-radius:var(--radius);overflow:hidden;box-shadow:0 2px 20px rgba(15,43,91,.07);transition:transform .25s,box-shadow .25s,border-top-color .25s;border-top:3px solid transparent;cursor:pointer;}
-    .prop-card:hover{transform:translateY(-6px);box-shadow:var(--shadow);border-top-color:var(--gold);}
-    .prop-card.hidden{display:none;}
-    .prop-img{height:210px;position:relative;overflow:hidden;background:var(--navy);}
-    .prop-img img{width:100%;height:100%;object-fit:cover;transition:transform .45s;}
-    .prop-card:hover .prop-img img{transform:scale(1.07);}
-    .prop-badge{position:absolute;top:14px;left:14px;background:var(--gold);color:var(--navy);font-size:.66rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:5px 13px;border-radius:2px;}
-    .prop-body{padding:20px 22px;}
-    .prop-price{font-family:'Bebas Neue',sans-serif;font-size:1.85rem;letter-spacing:.04em;color:var(--navy);margin-bottom:4px;}
-    .prop-price span{color:var(--gold);font-size:1.1rem;}
-    .prop-name{font-size:.95rem;font-weight:700;margin-bottom:5px;color:var(--navy);}
-    .prop-loc{font-size:.8rem;color:var(--gray);margin-bottom:0;display:flex;align-items:center;gap:4px;}
-    .prop-divider{height:1px;background:#EAE6DF;margin:0 22px;}
-    .prop-attrs{display:flex;gap:16px;padding:14px 22px 6px;}
-    .prop-attr{display:flex;align-items:center;gap:5px;font-size:.8rem;color:var(--gray);font-weight:600;}
-    .prop-attr svg{width:14px;height:14px;stroke:var(--gold);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
-    .prop-cta-row{display:flex;gap:8px;margin:14px 22px 20px;}
-    .prop-btn-detail{flex:1;text-align:center;padding:10px;background:var(--navy);color:var(--white);font-family:'Bebas Neue',sans-serif;font-size:.88rem;letter-spacing:.1em;border-radius:3px;transition:background .2s,color .2s;border:none;cursor:pointer;}
-    .prop-btn-detail:hover{background:var(--navy3);color:var(--gold);}
-    .prop-btn-contact{flex:1;text-align:center;padding:10px;background:var(--gold);color:var(--navy);font-family:'Bebas Neue',sans-serif;font-size:.88rem;letter-spacing:.1em;border-radius:3px;transition:background .2s;border:none;cursor:pointer;}
-    .prop-btn-contact:hover{background:var(--gold2);color:var(--white);}
-    .no-results{display:none;text-align:center;padding:60px 20px;grid-column:1/-1;}
-    .no-results p{font-family:'Bebas Neue',sans-serif;font-size:1.5rem;letter-spacing:.04em;color:var(--gray);}
+    .section{
+      position:relative;
+      z-index:1;
+      padding:88px 5vw;
+    }
+    .section.alt{background:var(--white)}
+    .section.deep{background:var(--navy-2);color:var(--white)}
+    .section-header{
+      display:flex;
+      justify-content:space-between;
+      align-items:end;
+      gap:24px;
+      flex-wrap:wrap;
+      margin-bottom:30px;
+    }
+    .section-title{
+      font-family:'Bebas Neue',sans-serif;
+      font-size:clamp(2.2rem,4vw,3.4rem);
+      letter-spacing:.04em;
+      line-height:.96;
+      margin-top:10px;
+    }
+    .section-title.light{color:var(--white)}
+    .section-sub{
+      color:var(--ink);
+      font-size:1.02rem;
+      line-height:1.75;
+      max-width:620px;
+    }
+    .section-sub.light{color:rgba(255,255,255,.72)}
 
-    /* ── PROPERTY DETAIL MODAL ── */
-    .modal-overlay{position:fixed;inset:0;background:rgba(10,31,66,.85);z-index:500;display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;pointer-events:none;transition:opacity .3s;}
-    .modal-overlay.open{opacity:1;pointer-events:all;}
-    .modal{background:var(--white);border-radius:16px;max-width:900px;width:100%;max-height:90vh;overflow-y:auto;position:relative;transform:translateY(20px);transition:transform .3s;}
-    .modal-overlay.open .modal{transform:translateY(0);}
-    .modal-close{position:absolute;top:16px;right:16px;z-index:10;width:36px;height:36px;background:rgba(15,43,91,.08);border:none;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .2s;}
-    .modal-close:hover{background:rgba(15,43,91,.15);}
-    .modal-close svg{width:18px;height:18px;stroke:var(--navy);fill:none;stroke-width:2;stroke-linecap:round;}
-    .modal-gallery{height:320px;position:relative;overflow:hidden;border-radius:16px 16px 0 0;}
-    .modal-gallery img{width:100%;height:100%;object-fit:cover;}
-    .modal-gallery-badge{position:absolute;top:18px;left:18px;background:var(--gold);color:var(--navy);font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:6px 16px;border-radius:2px;}
-    .modal-body{padding:32px 36px 36px;}
-    .modal-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:20px;flex-wrap:wrap;gap:14px;}
-    .modal-price{font-family:'Bebas Neue',sans-serif;font-size:2.5rem;letter-spacing:.04em;color:var(--navy);}
-    .modal-price span{color:var(--gold);}
-    .modal-name{font-family:'Bebas Neue',sans-serif;font-size:1.6rem;letter-spacing:.03em;color:var(--navy);margin-bottom:4px;}
-    .modal-loc{font-size:.88rem;color:var(--gray);display:flex;align-items:center;gap:5px;}
-    .modal-attrs{display:flex;gap:20px;padding:18px 0;border-top:1px solid #EAE6DF;border-bottom:1px solid #EAE6DF;margin-bottom:24px;flex-wrap:wrap;}
-    .modal-attr{display:flex;flex-direction:column;align-items:center;gap:6px;min-width:70px;}
-    .modal-attr-icon{width:40px;height:40px;background:rgba(212,169,64,.1);border-radius:8px;display:flex;align-items:center;justify-content:center;}
-    .modal-attr-icon svg{width:20px;height:20px;stroke:var(--gold);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
-    .modal-attr-val{font-family:'Bebas Neue',sans-serif;font-size:1.1rem;letter-spacing:.04em;color:var(--navy);}
-    .modal-attr-label{font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--gray);}
-    .modal-desc{font-size:.98rem;line-height:1.75;color:#4A6080;margin-bottom:28px;}
-    .modal-features{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:28px;}
-    .modal-feature{display:flex;align-items:center;gap:8px;font-size:.88rem;color:var(--navy);}
-    .modal-feature::before{content:'';width:8px;height:8px;background:var(--gold);border-radius:50%;flex-shrink:0;}
-    .modal-cta-btn{width:100%;background:var(--gold);color:var(--navy);border:none;padding:16px;border-radius:4px;font-family:'Bebas Neue',sans-serif;font-size:1.15rem;letter-spacing:.1em;cursor:pointer;transition:background .2s;}
-    .modal-cta-btn:hover{background:var(--gold2);color:var(--white);}
+    .trust-strip{
+      margin-top:-38px;
+      padding:0 5vw;
+      position:relative;
+      z-index:3;
+    }
+    .trust-grid{
+      max-width:1260px;
+      margin:0 auto;
+      display:grid;
+      grid-template-columns:repeat(4,minmax(0,1fr));
+      gap:18px;
+    }
+    .trust-card{
+      background:var(--white);
+      border-radius:20px;
+      padding:24px 22px;
+      box-shadow:var(--shadow-soft);
+      border:1px solid rgba(15,43,91,.06);
+    }
+    .trust-card strong{
+      display:block;
+      font-family:'Bebas Neue',sans-serif;
+      font-size:1.6rem;
+      letter-spacing:.04em;
+      margin-bottom:8px;
+    }
+    .trust-card p{color:var(--ink);line-height:1.65;font-size:.95rem}
 
-    /* ── CONTACT MODAL ── */
-    .contact-overlay{position:fixed;inset:0;background:rgba(10,31,66,.9);z-index:600;display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;pointer-events:none;transition:opacity .3s;}
-    .contact-overlay.open{opacity:1;pointer-events:all;}
-    .contact-modal{background:var(--navy);border-radius:16px;max-width:480px;width:100%;position:relative;padding:40px 36px;transform:translateY(20px);transition:transform .3s;max-height:90vh;overflow-y:auto;}
-    .contact-overlay.open .contact-modal{transform:translateY(0);}
-    .contact-modal::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(to right,var(--gold),var(--gold2));border-radius:16px 16px 0 0;}
-    .contact-close{position:absolute;top:14px;right:14px;width:34px;height:34px;background:rgba(255,255,255,.06);border:none;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;}
-    .contact-close svg{width:16px;height:16px;stroke:rgba(255,255,255,.6);fill:none;stroke-width:2;stroke-linecap:round;}
-    .contact-modal h3{font-family:'Bebas Neue',sans-serif;font-size:1.7rem;letter-spacing:.05em;color:var(--white);margin-bottom:4px;}
-    .contact-prop-name{font-size:.85rem;color:var(--gold);margin-bottom:24px;font-weight:600;}
-    .c-group{margin-bottom:14px;}
-    .c-group label{display:block;font-size:.68rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--gold);margin-bottom:6px;}
-    .c-group input,.c-group textarea{width:100%;padding:11px 14px;border:1.5px solid rgba(255,255,255,.1);border-radius:5px;font-family:'Source Sans 3',sans-serif;font-size:.92rem;background:rgba(255,255,255,.06);color:var(--white);outline:none;transition:border-color .2s;}
-    .c-group input::placeholder,.c-group textarea::placeholder{color:rgba(255,255,255,.22);}
-    .c-group input:focus,.c-group textarea:focus{border-color:var(--gold);}
-    .c-group textarea{resize:vertical;min-height:75px;}
-    .c-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
-    .c-submit{width:100%;background:var(--gold);color:var(--navy);border:none;padding:14px;border-radius:3px;font-family:'Bebas Neue',sans-serif;font-size:1.1rem;letter-spacing:.1em;cursor:pointer;transition:background .2s;margin-top:6px;}
-    .c-submit:hover{background:var(--gold2);color:var(--white);}
-    .c-note{text-align:center;font-size:.72rem;color:var(--gray);margin-top:9px;}
-    .c-success{display:none;text-align:center;padding:16px 0;}
-    .c-success-icon{width:56px;height:56px;background:rgba(212,169,64,.12);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;border:2px solid var(--gold);}
-    .c-success-icon svg{width:24px;height:24px;stroke:var(--gold);fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;}
-    .c-success h4{font-family:'Bebas Neue',sans-serif;font-size:1.4rem;letter-spacing:.05em;color:var(--white);margin-bottom:8px;}
-    .c-success p{font-size:.88rem;color:var(--gray);line-height:1.6;}
+    .filter-anchor{scroll-margin-top:calc(var(--nav-height) + 20px)}
+    .filter-section{
+      position:sticky;
+      top:var(--nav-height);
+      z-index:250;
+      background:rgba(244,241,235,.94);
+      backdrop-filter:blur(16px);
+      border-top:1px solid rgba(15,43,91,.05);
+      border-bottom:1px solid rgba(15,43,91,.08);
+      padding:16px 5vw 18px;
+    }
+    .filter-shell{
+      max-width:1260px;
+      margin:0 auto;
+      background:var(--white);
+      border-radius:24px;
+      padding:20px;
+      box-shadow:var(--shadow-soft);
+      border:1px solid rgba(15,43,91,.06);
+    }
+    .filter-top{
+      display:flex;
+      justify-content:space-between;
+      gap:20px;
+      align-items:flex-start;
+      margin-bottom:16px;
+      flex-wrap:wrap;
+    }
+    .filter-title{
+      font-family:'Bebas Neue',sans-serif;
+      font-size:1.55rem;
+      letter-spacing:.05em;
+    }
+    .filter-helper{color:var(--muted);line-height:1.6;max-width:540px}
+    .filter-status{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      min-height:28px;
+      padding:6px 12px;
+      border-radius:999px;
+      background:rgba(15,43,91,.05);
+      color:var(--ink);
+      font-size:.84rem;
+      font-weight:600;
+    }
+    .filter-status.pending{
+      background:rgba(212,169,64,.14);
+      color:var(--gold-2);
+    }
+    .filter-grid{
+      display:grid;
+      grid-template-columns:repeat(8,minmax(0,1fr));
+      gap:14px;
+      align-items:end;
+    }
+    .filter-group{
+      display:flex;
+      flex-direction:column;
+      gap:7px;
+      min-width:0;
+    }
+    .filter-group label{
+      font-size:.72rem;
+      font-weight:700;
+      letter-spacing:.15em;
+      text-transform:uppercase;
+      color:var(--navy);
+    }
+    .filter-control,
+    .filter-group input,
+    .filter-group select{
+      width:100%;
+      min-height:50px;
+      border-radius:14px;
+      border:1px solid var(--border);
+      background:var(--white);
+      color:var(--navy);
+      padding:0 14px;
+      outline:none;
+      transition:border-color .2s,box-shadow .2s;
+      appearance:none;
+    }
+    .filter-group select{
+      background-image:
+        linear-gradient(45deg, transparent 50%, var(--muted) 50%),
+        linear-gradient(135deg, var(--muted) 50%, transparent 50%);
+      background-position:
+        calc(100% - 20px) calc(50% - 3px),
+        calc(100% - 14px) calc(50% - 3px);
+      background-size:6px 6px,6px 6px;
+      background-repeat:no-repeat;
+      padding-right:34px;
+    }
+    .filter-group input::placeholder{color:#96a4bb}
+    .filter-group input:focus,
+    .filter-group select:focus{border-color:rgba(212,169,64,.95);box-shadow:0 0 0 4px rgba(212,169,64,.12)}
+    .filter-group select:disabled{
+      background-color:#f2f4f7;
+      color:#8c98ac;
+      cursor:not-allowed;
+    }
+    .filter-actions{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      justify-content:flex-end;
+      grid-column:span 2;
+      flex-wrap:wrap;
+    }
+    .filter-actions .btn-primary,
+    .filter-actions .btn-ghost{
+      min-height:50px;
+      padding-inline:24px;
+    }
 
-    /* ── MAP ── */
-    .map-section{background:var(--navy2);padding:88px 5vw;}
-    #map{margin-top:46px;height:500px;border-radius:var(--radius);overflow:hidden;box-shadow:0 24px 80px rgba(0,0,0,.5);border:2px solid rgba(212,169,64,.15);}
-    .leaflet-popup-content-wrapper{border-radius:8px!important;box-shadow:0 8px 30px rgba(0,0,0,.25)!important;overflow:hidden;padding:0!important;}
-    .leaflet-popup-content{margin:0!important;}
-    .map-popup{min-width:185px;font-family:'Source Sans 3',sans-serif;}
-    .map-popup-head{background:var(--navy);padding:12px 16px;}
-    .map-popup-head strong{display:block;font-size:.86rem;color:var(--white);margin-bottom:2px;}
-    .map-popup-head span{font-size:.76rem;color:var(--gray);}
-    .map-popup-body{padding:10px 16px 12px;background:var(--white);}
-    .map-popup-body .pp{font-family:'Bebas Neue',sans-serif;font-size:1.3rem;letter-spacing:.04em;color:var(--navy);display:block;}
+    .featured-grid,
+    .about-grid,
+    .trust-detail-grid{
+      display:grid;
+      gap:24px;
+    }
+    .featured-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+    .featured-card,
+    .value-card,
+    .trust-detail-card{
+      background:var(--white);
+      border-radius:22px;
+      overflow:hidden;
+      box-shadow:var(--shadow-soft);
+      border:1px solid rgba(15,43,91,.06);
+    }
+    .featured-card img{width:100%;height:220px;object-fit:cover}
+    .featured-card-body{padding:22px}
+    .featured-card h3{
+      font-family:'Bebas Neue',sans-serif;
+      font-size:1.55rem;
+      letter-spacing:.04em;
+      margin-bottom:8px;
+    }
+    .featured-card p{color:var(--ink);line-height:1.7}
+    .featured-meta{
+      margin-top:18px;
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+    }
+    .featured-meta span{
+      padding:7px 12px;
+      border-radius:999px;
+      background:rgba(15,43,91,.06);
+      font-size:.84rem;
+      font-weight:700;
+      color:var(--ink);
+    }
 
-    /* ── FOOTER ── */
-    footer{background:var(--navy2);color:rgba(255,255,255,.48);padding:56px 5vw 26px;}
-    .footer-gold-bar{height:3px;background:linear-gradient(to right,var(--gold),transparent);margin-bottom:38px;}
-    .footer-top{display:grid;grid-template-columns:2fr 1fr 1fr;gap:56px;padding-bottom:36px;border-bottom:1px solid rgba(212,169,64,.12);margin-bottom:26px;}
-    .footer-logo{margin-bottom:14px;}
-    .footer-logo .logo-mark{width:230px;}
-    .footer-brand p{font-size:.86rem;line-height:1.75;max-width:260px;}
-    .footer-contacts{margin-top:20px;display:flex;flex-direction:column;gap:8px;}
-    .footer-contacts a{font-size:.84rem;color:rgba(255,255,255,.5);transition:color .2s;}
-    .footer-contacts a:hover{color:var(--gold);}
-    .footer-col h4{font-family:'Bebas Neue',sans-serif;font-size:.95rem;letter-spacing:.12em;color:var(--gold);margin-bottom:16px;}
-    .footer-col ul{list-style:none;display:flex;flex-direction:column;gap:9px;}
-    .footer-col ul a{font-size:.84rem;transition:color .2s;}
-    .footer-col ul a:hover{color:var(--white);}
-    .footer-bottom{display:flex;justify-content:space-between;align-items:center;font-size:.76rem;flex-wrap:wrap;gap:10px;}
+    .about-grid{
+      grid-template-columns:minmax(0,1fr) minmax(320px,.9fr);
+      align-items:center;
+    }
+    .about-copy{
+      display:grid;
+      gap:20px;
+      max-width:650px;
+    }
+    .about-copy p{color:var(--ink);line-height:1.78;font-size:1rem}
+    .value-grid{
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:16px;
+      margin-top:6px;
+    }
+    .value-card{padding:20px}
+    .value-card strong{
+      display:block;
+      font-family:'Bebas Neue',sans-serif;
+      font-size:1.35rem;
+      letter-spacing:.05em;
+      margin-bottom:8px;
+    }
+    .value-card p{color:var(--ink);line-height:1.65}
+    .about-visual{
+      position:relative;
+      min-height:520px;
+      border-radius:28px;
+      overflow:hidden;
+      background:
+        linear-gradient(180deg, rgba(10,31,66,.08), rgba(10,31,66,.24)),
+        url('https://images.unsplash.com/photo-1484154218962-a197022b5858?auto=format&fit=crop&w=1200&q=80') center/cover;
+      box-shadow:var(--shadow);
+    }
+    .about-visual-card{
+      position:absolute;
+      left:24px;
+      right:24px;
+      bottom:24px;
+      background:rgba(255,255,255,.94);
+      border-radius:22px;
+      padding:22px;
+      box-shadow:var(--shadow-soft);
+    }
+    .about-visual-card strong{
+      display:block;
+      font-family:'Bebas Neue',sans-serif;
+      font-size:1.65rem;
+      letter-spacing:.05em;
+      margin-bottom:8px;
+    }
+    .about-visual-card p{line-height:1.65;color:var(--ink)}
 
-    /* ── WA ── */
-    .wa-btn{position:fixed;bottom:26px;right:26px;z-index:150;width:56px;height:56px;background:#25D366;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 22px rgba(37,211,102,.45);transition:transform .2s;}
-    .wa-btn:hover{transform:scale(1.1);}
-    .wa-btn svg{width:28px;height:28px;fill:white;}
+    .trust-detail-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+    .trust-detail-card{
+      background:rgba(255,255,255,.07);
+      color:var(--white);
+      padding:26px;
+      border:1px solid rgba(255,255,255,.08);
+      box-shadow:none;
+    }
+    .trust-detail-card strong{
+      display:block;
+      font-family:'Bebas Neue',sans-serif;
+      font-size:1.7rem;
+      letter-spacing:.05em;
+      color:var(--gold);
+      margin-bottom:10px;
+    }
+    .trust-detail-card p{line-height:1.7;color:rgba(255,255,255,.76)}
 
-    /* ── RESPONSIVE ── */
-    @media(max-width:768px){
-      .nav-links{display:none;}
-      .logo-mark{width:210px;}
-      .footer-logo .logo-mark{width:190px;}
-      .filter-inner{gap:10px;}
-      .filter-range input{width:70px;}
-      .footer-top{grid-template-columns:1fr;gap:32px;}
-      .modal-body{padding:22px;}
-      .modal-features{grid-template-columns:1fr;}
-      .c-row{grid-template-columns:1fr;}
+    .properties{padding-top:52px}
+    .results-bar{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:18px;
+      flex-wrap:wrap;
+      margin-bottom:26px;
+    }
+    .results-summary{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      flex-wrap:wrap;
+    }
+    .results-count{
+      display:inline-flex;
+      align-items:center;
+      min-height:42px;
+      padding:0 16px;
+      border-radius:999px;
+      background:var(--white);
+      border:1px solid rgba(15,43,91,.08);
+      box-shadow:var(--shadow-soft);
+      font-weight:700;
+      color:var(--navy);
+    }
+    .results-context{color:var(--muted);line-height:1.6}
+    .props-grid{
+      display:grid;
+      grid-template-columns:repeat(auto-fill,minmax(290px,1fr));
+      gap:24px;
+    }
+    .prop-card{
+      background:var(--white);
+      border-radius:22px;
+      overflow:hidden;
+      box-shadow:var(--shadow-soft);
+      border:1px solid rgba(15,43,91,.06);
+      transition:transform .22s,box-shadow .22s,border-color .22s;
+      display:flex;
+      flex-direction:column;
+    }
+    .prop-card:hover{
+      transform:translateY(-5px);
+      box-shadow:var(--shadow);
+      border-color:rgba(212,169,64,.3);
+    }
+    .prop-img{
+      position:relative;
+      height:220px;
+      overflow:hidden;
+      background:var(--navy-2);
+    }
+    .prop-img img{width:100%;height:100%;object-fit:cover;transition:transform .4s}
+    .prop-card:hover .prop-img img{transform:scale(1.06)}
+    .prop-badge,
+    .prop-tag{
+      position:absolute;
+      top:16px;
+      padding:6px 12px;
+      border-radius:999px;
+      font-size:.72rem;
+      font-weight:700;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+    }
+    .prop-badge{left:16px;background:var(--gold);color:var(--navy)}
+    .prop-tag{right:16px;background:rgba(10,31,66,.82);color:var(--white)}
+    .prop-body{padding:20px 20px 16px}
+    .prop-price{
+      font-family:'Bebas Neue',sans-serif;
+      font-size:1.95rem;
+      letter-spacing:.04em;
+      line-height:1;
+      margin-bottom:10px;
+    }
+    .prop-name{
+      font-size:1rem;
+      font-weight:700;
+      line-height:1.4;
+      margin-bottom:8px;
+    }
+    .prop-loc{
+      display:flex;
+      gap:6px;
+      align-items:flex-start;
+      color:var(--muted);
+      font-size:.88rem;
+      line-height:1.55;
+    }
+    .prop-summary{
+      padding:0 20px;
+      color:var(--ink);
+      line-height:1.65;
+      font-size:.93rem;
+    }
+    .prop-attrs{
+      display:grid;
+      grid-template-columns:repeat(3,minmax(0,1fr));
+      gap:10px;
+      padding:18px 20px 0;
+    }
+    .prop-attr{
+      background:rgba(15,43,91,.05);
+      border-radius:14px;
+      padding:12px 10px;
+      text-align:center;
+      color:var(--ink);
+    }
+    .prop-attr strong{
+      display:block;
+      font-family:'Bebas Neue',sans-serif;
+      font-size:1.2rem;
+      letter-spacing:.04em;
+    }
+    .prop-attr span{display:block;font-size:.77rem;color:var(--muted);margin-top:3px}
+    .prop-cta-row{
+      margin-top:auto;
+      display:flex;
+      gap:10px;
+      padding:20px;
+    }
+    .prop-btn-detail,
+    .prop-btn-contact{
+      flex:1;
+      min-height:46px;
+      border:none;
+      border-radius:999px;
+      cursor:pointer;
+      font-family:'Bebas Neue',sans-serif;
+      font-size:.95rem;
+      letter-spacing:.1em;
+    }
+    .prop-btn-detail{background:var(--navy);color:var(--white)}
+    .prop-btn-detail:hover{background:var(--navy-3)}
+    .prop-btn-contact{background:rgba(212,169,64,.16);color:var(--navy)}
+    .prop-btn-contact:hover{background:var(--gold);color:var(--navy)}
+    .no-results{
+      display:none;
+      background:var(--white);
+      border:1px solid rgba(15,43,91,.08);
+      border-radius:22px;
+      box-shadow:var(--shadow-soft);
+      padding:42px 26px;
+      text-align:center;
+    }
+    .no-results h3{
+      font-family:'Bebas Neue',sans-serif;
+      font-size:2rem;
+      letter-spacing:.05em;
+      margin-bottom:8px;
+    }
+    .no-results p{color:var(--muted);line-height:1.7;max-width:520px;margin:0 auto 20px}
+
+    .map-section{padding-top:70px}
+    #map{
+      width:100%;
+      height:520px;
+      border-radius:24px;
+      overflow:hidden;
+      box-shadow:var(--shadow);
+      border:1px solid rgba(255,255,255,.08);
+    }
+    .leaflet-popup-content-wrapper{border-radius:18px!important;overflow:hidden}
+    .leaflet-popup-content{margin:0!important}
+    .map-popup{min-width:200px;font-family:'Source Sans 3',sans-serif}
+    .map-popup-head{background:var(--navy);padding:12px 16px}
+    .map-popup-head strong{display:block;color:var(--white);font-size:.92rem}
+    .map-popup-head span{display:block;margin-top:3px;color:rgba(255,255,255,.72);font-size:.8rem}
+    .map-popup-body{background:var(--white);padding:12px 16px}
+    .map-popup-body .pp{font-family:'Bebas Neue',sans-serif;font-size:1.35rem;letter-spacing:.04em}
+
+    .contact-section{
+      background:
+        linear-gradient(180deg, rgba(255,255,255,.92), rgba(255,255,255,.96)),
+        url('https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1600&q=80') center/cover;
+    }
+    .contact-panel{
+      max-width:1080px;
+      margin:0 auto;
+      display:grid;
+      grid-template-columns:minmax(0,1fr) minmax(280px,.78fr);
+      gap:24px;
+      background:rgba(255,255,255,.94);
+      border-radius:28px;
+      padding:30px;
+      box-shadow:var(--shadow);
+    }
+    .contact-panel p{color:var(--ink);line-height:1.75}
+    .contact-bullets{
+      display:grid;
+      gap:12px;
+      margin-top:18px;
+    }
+    .contact-bullets div{
+      display:flex;
+      gap:10px;
+      color:var(--ink);
+      line-height:1.6;
+    }
+    .contact-bullets div::before{
+      content:'';
+      width:9px;height:9px;
+      border-radius:50%;
+      background:var(--gold);
+      flex-shrink:0;
+      margin-top:8px;
+    }
+    .contact-side{
+      border-radius:24px;
+      background:linear-gradient(180deg, var(--navy), var(--navy-2));
+      color:var(--white);
+      padding:24px;
+      display:grid;
+      gap:16px;
+      align-content:start;
+    }
+    .contact-side strong{
+      font-family:'Bebas Neue',sans-serif;
+      font-size:1.7rem;
+      letter-spacing:.05em;
+      color:var(--gold);
+    }
+    .contact-side a,
+    .contact-side span{color:rgba(255,255,255,.8);line-height:1.65}
+
+    footer{
+      background:var(--navy-2);
+      color:rgba(255,255,255,.74);
+      padding:56px 5vw 28px;
+    }
+    .footer-top{
+      max-width:1260px;
+      margin:0 auto;
+      display:grid;
+      grid-template-columns:1.6fr 1fr 1fr;
+      gap:40px;
+      padding-bottom:30px;
+      border-bottom:1px solid rgba(255,255,255,.08);
+    }
+    .footer-logo .logo-mark{width:220px}
+    .footer-brand p{margin-top:14px;max-width:320px;line-height:1.75}
+    .footer-contacts{margin-top:18px;display:grid;gap:8px}
+    .footer-col h4{
+      font-family:'Bebas Neue',sans-serif;
+      font-size:1.05rem;
+      letter-spacing:.14em;
+      color:var(--gold);
+      margin-bottom:16px;
+    }
+    .footer-col ul{list-style:none;display:grid;gap:10px}
+    .footer-bottom{
+      max-width:1260px;
+      margin:22px auto 0;
+      display:flex;
+      justify-content:space-between;
+      gap:12px;
+      flex-wrap:wrap;
+      font-size:.82rem;
+      color:rgba(255,255,255,.5);
+    }
+
+    .wa-btn{
+      position:fixed;
+      right:18px;
+      bottom:18px;
+      z-index:260;
+      width:58px;
+      height:58px;
+      border-radius:50%;
+      background:#25d366;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      box-shadow:0 12px 30px rgba(37,211,102,.4);
+      transition:transform .2s;
+    }
+    .wa-btn:hover{transform:scale(1.06)}
+    .wa-btn svg{width:29px;height:29px;fill:#fff}
+
+    .modal-overlay,
+    .contact-overlay{
+      position:fixed;
+      inset:0;
+      z-index:500;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:18px;
+      background:rgba(10,31,66,.86);
+      opacity:0;
+      pointer-events:none;
+      transition:opacity .25s;
+    }
+    .contact-overlay{z-index:520;background:rgba(10,31,66,.9)}
+    .modal-overlay.open,
+    .contact-overlay.open{opacity:1;pointer-events:auto}
+
+    .modal{
+      width:min(1140px,100%);
+      max-height:92vh;
+      overflow:auto;
+      background:var(--white);
+      border-radius:26px;
+      box-shadow:0 32px 80px rgba(0,0,0,.32);
+      transform:translateY(18px);
+      transition:transform .25s;
+      position:relative;
+    }
+    .modal-overlay.open .modal,
+    .contact-overlay.open .contact-modal{transform:translateY(0)}
+    .modal-close,
+    .contact-close{
+      position:absolute;
+      top:14px;
+      right:14px;
+      z-index:4;
+      width:38px;
+      height:38px;
+      border:none;
+      border-radius:50%;
+      background:rgba(15,43,91,.08);
+      cursor:pointer;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+    }
+    .modal-close svg,
+    .contact-close svg{
+      width:18px;height:18px;
+      stroke:currentColor;
+      fill:none;
+      stroke-width:2;
+      stroke-linecap:round;
+    }
+
+    .modal-grid{
+      display:grid;
+      grid-template-columns:minmax(0,1.08fr) minmax(320px,.92fr);
+      min-height:100%;
+    }
+    .modal-media{
+      padding:22px 22px 22px 22px;
+      background:linear-gradient(180deg, #faf8f4, #f2ece1);
+      border-right:1px solid rgba(15,43,91,.08);
+      position:relative;
+    }
+    .modal-gallery{
+      position:relative;
+      border-radius:22px;
+      overflow:hidden;
+      background:var(--navy-2);
+      min-height:360px;
+    }
+    .modal-gallery img{width:100%;height:100%;object-fit:cover}
+    .modal-gallery-nav{
+      position:absolute;
+      inset:50% 14px auto 14px;
+      display:flex;
+      justify-content:space-between;
+      transform:translateY(-50%);
+      pointer-events:none;
+    }
+    .modal-gallery-nav button{
+      pointer-events:auto;
+      width:42px;
+      height:42px;
+      border:none;
+      border-radius:50%;
+      background:rgba(10,31,66,.72);
+      color:var(--white);
+      cursor:pointer;
+      font-size:1.1rem;
+    }
+    .modal-gallery-count{
+      position:absolute;
+      left:14px;
+      bottom:14px;
+      padding:7px 12px;
+      border-radius:999px;
+      background:rgba(10,31,66,.72);
+      color:var(--white);
+      font-size:.8rem;
+      font-weight:700;
+    }
+    .modal-thumbs{
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(72px,1fr));
+      gap:10px;
+      margin-top:14px;
+    }
+    .modal-thumb{
+      border:none;
+      padding:0;
+      border-radius:14px;
+      overflow:hidden;
+      cursor:pointer;
+      background:transparent;
+      border:2px solid transparent;
+    }
+    .modal-thumb.active{border-color:var(--gold)}
+    .modal-thumb img{width:100%;height:72px;object-fit:cover}
+    .modal-video,
+    .modal-map-block{
+      margin-top:18px;
+      border-radius:22px;
+      overflow:hidden;
+      background:var(--white);
+      box-shadow:var(--shadow-soft);
+      border:1px solid rgba(15,43,91,.06);
+    }
+    .modal-section-head{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:10px;
+      padding:14px 18px;
+      border-bottom:1px solid rgba(15,43,91,.08);
+    }
+    .modal-section-head strong{
+      font-family:'Bebas Neue',sans-serif;
+      font-size:1.15rem;
+      letter-spacing:.08em;
+    }
+    .modal-video iframe{display:block;width:100%;aspect-ratio:16/9;border:0}
+    #detailMap{height:280px;width:100%}
+    .detail-map-note{
+      padding:12px 18px 18px;
+      color:var(--muted);
+      line-height:1.6;
+      font-size:.9rem;
+    }
+
+    .modal-body{padding:30px}
+    .modal-top{display:flex;justify-content:space-between;gap:18px;flex-wrap:wrap;align-items:flex-start}
+    .modal-name{
+      font-family:'Bebas Neue',sans-serif;
+      font-size:2.1rem;
+      letter-spacing:.04em;
+      line-height:1.02;
+      margin-bottom:8px;
+    }
+    .modal-loc{
+      display:flex;
+      gap:8px;
+      align-items:flex-start;
+      color:var(--muted);
+      line-height:1.55;
+      max-width:520px;
+    }
+    .modal-price{
+      font-family:'Bebas Neue',sans-serif;
+      font-size:2.4rem;
+      letter-spacing:.04em;
+      white-space:nowrap;
+    }
+    .modal-price span{color:var(--gold)}
+    .modal-badges{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      margin-top:18px;
+    }
+    .modal-badges span{
+      padding:8px 14px;
+      border-radius:999px;
+      background:rgba(15,43,91,.06);
+      color:var(--ink);
+      font-weight:700;
+      font-size:.86rem;
+    }
+    .modal-attrs{
+      margin:24px 0;
+      display:grid;
+      grid-template-columns:repeat(4,minmax(0,1fr));
+      gap:12px;
+    }
+    .modal-attr{
+      background:#f7f4ef;
+      border-radius:18px;
+      padding:16px 14px;
+      text-align:center;
+    }
+    .modal-attr strong{
+      display:block;
+      font-family:'Bebas Neue',sans-serif;
+      font-size:1.45rem;
+      letter-spacing:.04em;
+    }
+    .modal-attr span{display:block;color:var(--muted);font-size:.8rem;margin-top:4px}
+    .modal-desc{color:var(--ink);line-height:1.8;font-size:1rem}
+    .modal-features{
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:12px;
+      margin:24px 0;
+    }
+    .modal-feature{
+      display:flex;
+      gap:10px;
+      align-items:flex-start;
+      background:rgba(15,43,91,.04);
+      border-radius:16px;
+      padding:13px 14px;
+      color:var(--ink);
+      line-height:1.55;
+    }
+    .modal-feature::before{
+      content:'';
+      width:9px;height:9px;
+      border-radius:50%;
+      background:var(--gold);
+      flex-shrink:0;
+      margin-top:7px;
+    }
+    .modal-cta-btn{
+      width:100%;
+      min-height:54px;
+      border:none;
+      border-radius:999px;
+      background:var(--gold);
+      color:var(--navy);
+      cursor:pointer;
+      font-family:'Bebas Neue',sans-serif;
+      font-size:1.08rem;
+      letter-spacing:.11em;
+    }
+    .modal-cta-btn:hover{background:var(--gold-2);color:var(--white)}
+
+    .contact-modal{
+      width:min(500px,100%);
+      background:var(--navy);
+      color:var(--white);
+      border-radius:24px;
+      padding:36px 28px 28px;
+      position:relative;
+      transform:translateY(18px);
+      transition:transform .25s;
+      max-height:92vh;
+      overflow:auto;
+    }
+    .contact-modal::before{
+      content:'';
+      position:absolute;
+      top:0;left:0;right:0;
+      height:4px;
+      border-radius:24px 24px 0 0;
+      background:linear-gradient(90deg, var(--gold), var(--gold-2));
+    }
+    .contact-modal h3{
+      font-family:'Bebas Neue',sans-serif;
+      font-size:1.9rem;
+      letter-spacing:.05em;
+      margin-bottom:6px;
+    }
+    .contact-prop-name{color:var(--gold);font-weight:700;margin-bottom:22px}
+    .c-group{margin-bottom:14px}
+    .c-group label{
+      display:block;
+      margin-bottom:6px;
+      font-size:.72rem;
+      font-weight:700;
+      letter-spacing:.14em;
+      text-transform:uppercase;
+      color:var(--gold);
+    }
+    .c-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .c-group input,
+    .c-group textarea{
+      width:100%;
+      min-height:48px;
+      border-radius:14px;
+      border:1px solid rgba(255,255,255,.12);
+      background:rgba(255,255,255,.07);
+      color:var(--white);
+      padding:12px 14px;
+      outline:none;
+    }
+    .c-group textarea{min-height:100px;resize:vertical}
+    .c-group input::placeholder,
+    .c-group textarea::placeholder{color:rgba(255,255,255,.35)}
+    .c-group input:focus,
+    .c-group textarea:focus{border-color:var(--gold);box-shadow:0 0 0 4px rgba(212,169,64,.12)}
+    .c-submit{
+      width:100%;
+      min-height:52px;
+      border:none;
+      border-radius:999px;
+      background:var(--gold);
+      color:var(--navy);
+      cursor:pointer;
+      font-family:'Bebas Neue',sans-serif;
+      font-size:1.05rem;
+      letter-spacing:.1em;
+      margin-top:6px;
+    }
+    .c-submit:hover{background:var(--gold-2);color:var(--white)}
+    .c-note{text-align:center;font-size:.8rem;color:rgba(255,255,255,.56);margin-top:10px}
+    .c-success{display:none;text-align:center;padding:12px 0 4px}
+    .c-success h4{
+      font-family:'Bebas Neue',sans-serif;
+      font-size:1.6rem;
+      letter-spacing:.05em;
+      margin-bottom:8px;
+    }
+    .c-success p{color:rgba(255,255,255,.72);line-height:1.7}
+
+    @media (max-width:1080px){
+      .hero-grid,
+      .about-grid,
+      .contact-panel,
+      .modal-grid{grid-template-columns:1fr}
+      .hero-card{justify-self:start;max-width:480px}
+      .featured-grid,
+      .trust-grid,
+      .trust-detail-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+      .filter-grid{grid-template-columns:repeat(4,minmax(0,1fr))}
+      .filter-actions{grid-column:span 4;justify-content:stretch}
+      .filter-actions .btn-primary,
+      .filter-actions .btn-ghost{flex:1}
+      .modal-media{border-right:none;border-bottom:1px solid rgba(15,43,91,.08)}
+    }
+
+    @media (max-width:768px){
+      :root{--nav-height:80px}
+      nav{padding:14px 4vw}
+      .logo-mark{width:190px}
+      .nav-links{display:none}
+      .hero{padding:calc(var(--nav-height) + 24px) 4vw 60px}
+      .hero-points{grid-template-columns:1fr}
+      .hero-card{max-width:none}
+      .trust-strip{margin-top:-18px;padding:0 4vw}
+      .trust-grid,
+      .featured-grid,
+      .trust-detail-grid,
+      .value-grid,
+      .footer-top,
+      .modal-attrs,
+      .modal-features,
+      .c-row{grid-template-columns:1fr}
+      .section,
+      .map-section,
+      .contact-section{padding:74px 4vw}
+      .filter-section{top:var(--nav-height);padding:14px 4vw 16px}
+      .filter-shell{padding:18px}
+      .filter-top{margin-bottom:14px}
+      .filter-grid{grid-template-columns:1fr}
+      .filter-actions{grid-column:auto}
+      .filter-actions .btn-primary,
+      .filter-actions .btn-ghost{width:100%}
+      .props-grid{grid-template-columns:1fr}
+      .prop-attrs{grid-template-columns:repeat(3,minmax(0,1fr))}
+      .prop-cta-row{flex-direction:column}
+      #map{height:380px}
+      .contact-panel{padding:22px}
+      .footer-logo .logo-mark{width:190px}
+      .modal,
+      .contact-modal{max-height:94vh;border-radius:22px}
+      .modal-media,
+      .modal-body{padding:18px}
+      .modal-gallery{min-height:250px}
+      .modal-name{font-size:1.7rem}
+      .modal-price{font-size:2rem}
+      #detailMap{height:240px}
+      .modal-gallery-nav button{width:38px;height:38px}
+    }
+
+    @media (max-width:480px){
+      .hero h1{font-size:3.05rem}
+      .section-title{font-size:2.35rem}
+      .trust-card,
+      .value-card,
+      .trust-detail-card{padding:20px}
+      .results-bar{align-items:flex-start}
+      .prop-attrs{gap:8px}
+      .prop-attr{padding:10px 8px}
+      .wa-btn{right:14px;bottom:14px;width:54px;height:54px}
     }
   </style>
 </head>
 <body>
+<div class="page-shell">
+  <nav>
+    <div class="nav-logo">
+      <img class="logo-mark" src="LOGO AQUI CASAS.png" alt="Aquí Casas"/>
+    </div>
+    <div class="nav-links">
+      <a href="#inicio">Inicio</a>
+      <a href="#propiedades">Propiedades</a>
+      <a href="#empresa">Empresa</a>
+      <a href="#mapa">Cobertura</a>
+      <a href="#contacto" class="nav-cta">Contactar</a>
+    </div>
+  </nav>
 
-<!-- NAVBAR -->
-<nav>
-  <div class="nav-logo">
-    <img class="logo-mark" src="LOGO AQUI CASAS.png" alt="AQUI CASAS"/>
-  </div>
-  <div class="nav-links">
-    <a href="#propiedades">Propiedades</a>
-    <a href="#mapa">Ubicaciones</a>
-    <a href="#contacto">Contacto</a>
-    <a href="#contacto" class="nav-cta">Me interesa una casa</a>
-  </div>
-</nav>
-
-<!-- HERO -->
-<section class="hero" id="inicio">
-  <div class="hero-circles"></div>
-  <div class="hero-bar"></div>
-  <div class="hero-content">
-    <div class="hero-eyebrow">Propiedades seleccionadas · Chile</div>
-    <h1>ENCUENTRA<br/>TU <span class="gold">HOGAR</span><br/>IDEAL</h1>
-    <div class="hero-sub">Casas y departamentos disponibles ahora</div>
-    <p>Ofrecemos propiedades cuidadosamente seleccionadas en la Región Metropolitana, Coquimbo y Biobío. Habla con un ejecutivo y te ayudamos a encontrar la indicada.</p>
-    <div class="hero-stats">
-      <div><div class="stat-num">+150</div><div class="stat-label">Propiedades vendidas</div></div>
-      <div><div class="stat-num">3</div><div class="stat-label">Regiones</div></div>
-      <div><div class="stat-num">48H</div><div class="stat-label">Tiempo de respuesta</div></div>
-    </div>
-    <div class="hero-actions">
-      <button class="btn-gold" onclick="document.getElementById('propiedades').scrollIntoView({behavior:'smooth'})">VER PROPIEDADES</button>
-      <button class="btn-outline" onclick="document.getElementById('contacto').scrollIntoView({behavior:'smooth'})">CONTACTAR EJECUTIVO</button>
-    </div>
-  </div>
-</section>
-
-<!-- FILTER BAR -->
-<div class="filter-section" id="propiedades">
-  <div class="filter-inner">
-    <div class="filter-group">
-      <label>Operación</label>
-      <select id="fOperacion" onchange="applyFilters()">
-        <option value="">Todas</option>
-      </select>
-    </div>
-    <div class="filter-group">
-      <label>Tipo</label>
-      <select id="fTipo" onchange="applyFilters()">
-        <option value="">Todos</option>
-      </select>
-    </div>
-    <div class="filter-group">
-      <label>Comuna</label>
-      <select id="fComuna" onchange="applyFilters()">
-        <option value="">Todas</option>
-      </select>
-    </div>
-    <div class="filter-group">
-      <label>Dormitorios</label>
-      <select id="fDorm" onchange="applyFilters()">
-        <option value="">Todos</option>
-        <option value="2">2+</option>
-        <option value="3">3+</option>
-        <option value="4">4+</option>
-      </select>
-    </div>
-    <div class="filter-group">
-      <label>Baños</label>
-      <select id="fBanos" onchange="applyFilters()">
-        <option value="">Todos</option>
-        <option value="1">1+</option>
-        <option value="2">2+</option>
-        <option value="3">3+</option>
-      </select>
-    </div>
-    <div class="filter-group">
-      <label>M² mínimos</label>
-      <input type="number" id="fM2" placeholder="ej: 50" onkeyup="applyFilters()" oninput="applyFilters()"/>
-    </div>
-    <div class="filter-group">
-      <label>Precio (UF)</label>
-      <div class="filter-range">
-        <input type="number" id="fPrecioMin" placeholder="Mín" onkeyup="applyFilters()" oninput="applyFilters()"/>
-        <span>–</span>
-        <input type="number" id="fPrecioMax" placeholder="Máx" onkeyup="applyFilters()" oninput="applyFilters()"/>
+  <section class="hero" id="inicio">
+    <div class="hero-grid">
+      <div class="hero-copy">
+        <div class="eyebrow">Asesoría inmobiliaria cercana y clara</div>
+        <h1>ENCUENTRA TU <span>PRÓXIMA PROPIEDAD</span> CON RESPALDO REAL</h1>
+        <p class="hero-sub">En Aquí Casas conectamos personas con oportunidades inmobiliarias bien seleccionadas. Te acompañamos desde la búsqueda hasta el contacto comercial con una experiencia clara, rápida y confiable.</p>
+        <div class="hero-points">
+          <div class="hero-point">
+            <strong>3 regiones</strong>
+            <span>Cobertura activa en Región Metropolitana, Coquimbo y Biobío.</span>
+          </div>
+          <div class="hero-point">
+            <strong>Atención humana</strong>
+            <span>Orientación comercial y acompañamiento en cada consulta.</span>
+          </div>
+          <div class="hero-point">
+            <strong>Búsqueda simple</strong>
+            <span>Filtros ordenados y fichas más completas para decidir mejor.</span>
+          </div>
+        </div>
+        <div class="hero-actions">
+          <button class="btn-primary" onclick="document.getElementById('propiedades').scrollIntoView({behavior:'smooth'})">Ver propiedades</button>
+          <button class="btn-secondary" onclick="document.getElementById('contacto').scrollIntoView({behavior:'smooth'})">Hablar con un ejecutivo</button>
+        </div>
+      </div>
+      <div class="hero-card">
+        <img src="https://images.unsplash.com/photo-1605146769289-440113cc3d00?auto=format&fit=crop&w=1200&q=80" alt="Interior cálido de una propiedad"/>
+        <div class="hero-card-body">
+          <h2>Una búsqueda más clara</h2>
+          <p>Organizamos la información para que encuentres propiedades disponibles de forma coherente, con comunas asociadas a su región y fichas más útiles en mobile y desktop.</p>
+          <div class="hero-card-list">
+            <div>Resultados alineados con los filtros elegidos</div>
+            <div>Galería completa, video y mapa cuando existen datos</div>
+            <div>Secciones con más contexto y mayor peso corporativo</div>
+          </div>
+        </div>
       </div>
     </div>
-    <div class="filter-group">
-      <label>Región</label>
-      <select id="fRegion" onchange="applyFilters()">
-        <option value="">Todas</option>
-        <option value="RM">R. Metropolitana</option>
-        <option value="IV">IV Coquimbo</option>
-        <option value="VIII">VIII Biobío</option>
-      </select>
+  </section>
+
+  <div class="trust-strip">
+    <div class="trust-grid">
+      <article class="trust-card">
+        <strong>Selección curada</strong>
+        <p>Mostramos propiedades con información comercial ordenada para comparar mejor y avanzar con mayor confianza.</p>
+      </article>
+      <article class="trust-card">
+        <strong>Respuesta rápida</strong>
+        <p>El sitio está pensado para captar interés y facilitar el contacto con un ejecutivo sin fricción innecesaria.</p>
+      </article>
+      <article class="trust-card">
+        <strong>Cobertura regional</strong>
+        <p>Integramos oportunidades en distintas zonas con una navegación más lógica para evitar búsquedas confusas.</p>
+      </article>
+      <article class="trust-card">
+        <strong>Experiencia consistente</strong>
+        <p>Priorizamos mobile first para que filtros, fichas, mapa y CTA funcionen bien desde el teléfono.</p>
+      </article>
     </div>
-    <button class="btn-filter-reset" onclick="resetFilters()">LIMPIAR</button>
-    <span class="filter-results" id="filterCount"></span>
   </div>
-</div>
 
-<!-- PROPERTIES -->
-<section class="properties">
-  <div class="props-header">
-    <div class="section-label">Disponibles ahora</div>
-    <div class="section-title">PROPIEDADES EN VENTA</div>
-    <p class="section-sub">¿Te interesa alguna? Un ejecutivo te contacta en menos de 48 horas.</p>
-  </div>
-  <p class="section-sub" id="apiStatus" style="max-width:none;margin-bottom:24px;"></p>
-  <div class="props-grid" id="propsGrid"></div>
-  <div class="no-results" id="noResults"><p>No se encontraron propiedades con esos filtros.</p></div>
-</section>
-
-<!-- MAP -->
-<section class="map-section" id="mapa">
-  <div class="section-label">Cobertura</div>
-  <div class="section-title light">DÓNDE ESTAMOS</div>
-  <p class="section-sub light">Propiedades en la Región Metropolitana, Coquimbo y Biobío.</p>
-  <div id="map"></div>
-</section>
-
-<!-- GENERAL CONTACT -->
-<section style="background:var(--white);padding:88px 5vw;" id="contacto">
-  <div style="max-width:560px;margin:0 auto;text-align:center;">
-    <div class="section-label" style="justify-content:center;">Habla con nosotros</div>
-    <div class="section-title">¿TIENES ALGUNA CONSULTA?</div>
-    <p class="section-sub" style="margin:0 auto 36px;text-align:center;">Déjanos tus datos y un ejecutivo de Aquí Casas te contactará en menos de 48 horas.</p>
-    <button class="btn-gold" style="font-size:1.1rem;padding:18px 48px;" onclick="openContact(0,event)">CONTACTAR EJECUTIVO</button>
-  </div>
-</section>
-
-<!-- FOOTER -->
-<footer>
-  <div class="footer-gold-bar"></div>
-  <div class="footer-top">
-    <div class="footer-brand">
-      <div class="footer-logo">
-        <img class="logo-mark" src="LOGO AQUI CASAS.png" alt="AQUI CASAS"/>
+  <section class="section alt">
+    <div class="section-header">
+      <div>
+        <div class="section-label">Propiedades destacadas</div>
+        <h2 class="section-title">OPORTUNIDADES PARA EMPEZAR A EXPLORAR</h2>
       </div>
-      <p>Propiedades seleccionadas en Chile. Comprometidos con ayudarte a encontrar el hogar que buscas.</p>
-      <div class="footer-contacts">
-        <a href="tel:+56991776069">📞 +56 9 9177 6069</a>
-        <a href="mailto:ventas@aquicasas.cl">✉️ ventas@aquicasas.cl</a>
-        <span style="font-size:.84rem">📍 Teatinos 251 of 1008, Santiago</span>
-      </div>
+      <p class="section-sub">Una selección inicial para que el usuario llegue rápido a propiedades con buena presentación, datos clave visibles y acceso inmediato a la ficha completa.</p>
     </div>
-    <div class="footer-col">
-      <h4>Navegación</h4>
-      <ul>
-        <li><a href="#inicio">Inicio</a></li>
-        <li><a href="#propiedades">Propiedades</a></li>
-        <li><a href="#mapa">Ubicaciones</a></li>
-        <li><a href="#contacto">Contacto</a></li>
-      </ul>
-    </div>
-    <div class="footer-col">
-      <h4>Regiones</h4>
-      <ul>
-        <li><a href="#mapa">Región Metropolitana</a></li>
-        <li><a href="#mapa">IV Coquimbo</a></li>
-        <li><a href="#mapa">VIII Biobío</a></li>
-      </ul>
-      <a href="https://www.aquicasas.cl/intranet.asp" target="_blank" rel="noopener noreferrer" class="btn-gold" style="display:inline-flex;align-items:center;justify-content:center;margin-top:18px;padding:12px 24px;font-size:.95rem;">ADMINISTRADOR</a>
-    </div>
-  </div>
-  <div class="footer-bottom">
-    <span>© 2026 Aquí Casas. Todos los derechos reservados.</span>
-    <span style="color:rgba(255,255,255,.2)">Santiago, Chile</span>
-  </div>
-</footer>
+    <div class="featured-grid" id="featuredGrid"></div>
+  </section>
 
-<!-- WHATSAPP -->
-<a class="wa-btn" href="https://wa.me/56991776069" target="_blank" aria-label="WhatsApp">
-  <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413z"/></svg>
-</a>
-
-<!-- DETAIL MODAL -->
-<div class="modal-overlay" id="detailOverlay" onclick="closeDetailOutside(event)">
-  <div class="modal" id="detailModal">
-    <button class="modal-close" onclick="closeDetail()"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
-    <div class="modal-gallery"><img id="mImg" src="" alt=""/><span class="modal-gallery-badge">En venta</span></div>
-    <div class="modal-body">
-      <div class="modal-top">
+  <div class="filter-anchor" id="propiedades"></div>
+  <section class="filter-section">
+    <div class="filter-shell">
+      <div class="filter-top">
         <div>
-          <div class="modal-name" id="mName"></div>
-          <div class="modal-loc" id="mLoc"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg><span id="mLocText"></span></div>
+          <div class="filter-title">Buscador de propiedades</div>
+          <p class="filter-helper">Primero selecciona región y comuna para evitar combinaciones inválidas. Cuando tengas listos los filtros, presiona <strong>Buscar</strong>.</p>
         </div>
-        <div class="modal-price" id="mPrice"></div>
+        <div class="filter-status" id="filterStatus">Mostrando la búsqueda actual</div>
       </div>
-      <div class="modal-attrs">
-        <div class="modal-attr">
-          <div class="modal-attr-icon"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>
-          <div class="modal-attr-val" id="mDorm"></div>
-          <div class="modal-attr-label">Dormitorios</div>
+      <div class="filter-grid">
+        <div class="filter-group">
+          <label for="fRegion">Región</label>
+          <select id="fRegion" class="filter-control"></select>
         </div>
-        <div class="modal-attr">
-          <div class="modal-attr-icon"><svg viewBox="0 0 24 24"><path d="M4 12h16M4 6h16M4 18h16"/></svg></div>
-          <div class="modal-attr-val" id="mBanos"></div>
-          <div class="modal-attr-label">Baños</div>
+        <div class="filter-group">
+          <label for="fComuna">Comuna</label>
+          <select id="fComuna" class="filter-control" disabled></select>
         </div>
-        <div class="modal-attr">
-          <div class="modal-attr-icon"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/></svg></div>
-          <div class="modal-attr-val" id="mM2"></div>
-          <div class="modal-attr-label">M² construidos</div>
+        <div class="filter-group">
+          <label for="fOperacion">Operación</label>
+          <select id="fOperacion" class="filter-control"></select>
         </div>
-        <div class="modal-attr">
-          <div class="modal-attr-icon"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" stroke-dasharray="4 2"/></svg></div>
-          <div class="modal-attr-val" id="mTerreno"></div>
-          <div class="modal-attr-label">M² terreno</div>
+        <div class="filter-group">
+          <label for="fTipo">Tipo</label>
+          <select id="fTipo" class="filter-control"></select>
+        </div>
+        <div class="filter-group">
+          <label for="fDorm">Dormitorios</label>
+          <select id="fDorm" class="filter-control">
+            <option value="">Todos</option>
+            <option value="1">1+</option>
+            <option value="2">2+</option>
+            <option value="3">3+</option>
+            <option value="4">4+</option>
+            <option value="5">5+</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label for="fBanos">Baños</label>
+          <select id="fBanos" class="filter-control">
+            <option value="">Todos</option>
+            <option value="1">1+</option>
+            <option value="2">2+</option>
+            <option value="3">3+</option>
+            <option value="4">4+</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label for="fM2">M² mínimos</label>
+          <input id="fM2" class="filter-control" type="number" min="0" placeholder="Ej: 70"/>
+        </div>
+        <div class="filter-group">
+          <label for="fPrecioMin">Precio</label>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+            <input id="fPrecioMin" class="filter-control" type="number" min="0" placeholder="Desde"/>
+            <input id="fPrecioMax" class="filter-control" type="number" min="0" placeholder="Hasta"/>
+          </div>
+        </div>
+        <div class="filter-actions">
+          <button class="btn-primary" id="searchButton" type="button">Buscar</button>
+          <button class="btn-ghost" id="resetButton" type="button">Limpiar</button>
         </div>
       </div>
-      <div class="modal-desc" id="mDesc"></div>
-      <div class="modal-features" id="mFeatures"></div>
-      <button class="modal-cta-btn" id="mCtaBtn">ME INTERESA ESTA PROPIEDAD →</button>
+    </div>
+  </section>
+
+  <section class="section properties">
+    <div class="section-header">
+      <div>
+        <div class="section-label">Disponibles ahora</div>
+        <h2 class="section-title">PROPIEDADES LISTAS PARA REVISAR</h2>
+      </div>
+      <p class="section-sub">Resultados claros, ordenados y coherentes con la búsqueda aplicada. Si no encuentras lo que buscas, puedes ajustar o limpiar los filtros fácilmente.</p>
+    </div>
+
+    <div class="results-bar">
+      <div class="results-summary">
+        <div class="results-count" id="filterCount">0 propiedades</div>
+        <p class="results-context" id="resultsContext">Explora la selección disponible en Aquí Casas.</p>
+      </div>
+    </div>
+
+    <div class="props-grid" id="propsGrid"></div>
+    <div class="no-results" id="noResults">
+      <h3>No encontramos propiedades con esa combinación</h3>
+      <p>Prueba modificando la comuna, ampliando el rango de precio o limpiando los filtros para volver a ver toda la oferta disponible.</p>
+      <button class="btn-primary" type="button" onclick="resetFilters()">Limpiar filtros</button>
+    </div>
+  </section>
+
+  <section class="section alt" id="empresa">
+    <div class="about-grid">
+      <div class="about-copy">
+        <div>
+          <div class="section-label">Quiénes somos</div>
+          <h2 class="section-title">UNA INMOBILIARIA CERCANA, SERIA Y ENFOCADA EN ACOMPAÑAR</h2>
+        </div>
+        <p>Aquí Casas busca que la experiencia digital se sienta tan clara como una buena atención comercial. Organizamos la información para que cada propiedad tenga contexto, datos útiles y un camino simple hacia el contacto.</p>
+        <p>Trabajamos con un enfoque práctico: orientar, responder y acompañar con cercanía. La búsqueda online es el primer paso, pero la confianza se construye con consistencia, seguimiento y criterio comercial.</p>
+        <div class="value-grid">
+          <article class="value-card">
+            <strong>Qué hacemos</strong>
+            <p>Conectamos oportunidades inmobiliarias con personas que necesitan una búsqueda más ordenada y asesoría directa.</p>
+          </article>
+          <article class="value-card">
+            <strong>Cómo acompañamos</strong>
+            <p>Reducimos fricción en la exploración y facilitamos el paso desde el interés digital al contacto con un ejecutivo.</p>
+          </article>
+          <article class="value-card">
+            <strong>Nuestra visión</strong>
+            <p>Ser una vitrina inmobiliaria confiable, útil y cercana, con una presencia digital que transmita respaldo real.</p>
+          </article>
+          <article class="value-card">
+            <strong>Nuestra misión</strong>
+            <p>Presentar propiedades de forma clara y profesional para ayudar a tomar mejores decisiones desde cualquier dispositivo.</p>
+          </article>
+        </div>
+      </div>
+      <div class="about-visual">
+        <div class="about-visual-card">
+          <strong>Confianza desde el primer vistazo</strong>
+          <p>Más aire entre secciones, mejor jerarquía visual y contenidos con tono institucional para que el sitio se perciba sólido sin perder foco comercial.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section deep">
+    <div class="section-header">
+      <div>
+        <div class="section-label">Respaldo</div>
+        <h2 class="section-title light">RAZONES PARA CONFIAR EN AQUÍ CASAS</h2>
+      </div>
+      <p class="section-sub light">Una presencia más corporativa también necesita transmitir experiencia, cobertura y acompañamiento. Esta sección refuerza ese mensaje de forma breve y clara.</p>
+    </div>
+    <div class="trust-detail-grid">
+      <article class="trust-detail-card">
+        <strong>Experiencia comercial</strong>
+        <p>Fichas mejor estructuradas, llamados a la acción visibles y una navegación que ayuda a avanzar sin dudas innecesarias.</p>
+      </article>
+      <article class="trust-detail-card">
+        <strong>Cobertura y contexto</strong>
+        <p>Mostramos propiedades con ubicación, atributos y medios de apoyo para que el usuario entienda mejor cada oportunidad.</p>
+      </article>
+      <article class="trust-detail-card">
+        <strong>Acompañamiento cercano</strong>
+        <p>El foco sigue siendo comercial: captar interés, responder consultas y convertir la visita en una conversación útil.</p>
+      </article>
+    </div>
+  </section>
+
+  <section class="section map-section deep" id="mapa">
+    <div class="section-header">
+      <div>
+        <div class="section-label">Cobertura</div>
+        <h2 class="section-title light">DÓNDE ESTAMOS PRESENTES</h2>
+      </div>
+      <p class="section-sub light">El mapa general resume las zonas con propiedades activas y ayuda a ubicar la oferta de forma más rápida, tanto en mobile como en desktop.</p>
+    </div>
+    <div id="map"></div>
+  </section>
+
+  <section class="section contact-section" id="contacto">
+    <div class="contact-panel">
+      <div>
+        <div class="section-label">Contacto</div>
+        <h2 class="section-title">CONVERSEMOS SOBRE TU PRÓXIMA PROPIEDAD</h2>
+        <p>Si viste una propiedad que te interesa o quieres que te orientemos según tu búsqueda, podemos ayudarte. Déjanos tus datos y un ejecutivo se pondrá en contacto contigo.</p>
+        <div class="contact-bullets">
+          <div>Atención enfocada en entender tu necesidad antes de ofrecer alternativas.</div>
+          <div>Seguimiento claro para avanzar desde la consulta hasta la visita o evaluación comercial.</div>
+          <div>Respuesta pensada para funcionar bien desde el celular, sin formularios confusos ni pasos extra.</div>
+        </div>
+        <div style="margin-top:24px">
+          <button class="btn-primary" type="button" onclick="openContact(0)">Contactar ejecutivo</button>
+        </div>
+      </div>
+      <aside class="contact-side">
+        <strong>Atención Aquí Casas</strong>
+        <span>Estamos disponibles para orientar tu búsqueda y responder consultas sobre disponibilidad, ubicación y características.</span>
+        <a href="tel:+56991776069">+56 9 9177 6069</a>
+        <a href="mailto:ventas@aquicasas.cl">ventas@aquicasas.cl</a>
+        <span>Teatinos 251, oficina 1008, Santiago</span>
+      </aside>
+    </div>
+  </section>
+
+  <footer>
+    <div class="footer-top">
+      <div class="footer-brand">
+        <div class="footer-logo">
+          <img class="logo-mark" src="LOGO AQUI CASAS.png" alt="Aquí Casas"/>
+        </div>
+        <p>Propiedades seleccionadas con una experiencia de búsqueda más clara, cercana y profesional para usuarios que navegan desde desktop y mobile.</p>
+        <div class="footer-contacts">
+          <a href="tel:+56991776069">+56 9 9177 6069</a>
+          <a href="mailto:ventas@aquicasas.cl">ventas@aquicasas.cl</a>
+          <span>Teatinos 251 of 1008, Santiago</span>
+        </div>
+      </div>
+      <div class="footer-col">
+        <h4>Navegación</h4>
+        <ul>
+          <li><a href="#inicio">Inicio</a></li>
+          <li><a href="#propiedades">Propiedades</a></li>
+          <li><a href="#empresa">Empresa</a></li>
+          <li><a href="#mapa">Cobertura</a></li>
+          <li><a href="#contacto">Contacto</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Accesos</h4>
+        <ul>
+          <li><a href="https://www.aquicasas.cl/intranet.asp" target="_blank" rel="noopener noreferrer">Administrador</a></li>
+          <li><a href="https://wa.me/56991776069" target="_blank" rel="noopener noreferrer">WhatsApp</a></li>
+          <li><a href="mailto:ventas@aquicasas.cl">Solicitar contacto</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 Aquí Casas. Todos los derechos reservados.</span>
+      <span>Santiago, Chile</span>
+    </div>
+  </footer>
+
+  <a class="wa-btn" href="https://wa.me/56991776069" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp">
+    <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413z"/></svg>
+  </a>
+
+  <div class="modal-overlay" id="detailOverlay" onclick="closeDetailOutside(event)">
+    <div class="modal" id="detailModal">
+      <button class="modal-close" type="button" onclick="closeDetail()" aria-label="Cerrar ficha">
+        <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+      <div class="modal-grid">
+        <div class="modal-media">
+          <div class="modal-gallery" id="modalGallery">
+            <img id="mImg" src="" alt=""/>
+            <div class="modal-gallery-nav">
+              <button type="button" id="galleryPrev" aria-label="Imagen anterior">‹</button>
+              <button type="button" id="galleryNext" aria-label="Imagen siguiente">›</button>
+            </div>
+            <div class="modal-gallery-count" id="galleryCount">1 / 1</div>
+          </div>
+          <div class="modal-thumbs" id="modalThumbs"></div>
+          <div class="modal-video" id="videoBlock" style="display:none">
+            <div class="modal-section-head">
+              <strong>Video</strong>
+            </div>
+            <div id="videoContainer"></div>
+          </div>
+          <div class="modal-map-block" id="detailMapBlock" style="display:none">
+            <div class="modal-section-head">
+              <strong>Ubicación referencial</strong>
+            </div>
+            <div id="detailMap"></div>
+            <p class="detail-map-note" id="detailMapNote"></p>
+          </div>
+        </div>
+        <div class="modal-body">
+          <div class="modal-top">
+            <div>
+              <div class="modal-name" id="mName"></div>
+              <div class="modal-loc" id="mLoc">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                <span id="mLocText"></span>
+              </div>
+              <div class="modal-badges" id="mBadges"></div>
+            </div>
+            <div class="modal-price" id="mPrice"></div>
+          </div>
+          <div class="modal-attrs">
+            <div class="modal-attr"><strong id="mDorm">0</strong><span>Dormitorios</span></div>
+            <div class="modal-attr"><strong id="mBanos">0</strong><span>Baños</span></div>
+            <div class="modal-attr"><strong id="mM2">0 m²</strong><span>M² construidos</span></div>
+            <div class="modal-attr"><strong id="mTerreno">0 m²</strong><span>M² terreno</span></div>
+          </div>
+          <div class="modal-desc" id="mDesc"></div>
+          <div class="modal-features" id="mFeatures"></div>
+          <button class="modal-cta-btn" id="mCtaBtn" type="button">Me interesa esta propiedad</button>
+        </div>
+      </div>
     </div>
   </div>
-</div>
 
-<!-- CONTACT MODAL -->
-<div class="contact-overlay" id="contactOverlay" onclick="closeContactOutside(event)">
-  <div class="contact-modal">
-    <button class="contact-close" onclick="closeContact()"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
-    <h3>ME INTERESA</h3>
-    <div class="contact-prop-name" id="cPropName"></div>
-    <div id="cForm">
-      <div class="c-row">
-        <div class="c-group"><label>Nombre</label><input type="text" id="cNombre" placeholder="Juan Pérez"/></div>
-        <div class="c-group"><label>Teléfono</label><input type="tel" id="cTelefono" placeholder="+56 9 xxxx xxxx"/></div>
+  <div class="contact-overlay" id="contactOverlay" onclick="closeContactOutside(event)">
+    <div class="contact-modal">
+      <button class="contact-close" type="button" onclick="closeContact()" aria-label="Cerrar contacto">
+        <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+      <h3>ME INTERESA</h3>
+      <div class="contact-prop-name" id="cPropName"></div>
+      <div id="cForm">
+        <div class="c-row">
+          <div class="c-group">
+            <label for="cNombre">Nombre</label>
+            <input type="text" id="cNombre" placeholder="Juan Pérez"/>
+          </div>
+          <div class="c-group">
+            <label for="cTelefono">Teléfono</label>
+            <input type="tel" id="cTelefono" placeholder="+56 9 xxxx xxxx"/>
+          </div>
+        </div>
+        <div class="c-group">
+          <label for="cEmail">Email</label>
+          <input type="email" id="cEmail" placeholder="juan@email.com"/>
+        </div>
+        <div class="c-group">
+          <label for="cMensaje">Mensaje</label>
+          <textarea id="cMensaje" placeholder="Cuéntanos qué te interesa o qué necesitas revisar."></textarea>
+        </div>
+        <button class="c-submit" type="button" onclick="submitContact()">Quiero que me contacten</button>
+        <p class="c-note">Tus datos son confidenciales.</p>
       </div>
-      <div class="c-group"><label>Email</label><input type="email" id="cEmail" placeholder="juan@email.com"/></div>
-      <div class="c-group"><label>Mensaje (opcional)</label><textarea id="cMensaje" placeholder="¿Alguna consulta específica?"></textarea></div>
-      <button class="c-submit" onclick="submitContact()">QUIERO QUE ME CONTACTEN →</button>
-      <p class="c-note">🔒 Tus datos son confidenciales.</p>
-    </div>
-    <div class="c-success" id="cSuccess">
-      <div class="c-success-icon"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
-      <h4>¡MENSAJE RECIBIDO!</h4>
-      <p>Un ejecutivo de Aquí Casas te contactará en menos de 48 horas hábiles.</p>
+      <div class="c-success" id="cSuccess">
+        <h4>Mensaje recibido</h4>
+        <p>Un ejecutivo de Aquí Casas te contactará a la brevedad para continuar con tu consulta.</p>
+      </div>
     </div>
   </div>
 </div>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<!--
-  Activa la API real definiendo esto antes del script principal:
-  <script>
-    window.OFINET_CONFIG = {
-      useMockData: false,
-      baseUrl: '/api/ofinet',
-      token: '',
-      endpoints: {
-        comunas: 'comunas',
-        tipos: 'tipos',
-        operaciones: 'operaciones',
-        propiedades: 'propiedades',
-        detallePropiedad: 'propiedades/{id}'
-      }
-    };
-  </script>
-
-  O bien, para pruebas temporales desde consola en un hosting estatico:
-  localStorage.setItem('OFINET_CONFIG', JSON.stringify({
-    useMockData: false,
-    baseUrl: '/api/ofinet',
-    token: 'TU_TOKEN_BEARER',
-    endpoints: {
-      comunas: 'comunas',
-      tipos: 'tipos',
-      operaciones: 'operaciones',
-      propiedades: 'propiedades',
-      detallePropiedad: 'propiedades/{id}'
-    }
-  }));
-  location.reload();
--->
 <script>
 function getStoredOfinetConfig() {
   try {
@@ -525,7 +1668,7 @@ const SAMPLE_PROPERTIES = [
     id: 1,
     code: 'AC-001',
     name: 'Conjunto Montemar',
-    loc: 'Coquimbo, IV Región',
+    loc: 'Coquimbo, Región de Coquimbo',
     comuna: 'Coquimbo',
     region: 'IV',
     tipo: 'Casa',
@@ -538,15 +1681,21 @@ const SAMPLE_PROPERTIES = [
     terreno: 188,
     lat: -29.9533,
     lng: -71.3395,
-    img: 'https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=900&q=80',
-    desc: 'Amplia casa en conjunto cerrado ubicado en Coquimbo. Excelente distribución con amplio living-comedor, cocina equipada y patio trasero.',
-    features: ['Conjunto cerrado', 'Áreas verdes', '2 estacionamientos', 'Patio trasero', 'Cocina equipada', 'Cerca de colegios']
+    img: 'https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=1200&q=80',
+    gallery: [
+      'https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=1200&q=80',
+      'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=1200&q=80',
+      'https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?w=1200&q=80'
+    ],
+    desc: 'Amplia casa en conjunto cerrado ubicado en Coquimbo. Excelente distribución con living comedor, cocina equipada y patio trasero.',
+    features: ['Conjunto cerrado', 'Áreas verdes', '2 estacionamientos', 'Patio trasero', 'Cocina equipada', 'Cerca de colegios'],
+    video: 'https://www.youtube.com/watch?v=jNQXAC9IVRw'
   },
   {
     id: 2,
     code: 'AC-002',
     name: 'Casa 2 Pisos Nuevo Parque San Francisco',
-    loc: 'Puente Alto, R.M.',
+    loc: 'Puente Alto, Región Metropolitana',
     comuna: 'Puente Alto',
     region: 'RM',
     tipo: 'Casa',
@@ -559,15 +1708,20 @@ const SAMPLE_PROPERTIES = [
     terreno: 75,
     lat: -33.6167,
     lng: -70.5806,
-    img: 'https://images.unsplash.com/photo-1570129477492-45c003edd2be?w=900&q=80',
-    desc: 'Casa de 2 pisos en pasaje cerrado con buena seguridad. Planta baja con living, comedor y cocina. Planta alta con 3 dormitorios y 2 baños completos.',
+    img: 'https://images.unsplash.com/photo-1570129477492-45c003edd2be?w=1200&q=80',
+    gallery: [
+      'https://images.unsplash.com/photo-1570129477492-45c003edd2be?w=1200&q=80',
+      'https://images.unsplash.com/photo-1600607687644-aac4c3eac7f4?w=1200&q=80',
+      'https://images.unsplash.com/photo-1513694203232-719a280e022f?w=1200&q=80'
+    ],
+    desc: 'Casa de 2 pisos en pasaje cerrado con buena seguridad, conectividad y distribución para una vida familiar cómoda.',
     features: ['Pasaje cerrado', '2 pisos', 'Cerca del Metro', '3 dormitorios', 'Cocina americana', 'Estacionamiento']
   },
   {
     id: 3,
     code: 'AC-003',
     name: 'Casa 2 Pisos Las Vertientes',
-    loc: 'Peñaflor, R.M.',
+    loc: 'Peñaflor, Región Metropolitana',
     comuna: 'Peñaflor',
     region: 'RM',
     tipo: 'Casa',
@@ -580,15 +1734,19 @@ const SAMPLE_PROPERTIES = [
     terreno: 115,
     lat: -33.5953,
     lng: -70.8783,
-    img: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=900&q=80',
-    desc: 'Casa en condominio Las Vertientes de Peñaflor con excelente conectividad. Terreno de 115 m² con jardín frontal y patio trasero.',
+    img: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=1200&q=80',
+    gallery: [
+      'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=1200&q=80',
+      'https://images.unsplash.com/photo-1600607687126-8a3414349a51?w=1200&q=80'
+    ],
+    desc: 'Casa en condominio Las Vertientes con excelente conectividad, terreno de 115 m² y espacios exteriores aprovechables.',
     features: ['Condominio privado', 'Jardín y patio', 'Acceso Ruta 78', '3 dormitorios', '2 baños completos', 'Estacionamiento cubierto']
   },
   {
     id: 4,
     code: 'AC-004',
     name: 'Condominio El Mañío',
-    loc: 'Lampa, R.M.',
+    loc: 'Lampa, Región Metropolitana',
     comuna: 'Lampa',
     region: 'RM',
     tipo: 'Casa',
@@ -599,17 +1757,18 @@ const SAMPLE_PROPERTIES = [
     banos: 1,
     m2: 51,
     terreno: 115,
-    lat: -33.5847,
+    lat: -33.2847,
     lng: -70.9086,
-    img: 'https://images.unsplash.com/photo-1583608205776-bfd35f0d9f83?w=900&q=80',
-    desc: 'Casa en condominio El Mañío en Lampa. Ideal para primera vivienda o inversión.',
-    features: ['Condominio El Mañío', 'Terreno amplio', '2 dormitorios', 'Posibilidad ampliación', 'Zona residencial tranquila', 'Estacionamiento']
+    img: 'https://images.unsplash.com/photo-1583608205776-bfd35f0d9f83?w=1200&q=80',
+    gallery: ['https://images.unsplash.com/photo-1583608205776-bfd35f0d9f83?w=1200&q=80'],
+    desc: 'Casa en condominio El Mañío en Lampa, ideal para primera vivienda o inversión.',
+    features: ['Condominio El Mañío', 'Terreno amplio', '2 dormitorios', 'Posibilidad de ampliación', 'Zona tranquila', 'Estacionamiento']
   },
   {
     id: 5,
     code: 'AC-005',
     name: 'Estupenda Casa con Piscina',
-    loc: 'Puente Alto, R.M.',
+    loc: 'Puente Alto, Región Metropolitana',
     comuna: 'Puente Alto',
     region: 'RM',
     tipo: 'Casa',
@@ -622,15 +1781,19 @@ const SAMPLE_PROPERTIES = [
     terreno: 164,
     lat: -33.525,
     lng: -70.615,
-    img: 'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=900&q=80',
-    desc: 'Destacada casa con piscina privada en Puente Alto. Amplio terreno de 164 m² con jardín, piscina y zona de asado.',
+    img: 'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=1200&q=80',
+    gallery: [
+      'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=1200&q=80',
+      'https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?w=1200&q=80'
+    ],
+    desc: 'Destacada casa con piscina privada, jardín, patio y zona de asado. Muy buena para vida familiar y reuniones.',
     features: ['Piscina privada', 'Zona de asado', 'Jardín 164 m²', '3 baños completos', 'Living amplio', '2 estacionamientos']
   },
   {
     id: 6,
     code: 'AC-006',
-    name: 'Casa Hacienda Los Conquistadores',
-    loc: 'Puente Alto, R.M.',
+    name: 'Hacienda Los Conquistadores',
+    loc: 'Puente Alto, Región Metropolitana',
     comuna: 'Puente Alto',
     region: 'RM',
     tipo: 'Casa',
@@ -643,9 +1806,13 @@ const SAMPLE_PROPERTIES = [
     terreno: 104,
     lat: -33.601,
     lng: -70.575,
-    img: 'https://images.unsplash.com/photo-1598228723793-52759bba239c?w=900&q=80',
-    desc: 'Casa en condominio Hacienda Los Conquistadores, Puente Alto. Condominio con vigilancia 24/7 y áreas verdes.',
-    features: ['Vigilancia 24/7', 'Áreas verdes', '2 pisos', 'Terreno 104 m²', 'Cerca colegio', 'Estacionamiento']
+    img: 'https://images.unsplash.com/photo-1598228723793-52759bba239c?w=1200&q=80',
+    gallery: [
+      'https://images.unsplash.com/photo-1598228723793-52759bba239c?w=1200&q=80',
+      'https://images.unsplash.com/photo-1600210492493-0946911123ea?w=1200&q=80'
+    ],
+    desc: 'Casa en condominio con vigilancia 24/7, áreas verdes y buena conectividad interior.',
+    features: ['Vigilancia 24/7', 'Áreas verdes', '2 pisos', 'Terreno 104 m²', 'Cerca de colegio', 'Estacionamiento']
   }
 ];
 
@@ -657,7 +1824,17 @@ const STATE = {
     comunas: [],
     tipos: [],
     operaciones: []
-  }
+  },
+  regions: [],
+  comunasByRegion: {},
+  filteredProperties: [],
+  appliedFilters: {},
+  activePropertyId: null,
+  activeGallery: [],
+  activeGalleryIndex: 0,
+  mainMap: null,
+  detailMap: null,
+  detailMarker: null
 };
 
 function escapeHtml(value) {
@@ -670,45 +1847,78 @@ function escapeHtml(value) {
   })[char]);
 }
 
-function formatPrice(value, currency = 'UF') {
-  if (!Number.isFinite(Number(value))) return `${currency} --`;
-  return `${currency} ${Number(value).toLocaleString('es-CL')}`;
+function normalizeText(value) {
+  return String(value ?? '')
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, ' ')
+    .trim();
 }
 
-function setApiStatus(message, isError = false) {
-  const el = document.getElementById('apiStatus');
-  el.textContent = message;
-  el.style.color = isError ? '#A33A32' : '#4A6080';
+function slugify(value) {
+  return normalizeText(value).replace(/\s+/g, '-');
 }
 
-function getApiBaseUrl() {
-  return API_CONFIG.baseUrl.replace(/\/$/, '');
+function toNumber(value, fallback = 0) {
+  const numeric = Number(String(value ?? '').replace(/[^\d.-]/g, ''));
+  return Number.isFinite(numeric) ? numeric : fallback;
 }
 
 function buildEndpoint(endpoint, params = {}) {
   return endpoint.replace(/\{(\w+)\}/g, (_, key) => encodeURIComponent(params[key] ?? ''));
 }
 
-function normalizeRegionCode(value, regionName = '') {
-  const regionCode = String(value ?? '').trim();
-  const name = String(regionName || '').toLowerCase();
+function getApiBaseUrl() {
+  return API_CONFIG.baseUrl.replace(/\/$/, '');
+}
 
-  if (regionCode === '13' || name.includes('metropolitana')) return 'RM';
-  if (regionCode === '4' || regionCode === '04' || name.includes('coquimbo')) return 'IV';
-  if (regionCode === '8' || regionCode === '08' || name.includes('biob') || name.includes('b[oí]o')) return 'VIII';
-  return regionCode;
+function formatPrice(value, currency = 'UF') {
+  if (!Number.isFinite(Number(value))) {
+    return `${currency} --`;
+  }
+  return `${currency} ${Number(value).toLocaleString('es-CL')}`;
+}
+
+function humanizeRegionLabel(regionCode, fallbackName = '') {
+  const code = normalizeRegionCode(regionCode, fallbackName);
+  const regionLabels = {
+    RM: 'Región Metropolitana',
+    IV: 'Región de Coquimbo',
+    VIII: 'Región del Biobío'
+  };
+  return regionLabels[code] || fallbackName || code || 'Región';
+}
+
+function normalizeRegionCode(value, regionName = '') {
+  const rawCode = String(value ?? '').trim();
+  const normalized = normalizeText(rawCode || regionName);
+
+  if (['13', 'rm', 'metropolitana', 'region metropolitana', 'region-metropolitana'].includes(normalized.replace(/\s+/g, ''))) {
+    return 'RM';
+  }
+  if (rawCode === '13') return 'RM';
+  if (rawCode === '4' || rawCode === '04' || normalized.includes('coquimbo')) return 'IV';
+  if (rawCode === '8' || rawCode === '08' || normalized.includes('biobio') || normalized.includes('bio bio')) return 'VIII';
+  if (rawCode === 'RM' || rawCode === 'IV' || rawCode === 'VIII') return rawCode;
+  return rawCode || regionName || '';
 }
 
 function normalizeOperationLabel(value) {
-  const operation = String(value ?? '').trim().toUpperCase();
-  const operationMap = {
-    VE: 'VENTA',
-    AT: 'ARRIENDO',
-    1: 'VENTA',
-    2: 'ARRIENDO'
-  };
+  const normalized = normalizeText(value);
+  if (['ve', 'venta', '1'].includes(normalized)) return 'Venta';
+  if (['at', 'arriendo', 'arriendo', '2'].includes(normalized)) return 'Arriendo';
+  return String(value ?? '').trim() || 'Venta';
+}
 
-  return operationMap[operation] || String(value ?? '').trim();
+function uniqueBy(items, keyFn) {
+  const seen = new Set();
+  return items.filter(item => {
+    const key = keyFn(item);
+    if (!key || seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
 }
 
 function getCollection(payload) {
@@ -729,11 +1939,9 @@ function getCollection(payload) {
     payload?.Operaciones,
     payload?.Lista
   ];
-
-  const match = candidates.find(Array.isArray);
-  if (match) return match;
-  if (Array.isArray(payload)) return payload;
-  return [];
+  const collection = candidates.find(Array.isArray);
+  if (collection) return collection;
+  return Array.isArray(payload) ? payload : [];
 }
 
 function normalizeOption(raw, fallbackType) {
@@ -751,6 +1959,8 @@ function normalizeOption(raw, fallbackType) {
     raw?.Nombre ??
     raw?.descripcion ??
     raw?.Descripcion ??
+    raw?.detalle ??
+    raw?.Detalle ??
     ''
   ).trim();
 
@@ -771,83 +1981,155 @@ function normalizeOption(raw, fallbackType) {
     value
   ).trim();
 
+  const region = String(raw?.Region ?? raw?.region ?? raw?.RegionNombre ?? raw?.regionNombre ?? '').trim();
+
   return {
     type: fallbackType,
     value,
-    label
+    label,
+    key: slugify(label || value),
+    region: normalizeRegionCode(raw?.CodigoRegion ?? raw?.RegionCodigo ?? raw?.regionCodigo ?? region, region)
   };
 }
 
-function fillSelectOptions(selectId, options, emptyLabel) {
-  const select = document.getElementById(selectId);
-  const currentValue = select.value;
-  const uniqueOptions = options
-    .filter(option => option.value && option.label)
-    .filter((option, index, list) => list.findIndex(item => item.value === option.value) === index)
-    .sort((a, b) => a.label.localeCompare(b.label, 'es'));
+function getImageCandidates(raw) {
+  const candidates = [];
+  const direct = [
+    raw?.img,
+    raw?.ImagenPrincipal,
+    raw?.FotoPrincipal,
+    raw?.UrlImagen,
+    raw?.UrlFoto,
+    raw?.Imagen,
+    raw?.Foto
+  ];
+  direct.forEach(item => {
+    if (typeof item === 'string' && item.trim()) candidates.push(item.trim());
+  });
 
-  select.innerHTML = [
-    `<option value="">${escapeHtml(emptyLabel)}</option>`,
-    ...uniqueOptions.map(option => `<option value="${escapeHtml(option.value)}">${escapeHtml(option.label)}</option>`)
-  ].join('');
-  select.value = uniqueOptions.some(option => option.value === currentValue) ? currentValue : '';
+  const imageBuckets = [
+    raw?.Imagenes,
+    raw?.imagenes,
+    raw?.Fotos,
+    raw?.fotos,
+    raw?.Galeria,
+    raw?.galeria,
+    raw?.Gallery,
+    raw?.gallery
+  ];
+
+  imageBuckets.forEach(bucket => {
+    if (Array.isArray(bucket)) {
+      bucket.forEach(entry => {
+        const imageValue = entry?.Imagen ?? entry?.imagen ?? entry?.Url ?? entry?.url ?? entry?.Foto ?? entry?.foto ?? entry;
+        if (typeof imageValue === 'string' && imageValue.trim()) candidates.push(imageValue.trim());
+      });
+    } else if (typeof bucket === 'string' && bucket.trim()) {
+      bucket.split('|').forEach(item => {
+        const candidate = item.trim();
+        if (candidate) candidates.push(candidate);
+      });
+    }
+  });
+
+  return uniqueBy(candidates.filter(Boolean), item => item);
+}
+
+function getVideoUrl(raw) {
+  return String(
+    raw?.video ??
+    raw?.Video ??
+    raw?.VideoUrl ??
+    raw?.UrlVideo ??
+    raw?.video_url ??
+    raw?.TourVirtual ??
+    raw?.tourVirtual ??
+    ''
+  ).trim();
+}
+
+function buildLocationLabel(parts) {
+  return parts.filter(Boolean).join(', ') || 'Ubicación por confirmar';
+}
+
+function normalizeComunaLabel(value) {
+  const label = String(value ?? '').trim();
+  if (!label) return '';
+  return label
+    .split(/\s+/)
+    .map(part => part.charAt(0).toUpperCase() + part.slice(1).toLowerCase())
+    .join(' ');
 }
 
 function normalizeProperty(raw) {
-  const comuna = raw.comuna ?? raw.ComunaNombre ?? raw.Comuna ?? '';
-  const regionName = raw.Region ?? raw.RegionNombre ?? '';
+  const comunaSource = raw.comuna ?? raw.ComunaNombre ?? raw.Comuna ?? raw.NombreComuna ?? '';
+  const comuna = normalizeComunaLabel(comunaSource);
+  const regionName = raw.RegionNombre ?? raw.Region ?? raw.regionNombre ?? '';
   const region = normalizeRegionCode(raw.region ?? raw.RegionCodigo ?? raw.CodigoRegion ?? raw.Region ?? '', regionName);
-  const direccion = raw.loc ?? raw.Ubicacion ?? raw.Direccion ?? raw.DireccionCorta ?? raw.Entre ?? '';
-  const imageList = Array.isArray(raw.Imagenes) ? raw.Imagenes : [];
-  const primaryImage = imageList.find(item => item?.Imagen)?.Imagen;
-  const tipo = raw.tipo ?? raw.TipoInmuebleNombre ?? raw.TipoInmueble ?? raw.Tipo ?? '';
+  const tipo = String(raw.tipo ?? raw.TipoInmuebleNombre ?? raw.TipoInmueble ?? raw.Tipo ?? raw.Categoria ?? '').trim() || 'Propiedad';
   const operacion = normalizeOperationLabel(raw.operacion ?? raw.OperacionNombre ?? raw.Operacion ?? 'Venta');
-  const precioPesos = Number(raw.ValorPesos ?? 0);
-  const precioUf = Number(raw.ValorUf ?? 0);
-  const monedaBase = raw.moneda ?? raw.Pactado ?? (precioUf ? 'UF' : 'CLP');
-  const precio = monedaBase === 'PESOS' || monedaBase === 'CLP'
-    ? precioPesos
-    : (precioUf || precioPesos);
-  const gallery = imageList.map(item => item?.Imagen).filter(Boolean);
+  const direccion = String(raw.DireccionCorta ?? raw.Direccion ?? raw.Ubicacion ?? raw.loc ?? raw.Sector ?? '').trim();
+  const gallery = getImageCandidates(raw);
+  const fallbackImage = 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=1200&q=80';
+  const precioPesos = toNumber(raw.ValorPesos ?? raw.PrecioPesos ?? raw.precioPesos, 0);
+  const precioUf = toNumber(raw.ValorUf ?? raw.PrecioUF ?? raw.precioUf ?? raw.precio, 0);
+  const monedaRaw = String(raw.moneda ?? raw.Pactado ?? raw.Moneda ?? '').trim().toUpperCase();
+  const moneda = ['PESOS', 'CLP', '$'].includes(monedaRaw) ? 'CLP' : 'UF';
+  const precio = moneda === 'CLP' ? (precioPesos || precioUf) : (precioUf || precioPesos);
+  const description = String(raw.desc ?? raw.Descripcion ?? raw.DescripcionCorta ?? raw.Observaciones ?? '').trim() || 'Sin descripción disponible.';
+  const features = [
+    ...(Array.isArray(raw.features) ? raw.features : []),
+    raw.Estacionamientos ? `${raw.Estacionamientos} estacionamiento${Number(raw.Estacionamientos) > 1 ? 's' : ''}` : '',
+    raw.Bodegas ? `${raw.Bodegas} bodega${Number(raw.Bodegas) > 1 ? 's' : ''}` : '',
+    raw.Condominio ? 'Condominio' : '',
+    raw.Sector ? `Sector ${raw.Sector}` : '',
+    raw.Orientacion ? `Orientación ${raw.Orientacion}` : '',
+    tipo,
+    operacion
+  ].filter(Boolean);
 
-  return {
+  const normalized = {
     id: raw.id ?? raw.Id ?? raw.idPropiedad ?? raw.CodPropiedad ?? raw.NroProp ?? raw.code,
-    code: raw.code ?? raw.CodPropiedad ?? raw.Codigo ?? '',
-    name: raw.name ?? raw.Titulo ?? raw.Nombre ?? raw.NombrePropiedad ?? `${tipo || 'Propiedad'} en ${comuna || 'ubicación por confirmar'}`,
-    loc: [direccion, comuna, region].filter(Boolean).join(', ') || comuna || 'Ubicación por confirmar',
+    code: String(raw.code ?? raw.CodPropiedad ?? raw.Codigo ?? '').trim(),
+    name: String(raw.name ?? raw.Titulo ?? raw.Nombre ?? raw.NombrePropiedad ?? '').trim() || `${tipo} en ${comuna || 'ubicación por confirmar'}`,
+    loc: buildLocationLabel([direccion, comuna, humanizeRegionLabel(region, regionName)]),
+    direccion,
     comuna,
     region,
     tipo,
     operacion,
     precio,
-    moneda: monedaBase === 'PESOS' ? 'CLP' : monedaBase,
-    dorm: Number(raw.dorm ?? raw.Dormitorios ?? raw.Habitaciones ?? 0),
-    banos: Number(raw.banos ?? raw.Banos ?? raw.Baños ?? raw.Bathroom ?? 0),
-    m2: Number(raw.m2 ?? raw.M2Construidos ?? raw.SuperficieConstruida ?? raw.M2 ?? raw.Superficie ?? 0),
-    terreno: Number(raw.terreno ?? raw.M2Terreno ?? raw.SuperficieTerreno ?? raw.Superficie ?? 0),
-    lat: Number(raw.lat ?? raw.Latitud ?? 0),
-    lng: Number(raw.lng ?? raw.Longitud ?? 0),
-    img: raw.img ?? raw.ImagenPrincipal ?? raw.FotoPrincipal ?? raw.UrlImagen ?? primaryImage ?? 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=900&q=80',
-    desc: raw.desc ?? raw.Descripcion ?? raw.DescripcionCorta ?? 'Sin descripción disponible.',
-    gallery,
-    features: Array.isArray(raw.features) ? raw.features : [
-      raw.Estacionamientos ? `${raw.Estacionamientos} estacionamiento${raw.Estacionamientos > 1 ? 's' : ''}` : '',
-      raw.Bodegas ? `${raw.Bodegas} bodega${raw.Bodegas > 1 ? 's' : ''}` : '',
-      tipo || '',
-      operacion || ''
-    ].filter(Boolean)
+    moneda,
+    dorm: toNumber(raw.dorm ?? raw.Dormitorios ?? raw.Habitaciones, 0),
+    banos: toNumber(raw.banos ?? raw.Banos ?? raw.Baños ?? raw.Bathroom, 0),
+    m2: toNumber(raw.m2 ?? raw.M2Construidos ?? raw.SuperficieConstruida ?? raw.M2 ?? raw.Superficie, 0),
+    terreno: toNumber(raw.terreno ?? raw.M2Terreno ?? raw.SuperficieTerreno ?? raw.Terreno, 0),
+    lat: toNumber(raw.lat ?? raw.Latitud, 0),
+    lng: toNumber(raw.lng ?? raw.Longitud, 0),
+    img: gallery[0] || fallbackImage,
+    gallery: gallery.length ? gallery : [fallbackImage],
+    desc: description,
+    features: uniqueBy(features.map(feature => String(feature).trim()).filter(Boolean), item => normalizeText(item)),
+    video: getVideoUrl(raw),
+    locationNote: comuna ? `${comuna}, ${humanizeRegionLabel(region, regionName)}` : humanizeRegionLabel(region, regionName),
+    regionKey: slugify(region || humanizeRegionLabel(region, regionName)),
+    comunaKey: slugify(comuna),
+    tipoKey: slugify(tipo),
+    operacionKey: slugify(operacion)
   };
+
+  return normalized;
 }
 
 async function fetchJson(endpoint) {
-  const headers = { 'Accept': 'application/json' };
+  const headers = { Accept: 'application/json' };
   if (API_CONFIG.token) {
     headers.Authorization = `Bearer ${API_CONFIG.token}`;
   }
 
   const response = await fetch(`${getApiBaseUrl()}/${endpoint}`, { headers });
-
   let data;
+
   try {
     data = await response.json();
   } catch (error) {
@@ -861,6 +2143,7 @@ async function fetchJson(endpoint) {
   if (data.responseCode !== 0) {
     throw new Error(data.ErrorMensaje || 'La API devolvió un error.');
   }
+
   return data;
 }
 
@@ -870,43 +2153,28 @@ async function loadCatalog(endpointKey, fallbackType) {
   return getCollection(payload).map(item => normalizeOption(item, fallbackType));
 }
 
-function useSampleCatalogs() {
-  const comunas = [...new Set(SAMPLE_PROPERTIES.map(property => property.comuna))].map(value => ({ value, label: value }));
-  const tipos = [...new Set(SAMPLE_PROPERTIES.map(property => property.tipo))].map(value => ({ value, label: value }));
-  const operaciones = [...new Set(SAMPLE_PROPERTIES.map(property => property.operacion))].map(value => ({ value, label: value }));
-
-  STATE.catalogs = { comunas, tipos, operaciones };
-}
-
 async function loadCatalogs() {
   if (API_CONFIG.useMockData) {
-    useSampleCatalogs();
+    STATE.catalogs = { comunas: [], tipos: [], operaciones: [] };
     return;
   }
 
-  const [comunas, tipos, operaciones] = await Promise.all([
-    loadCatalog('comunas', 'comuna'),
-    loadCatalog('tipos', 'tipo'),
-    loadCatalog('operaciones', 'operacion')
-  ]);
-
-  STATE.catalogs = { comunas, tipos, operaciones };
-}
-
-function syncCatalogFilters() {
-  fillSelectOptions('fComuna', STATE.catalogs.comunas, 'Todas');
-  fillSelectOptions('fTipo', STATE.catalogs.tipos, 'Todos');
-  fillSelectOptions('fOperacion', STATE.catalogs.operaciones, 'Todas');
+  try {
+    const [comunas, tipos, operaciones] = await Promise.all([
+      loadCatalog('comunas', 'comuna'),
+      loadCatalog('tipos', 'tipo'),
+      loadCatalog('operaciones', 'operacion')
+    ]);
+    STATE.catalogs = { comunas, tipos, operaciones };
+  } catch (error) {
+    console.warn('No se pudieron cargar los catálogos de OFINET.', error);
+    STATE.catalogs = { comunas: [], tipos: [], operaciones: [] };
+  }
 }
 
 async function loadProperties() {
   if (API_CONFIG.useMockData) {
-    setApiStatus('Mostrando propiedades de ejemplo. Cuando tengamos dominio y token OFINET, cambiamos a datos reales.');
     return SAMPLE_PROPERTIES.map(normalizeProperty);
-  }
-
-  if (!API_CONFIG.baseUrl) {
-    throw new Error('Falta configurar la URL base del proxy/API.');
   }
 
   const payload = await fetchJson(API_CONFIG.endpoints.propiedades);
@@ -914,80 +2182,473 @@ async function loadProperties() {
 }
 
 async function loadPropertyDetail(id) {
-  if (API_CONFIG.useMockData) return STATE.propertyMap[id];
+  if (API_CONFIG.useMockData) {
+    return STATE.propertyMap[id];
+  }
 
   const detailEndpoint = API_CONFIG.endpoints.detallePropiedad;
   if (!detailEndpoint) return STATE.propertyMap[id];
 
   const payload = await fetchJson(buildEndpoint(detailEndpoint, { id }));
-  const detail = {
-    ...(payload.data || payload.Data || payload.propiedad || payload.Propiedad || payload),
-    Imagenes: payload.Imagenes || payload.imagenes || [],
-    Agente: payload.Agente || payload.agente || null
+  const detail = payload?.data || payload?.Data || payload?.propiedad || payload?.Propiedad || payload;
+  const enriched = normalizeProperty({
+    ...STATE.propertyMap[id],
+    ...detail,
+    Imagenes: detail?.Imagenes || payload?.Imagenes || detail?.imagenes || payload?.imagenes || STATE.propertyMap[id]?.gallery || [],
+    video: getVideoUrl(detail) || getVideoUrl(payload) || STATE.propertyMap[id]?.video || ''
+  });
+
+  STATE.propertyMap[String(enriched.id)] = enriched;
+  STATE.properties = STATE.properties.map(property => String(property.id) === String(enriched.id) ? enriched : property);
+  return enriched;
+}
+
+function buildPropertyIndexes() {
+  const regionMap = new Map();
+  const comunasByRegion = {};
+  const tipoMap = new Map();
+  const operationMap = new Map();
+
+  STATE.properties.forEach(property => {
+    const regionCode = property.region || '';
+    const regionKey = slugify(regionCode);
+    if (regionKey) {
+      regionMap.set(regionKey, {
+        key: regionKey,
+        value: regionCode,
+        label: humanizeRegionLabel(regionCode, property.region)
+      });
+    }
+
+    if (property.comunaKey) {
+      const regionBucket = regionKey || 'sin-region';
+      comunasByRegion[regionBucket] = comunasByRegion[regionBucket] || [];
+      comunasByRegion[regionBucket].push({
+        key: property.comunaKey,
+        value: property.comunaKey,
+        label: property.comuna
+      });
+    }
+
+    if (property.tipoKey) {
+      tipoMap.set(property.tipoKey, {
+        key: property.tipoKey,
+        value: property.tipoKey,
+        label: property.tipo
+      });
+    }
+
+    if (property.operacionKey) {
+      operationMap.set(property.operacionKey, {
+        key: property.operacionKey,
+        value: property.operacionKey,
+        label: property.operacion
+      });
+    }
+  });
+
+  STATE.catalogs.comunas.forEach(option => {
+    const regionBucket = slugify(option.region || '') || 'sin-region';
+    comunasByRegion[regionBucket] = comunasByRegion[regionBucket] || [];
+    comunasByRegion[regionBucket].push({
+      key: option.key,
+      value: option.key,
+      label: option.label
+    });
+  });
+
+  STATE.catalogs.tipos.forEach(option => {
+    const key = slugify(option.label || option.value);
+    if (!tipoMap.has(key)) {
+      tipoMap.set(key, { key, value: key, label: option.label });
+    }
+  });
+
+  STATE.catalogs.operaciones.forEach(option => {
+    const label = normalizeOperationLabel(option.label || option.value);
+    const key = slugify(label);
+    if (!operationMap.has(key)) {
+      operationMap.set(key, { key, value: key, label });
+    }
+  });
+
+  Object.keys(comunasByRegion).forEach(regionKey => {
+    comunasByRegion[regionKey] = uniqueBy(comunasByRegion[regionKey], item => item.key)
+      .sort((a, b) => a.label.localeCompare(b.label, 'es'));
+  });
+
+  STATE.regions = [...regionMap.values()].sort((a, b) => a.label.localeCompare(b.label, 'es'));
+  STATE.catalogs.tipos = [...tipoMap.values()].sort((a, b) => a.label.localeCompare(b.label, 'es'));
+  STATE.catalogs.operaciones = [...operationMap.values()].sort((a, b) => a.label.localeCompare(b.label, 'es'));
+  STATE.comunasByRegion = comunasByRegion;
+}
+
+function fillSelectOptions(selectId, options, emptyLabel) {
+  const select = document.getElementById(selectId);
+  const currentValue = select.value;
+  const list = [
+    `<option value="">${escapeHtml(emptyLabel)}</option>`,
+    ...options.map(option => `<option value="${escapeHtml(option.value)}">${escapeHtml(option.label)}</option>`)
+  ];
+  select.innerHTML = list.join('');
+  if (options.some(option => option.value === currentValue)) {
+    select.value = currentValue;
+  }
+}
+
+function syncFilterOptions() {
+  fillSelectOptions('fRegion', STATE.regions, 'Todas las regiones');
+  fillSelectOptions('fOperacion', STATE.catalogs.operaciones, 'Todas las operaciones');
+  fillSelectOptions('fTipo', STATE.catalogs.tipos, 'Todos los tipos');
+  refreshComunaOptions();
+}
+
+function refreshComunaOptions() {
+  const regionValue = document.getElementById('fRegion').value;
+  const regionKey = slugify(regionValue);
+  const comunaSelect = document.getElementById('fComuna');
+  const options = regionValue
+    ? (STATE.comunasByRegion[regionKey] || [])
+    : uniqueBy(Object.values(STATE.comunasByRegion).flat(), item => item.key)
+        .sort((a, b) => a.label.localeCompare(b.label, 'es'));
+
+  fillSelectOptions('fComuna', options, regionValue ? 'Todas las comunas' : 'Selecciona una región primero');
+  comunaSelect.disabled = !regionValue && options.length === 0;
+  if (!regionValue) {
+    comunaSelect.value = '';
+    comunaSelect.disabled = true;
+  } else {
+    const selectedComuna = comunaSelect.value;
+    const valid = options.some(option => option.value === selectedComuna);
+    if (!valid) comunaSelect.value = '';
+    comunaSelect.disabled = false;
+  }
+}
+
+function collectFiltersFromUI() {
+  return {
+    region: document.getElementById('fRegion').value,
+    comuna: document.getElementById('fComuna').value,
+    operacion: document.getElementById('fOperacion').value,
+    tipo: document.getElementById('fTipo').value,
+    dorm: document.getElementById('fDorm').value,
+    banos: document.getElementById('fBanos').value,
+    m2: document.getElementById('fM2').value,
+    precioMin: document.getElementById('fPrecioMin').value,
+    precioMax: document.getElementById('fPrecioMax').value
   };
-  const normalized = normalizeProperty({ ...STATE.propertyMap[id], ...detail });
-  STATE.propertyMap[String(normalized.id)] = normalized;
-  STATE.properties = STATE.properties.map(property => String(property.id) === String(normalized.id) ? normalized : property);
-  return normalized;
+}
+
+function filtersEqual(a = {}, b = {}) {
+  return JSON.stringify(a) === JSON.stringify(b);
+}
+
+function markPendingFilters() {
+  const status = document.getElementById('filterStatus');
+  const current = collectFiltersFromUI();
+  const pending = !filtersEqual(current, STATE.appliedFilters);
+  status.classList.toggle('pending', pending);
+  status.textContent = pending ? 'Tienes cambios pendientes por buscar' : 'Mostrando la búsqueda actual';
+}
+
+function getResultsContext(filters, count) {
+  if (count === 0) return 'Ajusta la búsqueda o limpia los filtros para volver a explorar todas las propiedades.';
+  const pieces = [];
+  if (filters.region) {
+    const region = STATE.regions.find(item => item.value === filters.region);
+    if (region) pieces.push(region.label);
+  }
+  if (filters.comuna) {
+    const comuna = (STATE.comunasByRegion[slugify(filters.region)] || []).find(item => item.value === filters.comuna);
+    if (comuna) pieces.push(comuna.label);
+  }
+  if (filters.tipo) {
+    const tipo = STATE.catalogs.tipos.find(item => item.value === filters.tipo);
+    if (tipo) pieces.push(tipo.label);
+  }
+  return pieces.length ? `Resultados filtrados por ${pieces.join(', ')}.` : 'Explora la selección disponible en Aquí Casas.';
+}
+
+function renderFeaturedProperties() {
+  const featured = STATE.properties.slice(0, 3);
+  const container = document.getElementById('featuredGrid');
+  container.innerHTML = featured.map(property => `
+    <article class="featured-card">
+      <img src="${escapeHtml(property.img)}" alt="${escapeHtml(property.name)}"/>
+      <div class="featured-card-body">
+        <h3>${escapeHtml(property.name)}</h3>
+        <p>${escapeHtml(property.desc.slice(0, 130))}${property.desc.length > 130 ? '…' : ''}</p>
+        <div class="featured-meta">
+          <span>${escapeHtml(formatPrice(property.precio, property.moneda))}</span>
+          <span>${escapeHtml(property.comuna || humanizeRegionLabel(property.region))}</span>
+          <span>${escapeHtml(property.tipo)}</span>
+        </div>
+      </div>
+    </article>
+  `).join('');
 }
 
 function renderProperties(properties) {
   const grid = document.getElementById('propsGrid');
   grid.innerHTML = properties.map(property => `
-    <div class="prop-card" data-id="${escapeHtml(property.id)}">
-      <div class="prop-img"><img src="${escapeHtml(property.img)}" alt="${escapeHtml(property.name)}"/><span class="prop-badge">${escapeHtml(property.operacion || 'Disponible')}</span></div>
-      <div class="prop-body">
-        <div class="prop-price"><span>${escapeHtml(property.moneda)}</span> ${escapeHtml(Number(property.precio || 0).toLocaleString('es-CL'))}</div>
-        <div class="prop-name">${escapeHtml(property.name)}</div>
-        <div class="prop-loc"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>${escapeHtml(property.loc)}</div>
+    <article class="prop-card">
+      <div class="prop-img">
+        <img src="${escapeHtml(property.img)}" alt="${escapeHtml(property.name)}"/>
+        <span class="prop-badge">${escapeHtml(property.operacion || 'Disponible')}</span>
+        <span class="prop-tag">${escapeHtml(property.tipo)}</span>
       </div>
-      <div class="prop-divider"></div>
+      <div class="prop-body">
+        <div class="prop-price">${escapeHtml(formatPrice(property.precio, property.moneda))}</div>
+        <div class="prop-name">${escapeHtml(property.name)}</div>
+        <div class="prop-loc">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          <span>${escapeHtml(property.loc)}</span>
+        </div>
+      </div>
+      <div class="prop-summary">${escapeHtml(property.desc.slice(0, 108))}${property.desc.length > 108 ? '…' : ''}</div>
       <div class="prop-attrs">
-        <div class="prop-attr"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>${escapeHtml(property.dorm)} dorm.</div>
-        <div class="prop-attr"><svg viewBox="0 0 24 24"><path d="M4 12h16M4 6h16M4 18h16"/></svg>${escapeHtml(property.banos)} baños</div>
-        <div class="prop-attr"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>${escapeHtml(property.m2)} m²</div>
+        <div class="prop-attr"><strong>${escapeHtml(property.dorm || 0)}</strong><span>Dorm.</span></div>
+        <div class="prop-attr"><strong>${escapeHtml(property.banos || 0)}</strong><span>Baños</span></div>
+        <div class="prop-attr"><strong>${escapeHtml(property.m2 || 0)}</strong><span>M²</span></div>
       </div>
       <div class="prop-cta-row">
-        <button class="prop-btn-detail" onclick="openDetail('${escapeHtml(property.id)}')">VER FICHA</button>
-        <button class="prop-btn-contact" onclick="openContact('${escapeHtml(property.id)}',event)">ME INTERESA</button>
+        <button class="prop-btn-detail" type="button" onclick="openDetail('${escapeHtml(property.id)}')">Ver ficha</button>
+        <button class="prop-btn-contact" type="button" onclick="openContact('${escapeHtml(property.id)}', event)">Me interesa</button>
       </div>
-    </div>
+    </article>
   `).join('');
 }
 
+function filterProperties(filters) {
+  return STATE.properties.filter(property => {
+    const matchesRegion = !filters.region || property.region === filters.region;
+    const matchesComuna = !filters.comuna || property.comunaKey === filters.comuna;
+    const matchesOperacion = !filters.operacion || property.operacionKey === filters.operacion;
+    const matchesTipo = !filters.tipo || property.tipoKey === filters.tipo;
+    const matchesDorm = !filters.dorm || property.dorm >= Number(filters.dorm);
+    const matchesBanos = !filters.banos || property.banos >= Number(filters.banos);
+    const matchesM2 = !filters.m2 || property.m2 >= Number(filters.m2);
+    const minPrice = filters.precioMin ? Number(filters.precioMin) : 0;
+    const maxPrice = filters.precioMax ? Number(filters.precioMax) : Infinity;
+    const matchesPrice = property.precio >= minPrice && property.precio <= maxPrice;
+
+    return matchesRegion && matchesComuna && matchesOperacion && matchesTipo && matchesDorm && matchesBanos && matchesM2 && matchesPrice;
+  });
+}
+
+function updateResultsUI(properties, filters) {
+  STATE.filteredProperties = properties;
+  renderProperties(properties);
+  updateMap(properties);
+  document.getElementById('filterCount').textContent = `${properties.length} propiedad${properties.length === 1 ? '' : 'es'}`;
+  document.getElementById('resultsContext').textContent = getResultsContext(filters, properties.length);
+  document.getElementById('noResults').style.display = properties.length ? 'none' : 'block';
+}
+
 function applyFilters() {
-  const operacion = document.getElementById('fOperacion').value;
-  const tipo = document.getElementById('fTipo').value;
-  const comuna = document.getElementById('fComuna').value;
-  const dorm = parseInt(document.getElementById('fDorm').value) || 0;
-  const banos = parseInt(document.getElementById('fBanos').value) || 0;
-  const m2 = parseFloat(document.getElementById('fM2').value) || 0;
-  const pMin = parseFloat(document.getElementById('fPrecioMin').value) || 0;
-  const pMax = parseFloat(document.getElementById('fPrecioMax').value) || Infinity;
-  const region = document.getElementById('fRegion').value;
-
-  const filtered = STATE.properties.filter(property => (
-    (!operacion || property.operacion === normalizeOperationLabel(operacion)) &&
-    (!tipo || property.tipo === tipo) &&
-    (!comuna || property.comuna === comuna) &&
-    property.dorm >= dorm &&
-    property.banos >= banos &&
-    property.m2 >= m2 &&
-    property.precio >= pMin &&
-    property.precio <= pMax &&
-    (!region || property.region === region)
-  ));
-
-  renderProperties(filtered);
-  updateMap(filtered);
-  document.getElementById('noResults').style.display = filtered.length === 0 ? 'block' : 'none';
-  document.getElementById('filterCount').textContent = filtered.length > 0 ? `${filtered.length} propiedad${filtered.length > 1 ? 'es' : ''}` : '';
+  const filters = collectFiltersFromUI();
+  STATE.appliedFilters = { ...filters };
+  const filtered = filterProperties(filters);
+  updateResultsUI(filtered, filters);
+  markPendingFilters();
 }
 
 function resetFilters() {
-  ['fOperacion', 'fTipo', 'fComuna', 'fDorm', 'fBanos', 'fRegion'].forEach(id => { document.getElementById(id).value = ''; });
-  ['fM2', 'fPrecioMin', 'fPrecioMax'].forEach(id => { document.getElementById(id).value = ''; });
+  ['fRegion', 'fComuna', 'fOperacion', 'fTipo', 'fDorm', 'fBanos', 'fM2', 'fPrecioMin', 'fPrecioMax'].forEach(id => {
+    document.getElementById(id).value = '';
+  });
+  refreshComunaOptions();
   applyFilters();
+}
+
+function handleRegionChange() {
+  refreshComunaOptions();
+  markPendingFilters();
+}
+
+function hydrateFilterEvents() {
+  const filterIds = ['fOperacion', 'fTipo', 'fComuna', 'fDorm', 'fBanos', 'fM2', 'fPrecioMin', 'fPrecioMax'];
+  filterIds.forEach(id => {
+    const element = document.getElementById(id);
+    element.addEventListener('change', markPendingFilters);
+    element.addEventListener('input', markPendingFilters);
+    element.addEventListener('keydown', event => {
+      if (event.key === 'Enter') {
+        event.preventDefault();
+        applyFilters();
+      }
+    });
+  });
+
+  document.getElementById('fRegion').addEventListener('change', handleRegionChange);
+  document.getElementById('searchButton').addEventListener('click', applyFilters);
+  document.getElementById('resetButton').addEventListener('click', resetFilters);
+}
+
+function createMapIcon() {
+  return L.divIcon({
+    className: '',
+    html: '<div style="width:28px;height:28px;background:#d4a940;border-radius:50% 50% 50% 0;transform:rotate(-45deg);border:3px solid #0a1f42;box-shadow:0 4px 12px rgba(0,0,0,.3)"></div>',
+    iconSize: [28, 28],
+    iconAnchor: [14, 28],
+    popupAnchor: [0, -30]
+  });
+}
+
+function initMainMap() {
+  STATE.mainMap = L.map('map', { scrollWheelZoom: false }).setView([-33.55, -70.8], 7);
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+    attribution: '© OpenStreetMap © CARTO',
+    maxZoom: 19
+  }).addTo(STATE.mainMap);
+}
+
+function updateMap(properties) {
+  if (!STATE.mainMap) return;
+  STATE.markers.forEach(marker => STATE.mainMap.removeLayer(marker));
+  STATE.markers = [];
+
+  const icon = createMapIcon();
+  const located = properties.filter(property => property.lat && property.lng);
+  located.forEach(property => {
+    const marker = L.marker([property.lat, property.lng], { icon }).addTo(STATE.mainMap).bindPopup(
+      `<div class="map-popup"><div class="map-popup-head"><strong>${escapeHtml(property.name)}</strong><span>${escapeHtml(property.locationNote || property.loc)}</span></div><div class="map-popup-body"><span class="pp">${escapeHtml(formatPrice(property.precio, property.moneda))}</span></div></div>`
+    );
+    STATE.markers.push(marker);
+  });
+
+  if (located.length === 1) {
+    STATE.mainMap.setView([located[0].lat, located[0].lng], 12);
+  } else if (located.length > 1) {
+    STATE.mainMap.fitBounds(located.map(property => [property.lat, property.lng]), { padding: [30, 30] });
+  } else {
+    STATE.mainMap.setView([-33.55, -70.8], 7);
+  }
+}
+
+function getEmbedVideoUrl(url) {
+  const value = String(url || '').trim();
+  if (!value) return '';
+  if (value.includes('youtube.com/embed') || value.includes('player.vimeo.com/video')) return value;
+
+  try {
+    const parsed = new URL(value);
+    if (parsed.hostname.includes('youtu.be')) {
+      return `https://www.youtube.com/embed/${parsed.pathname.replace('/', '')}`;
+    }
+    if (parsed.hostname.includes('youtube.com')) {
+      const videoId = parsed.searchParams.get('v');
+      return videoId ? `https://www.youtube.com/embed/${videoId}` : '';
+    }
+    if (parsed.hostname.includes('vimeo.com')) {
+      const videoId = parsed.pathname.split('/').filter(Boolean).pop();
+      return videoId ? `https://player.vimeo.com/video/${videoId}` : '';
+    }
+  } catch (error) {
+    return '';
+  }
+  return '';
+}
+
+function renderGallery(property) {
+  STATE.activeGallery = property.gallery && property.gallery.length ? property.gallery : [property.img];
+  STATE.activeGalleryIndex = 0;
+  updateGalleryImage();
+
+  const thumbs = document.getElementById('modalThumbs');
+  thumbs.innerHTML = STATE.activeGallery.map((image, index) => `
+    <button class="modal-thumb ${index === 0 ? 'active' : ''}" type="button" onclick="setGalleryIndex(${index})">
+      <img src="${escapeHtml(image)}" alt="Foto ${index + 1} de ${escapeHtml(property.name)}"/>
+    </button>
+  `).join('');
+}
+
+function updateGalleryImage() {
+  const image = STATE.activeGallery[STATE.activeGalleryIndex] || '';
+  document.getElementById('mImg').src = image;
+  document.getElementById('galleryCount').textContent = `${STATE.activeGalleryIndex + 1} / ${STATE.activeGallery.length}`;
+  document.querySelectorAll('.modal-thumb').forEach((thumb, index) => {
+    thumb.classList.toggle('active', index === STATE.activeGalleryIndex);
+  });
+}
+
+function setGalleryIndex(index) {
+  STATE.activeGalleryIndex = index;
+  updateGalleryImage();
+}
+
+function changeGallery(step) {
+  if (!STATE.activeGallery.length) return;
+  STATE.activeGalleryIndex = (STATE.activeGalleryIndex + step + STATE.activeGallery.length) % STATE.activeGallery.length;
+  updateGalleryImage();
+}
+
+function attachGalleryEvents() {
+  document.getElementById('galleryPrev').addEventListener('click', () => changeGallery(-1));
+  document.getElementById('galleryNext').addEventListener('click', () => changeGallery(1));
+
+  let startX = 0;
+  const gallery = document.getElementById('modalGallery');
+  gallery.addEventListener('touchstart', event => {
+    startX = event.changedTouches[0]?.clientX || 0;
+  }, { passive: true });
+  gallery.addEventListener('touchend', event => {
+    const endX = event.changedTouches[0]?.clientX || 0;
+    const delta = endX - startX;
+    if (Math.abs(delta) > 40) {
+      changeGallery(delta > 0 ? -1 : 1);
+    }
+  }, { passive: true });
+}
+
+function updateDetailMap(property) {
+  const block = document.getElementById('detailMapBlock');
+  const note = document.getElementById('detailMapNote');
+  const hasCoordinates = Boolean(property.lat && property.lng);
+
+  if (!hasCoordinates) {
+    block.style.display = 'none';
+    return;
+  }
+
+  block.style.display = 'block';
+  note.textContent = property.locationNote
+    ? `Ubicación referencial: ${property.locationNote}.`
+    : 'Ubicación referencial de la propiedad.';
+
+  requestAnimationFrame(() => {
+    if (!STATE.detailMap) {
+      STATE.detailMap = L.map('detailMap', { zoomControl: true, scrollWheelZoom: false });
+      L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+        attribution: '© OpenStreetMap © CARTO',
+        maxZoom: 19
+      }).addTo(STATE.detailMap);
+    }
+
+    if (STATE.detailMarker) {
+      STATE.detailMap.removeLayer(STATE.detailMarker);
+    }
+
+    STATE.detailMap.setView([property.lat, property.lng], 14);
+    STATE.detailMarker = L.marker([property.lat, property.lng], { icon: createMapIcon() }).addTo(STATE.detailMap);
+    STATE.detailMarker.bindPopup(`<div class="map-popup"><div class="map-popup-head"><strong>${escapeHtml(property.name)}</strong><span>${escapeHtml(property.locationNote || property.loc)}</span></div></div>`);
+    setTimeout(() => STATE.detailMap.invalidateSize(), 120);
+  });
+}
+
+function renderDetailVideo(property) {
+  const block = document.getElementById('videoBlock');
+  const container = document.getElementById('videoContainer');
+  const embed = getEmbedVideoUrl(property.video);
+
+  if (!embed) {
+    block.style.display = 'none';
+    container.innerHTML = '';
+    return;
+  }
+
+  block.style.display = 'block';
+  container.innerHTML = `<iframe src="${escapeHtml(embed)}" title="Video de ${escapeHtml(property.name)}" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>`;
 }
 
 async function openDetail(id) {
@@ -997,22 +2658,35 @@ async function openDetail(id) {
   try {
     property = await loadPropertyDetail(id);
   } catch (error) {
-    console.error(error);
-    setApiStatus(`No se pudo cargar el detalle de la propiedad ${id}: ${error.message}`, true);
+    console.error('No se pudo cargar el detalle de la propiedad.', error);
   }
 
-  document.getElementById('mImg').src = property.img;
+  STATE.activePropertyId = String(id);
+  renderGallery(property);
+  renderDetailVideo(property);
+  updateDetailMap(property);
+
   document.getElementById('mImg').alt = property.name;
   document.getElementById('mName').textContent = property.name;
   document.getElementById('mLocText').textContent = property.loc;
-  document.getElementById('mPrice').innerHTML = `<span>${property.moneda}</span> ${Number(property.precio || 0).toLocaleString('es-CL')}`;
-  document.getElementById('mDorm').textContent = property.dorm;
-  document.getElementById('mBanos').textContent = property.banos;
-  document.getElementById('mM2').textContent = `${property.m2} m²`;
+  document.getElementById('mPrice').innerHTML = `<span>${escapeHtml(property.moneda)}</span> ${escapeHtml(Number(property.precio || 0).toLocaleString('es-CL'))}`;
+  document.getElementById('mDorm').textContent = property.dorm || 0;
+  document.getElementById('mBanos').textContent = property.banos || 0;
+  document.getElementById('mM2').textContent = `${property.m2 || 0} m²`;
   document.getElementById('mTerreno').textContent = `${property.terreno || 0} m²`;
   document.getElementById('mDesc').textContent = property.desc;
+  document.getElementById('mBadges').innerHTML = [
+    property.operacion,
+    property.tipo,
+    property.comuna || '',
+    property.code ? `Código ${property.code}` : ''
+  ].filter(Boolean).map(item => `<span>${escapeHtml(item)}</span>`).join('');
   document.getElementById('mFeatures').innerHTML = (property.features || []).map(feature => `<div class="modal-feature">${escapeHtml(feature)}</div>`).join('');
-  document.getElementById('mCtaBtn').onclick = () => { closeDetail(); openContact(id, null); };
+  document.getElementById('mCtaBtn').onclick = () => {
+    closeDetail();
+    openContact(id);
+  };
+
   document.getElementById('detailOverlay').classList.add('open');
   document.body.style.overflow = 'hidden';
 }
@@ -1022,17 +2696,19 @@ function closeDetail() {
   document.body.style.overflow = '';
 }
 
-function closeDetailOutside(e) {
-  if (e.target === document.getElementById('detailOverlay')) closeDetail();
+function closeDetailOutside(event) {
+  if (event.target === document.getElementById('detailOverlay')) {
+    closeDetail();
+  }
 }
 
 let currentContactProp = 0;
 
-function openContact(id, e) {
-  if (e) e.stopPropagation();
+function openContact(id, event) {
+  if (event) event.stopPropagation();
   currentContactProp = id;
   const property = STATE.propertyMap[id];
-  const label = id === 0 || !property ? 'Consulta general' : `${property.name} - ${formatPrice(property.precio, property.moneda)}`;
+  const label = !id || !property ? 'Consulta general' : `${property.name} · ${formatPrice(property.precio, property.moneda)}`;
   document.getElementById('cPropName').textContent = label;
   document.getElementById('cForm').style.display = 'block';
   document.getElementById('cSuccess').style.display = 'none';
@@ -1049,13 +2725,16 @@ function closeContact() {
   document.body.style.overflow = '';
 }
 
-function closeContactOutside(e) {
-  if (e.target === document.getElementById('contactOverlay')) closeContact();
+function closeContactOutside(event) {
+  if (event.target === document.getElementById('contactOverlay')) {
+    closeContact();
+  }
 }
 
 function submitContact() {
   const nombre = document.getElementById('cNombre').value.trim();
   const telefono = document.getElementById('cTelefono').value.trim();
+
   if (!nombre || !telefono) {
     alert('Por favor ingresa tu nombre y teléfono.');
     return;
@@ -1074,77 +2753,37 @@ function submitContact() {
   document.getElementById('cSuccess').style.display = 'block';
 }
 
-document.addEventListener('keydown', e => {
-  if (e.key === 'Escape') {
-    closeDetail();
-    closeContact();
-  }
-});
-
-const map = L.map('map', { scrollWheelZoom: false }).setView([-33.55, -70.8], 8);
-L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-  attribution: '© OpenStreetMap © CARTO',
-  maxZoom: 19
-}).addTo(map);
-
-const goldIcon = L.divIcon({
-  className: '',
-  html: `<div style="width:28px;height:28px;background:#D4A940;border-radius:50% 50% 50% 0;transform:rotate(-45deg);border:3px solid #0A1F42;box-shadow:0 4px 12px rgba(0,0,0,.4)"></div>`,
-  iconSize: [28, 28],
-  iconAnchor: [14, 28],
-  popupAnchor: [0, -32]
-});
-
-function updateMap(properties) {
-  STATE.markers.forEach(marker => map.removeLayer(marker));
-  STATE.markers = [];
-
-  const located = properties.filter(property => Number.isFinite(property.lat) && Number.isFinite(property.lng) && property.lat && property.lng);
-  located.forEach(property => {
-    const marker = L.marker([property.lat, property.lng], { icon: goldIcon }).addTo(map).bindPopup(
-      `<div class="map-popup"><div class="map-popup-head"><strong>${escapeHtml(property.name)}</strong><span>${escapeHtml(property.loc)}</span></div><div class="map-popup-body"><span class="pp">${escapeHtml(formatPrice(property.precio, property.moneda))}</span></div></div>`
-    );
-    STATE.markers.push(marker);
+function bindGlobalEvents() {
+  document.addEventListener('keydown', event => {
+    if (event.key === 'Escape') {
+      closeDetail();
+      closeContact();
+    }
   });
-
-  if (located.length === 1) {
-    map.setView([located[0].lat, located[0].lng], 13);
-  } else if (located.length > 1) {
-    map.fitBounds(located.map(property => [property.lat, property.lng]), { padding: [30, 30] });
-  } else {
-    map.setView([-33.55, -70.8], 8);
-  }
 }
 
 async function bootstrap() {
-  try {
-    setApiStatus('Cargando catálogos y propiedades...');
-    await loadCatalogs();
-    syncCatalogFilters();
-    STATE.properties = await loadProperties();
-    STATE.propertyMap = Object.fromEntries(STATE.properties.map(property => [String(property.id), property]));
-    applyFilters();
+  initMainMap();
+  hydrateFilterEvents();
+  attachGalleryEvents();
+  bindGlobalEvents();
 
-    if (API_CONFIG.useMockData) {
-      setApiStatus('La vitrina ya está preparada para OFINET. En Heroku solo falta definir `OFINET_BASE_URL` y `OFINET_TOKEN` como variables de entorno.');
-    } else {
-      setApiStatus(`Propiedades cargadas correctamente desde OFINET: ${STATE.properties.length}.`);
-    }
+  try {
+    await loadCatalogs();
+    STATE.properties = await loadProperties();
   } catch (error) {
-    console.error(error);
+    console.error('No se pudieron cargar propiedades desde OFINET. Se utilizarán datos de ejemplo.', error);
     STATE.properties = SAMPLE_PROPERTIES.map(normalizeProperty);
-    STATE.propertyMap = Object.fromEntries(STATE.properties.map(property => [String(property.id), property]));
-    useSampleCatalogs();
-    syncCatalogFilters();
-    applyFilters();
-    setApiStatus(`No se pudo cargar la API: ${error.message}. Se muestran propiedades de ejemplo para seguir trabajando.`, true);
   }
+
+  STATE.propertyMap = Object.fromEntries(STATE.properties.map(property => [String(property.id), property]));
+  buildPropertyIndexes();
+  syncFilterOptions();
+  renderFeaturedProperties();
+  applyFilters();
 }
 
 bootstrap();
 </script>
-
-<!-- META PIXEL — pega tu código aquí -->
-<!-- GOOGLE TAG — pega tu código aquí -->
 </body>
 </html>
