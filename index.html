@@ -2188,6 +2188,7 @@ function normalizeProperty(raw) {
       raw.TerrenoTotal ??
       raw.M2Total ??
       raw.MtsTotal ??
+      (raw.M2 || raw.m2 || raw.M2Construidos || raw.SuperficieConstruida ? raw.Superficie : 0) ??
       raw.Terreno,
       0
     ),
@@ -2284,14 +2285,26 @@ async function loadPropertyDetail(id) {
   const detailEndpoint = API_CONFIG.endpoints.detallePropiedad;
   if (!detailEndpoint) return STATE.propertyMap[id];
 
-  const payload = await fetchJson(buildEndpoint(detailEndpoint, { id }));
-  const detail = payload?.data || payload?.Data || payload?.propiedad || payload?.Propiedad || payload;
-  const enriched = normalizeProperty({
-    ...STATE.propertyMap[id],
-    ...detail,
-    Imagenes: detail?.Imagenes || payload?.Imagenes || detail?.imagenes || payload?.imagenes || STATE.propertyMap[id]?.gallery || [],
-    video: getVideoUrl(detail) || getVideoUrl(payload) || STATE.propertyMap[id]?.video || ''
-  });
+  let payload = null;
+  let detail = null;
+  let enriched = STATE.propertyMap[id];
+
+  try {
+    payload = await fetchJson(buildEndpoint(detailEndpoint, { id }));
+    detail = payload?.data || payload?.Data || payload?.propiedad || payload?.Propiedad || payload;
+    enriched = normalizeProperty({
+      ...STATE.propertyMap[id],
+      ...detail,
+      Imagenes: detail?.Imagenes || payload?.Imagenes || detail?.imagenes || payload?.imagenes || STATE.propertyMap[id]?.gallery || [],
+      video: getVideoUrl(detail) || getVideoUrl(payload) || STATE.propertyMap[id]?.video || ''
+    });
+  } catch (error) {
+    console.warn(`No se pudo cargar el detalle OFINET de la propiedad ${id}. Se usará la data base y el fallback de galería.`, error);
+    enriched = normalizeProperty({
+      ...STATE.propertyMap[id],
+      legacyIdCandidates: STATE.propertyMap[id]?.legacyIdCandidates || [id]
+    });
+  }
 
   if ((enriched.gallery || []).length <= 1) {
     for (const legacyId of enriched.legacyIdCandidates || [id]) {
