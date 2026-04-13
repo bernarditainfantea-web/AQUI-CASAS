@@ -2122,6 +2122,16 @@ function normalizeProperty(raw) {
   const direccion = String(raw.DireccionCorta ?? raw.Direccion ?? raw.Ubicacion ?? raw.loc ?? raw.Sector ?? '').trim();
   const gallery = getImageCandidates(raw);
   const fallbackImage = 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=1200&q=80';
+  const legacyIdCandidates = uniqueBy([
+    raw?.legacyId,
+    raw?.id,
+    raw?.Id,
+    raw?.idPropiedad,
+    raw?.CodPropiedad,
+    raw?.NroProp,
+    raw?.Codigo,
+    raw?.code
+  ].filter(value => value !== undefined && value !== null && String(value).trim()), value => String(value).trim()).map(value => String(value).trim());
   const precioPesos = toNumber(raw.ValorPesos ?? raw.PrecioPesos ?? raw.precioPesos, 0);
   const precioUf = toNumber(raw.ValorUf ?? raw.PrecioUF ?? raw.precioUf ?? raw.precio, 0);
   const monedaRaw = String(raw.moneda ?? raw.Pactado ?? raw.Moneda ?? '').trim().toUpperCase();
@@ -2153,8 +2163,34 @@ function normalizeProperty(raw) {
     moneda,
     dorm: toNumber(raw.dorm ?? raw.Dormitorios ?? raw.Habitaciones, 0),
     banos: toNumber(raw.banos ?? raw.Banos ?? raw.Baños ?? raw.Bathroom, 0),
-    m2: toNumber(raw.m2 ?? raw.M2Construidos ?? raw.SuperficieConstruida ?? raw.M2 ?? raw.Superficie, 0),
-    terreno: toNumber(raw.terreno ?? raw.M2Terreno ?? raw.SuperficieTerreno ?? raw.Terreno, 0),
+    m2: toNumber(
+      raw.m2 ??
+      raw.M2Construidos ??
+      raw.SuperficieConstruida ??
+      raw.MtsConstruidos ??
+      raw.MetrosConstruidos ??
+      raw.SupConstruida ??
+      raw.SuperficieUtil ??
+      raw.M2 ??
+      raw.Superficie,
+      0
+    ),
+    terreno: toNumber(
+      raw.terreno ??
+      raw.M2Terreno ??
+      raw.SuperficieTerreno ??
+      raw.MtsTerreno ??
+      raw.MetrosTerreno ??
+      raw.SupTerreno ??
+      raw.SuperficieTotal ??
+      raw.SupTotal ??
+      raw.TotalTerreno ??
+      raw.TerrenoTotal ??
+      raw.M2Total ??
+      raw.MtsTotal ??
+      raw.Terreno,
+      0
+    ),
     lat: toNumber(raw.lat ?? raw.Latitud, 0),
     lng: toNumber(raw.lng ?? raw.Longitud, 0),
     img: gallery[0] || fallbackImage,
@@ -2166,7 +2202,8 @@ function normalizeProperty(raw) {
     regionKey: slugify(region || humanizeRegionLabel(region, regionName)),
     comunaKey: slugify(comuna),
     tipoKey: slugify(tipo),
-    operacionKey: slugify(operacion)
+    operacionKey: slugify(operacion),
+    legacyIdCandidates
   };
 
   return normalized;
@@ -2257,17 +2294,20 @@ async function loadPropertyDetail(id) {
   });
 
   if ((enriched.gallery || []).length <= 1) {
-    try {
-      const legacyPayload = await fetchJson(`${buildEndpoint(detailEndpoint, { id })}/legacy-images`);
-      const legacyImages = legacyPayload?.images || legacyPayload?.data || [];
-      const mergedGallery = mergeGalleryImages(enriched.gallery || [], legacyImages);
+    for (const legacyId of enriched.legacyIdCandidates || [id]) {
+      try {
+        const legacyPayload = await fetchJson(`${API_CONFIG.endpoints.propiedades}/${encodeURIComponent(legacyId)}/legacy-images`);
+        const legacyImages = legacyPayload?.images || legacyPayload?.data || [];
+        const mergedGallery = mergeGalleryImages(enriched.gallery || [], legacyImages);
 
-      if (mergedGallery.length > (enriched.gallery || []).length) {
-        enriched.gallery = mergedGallery;
-        enriched.img = mergedGallery[0] || enriched.img;
+        if (mergedGallery.length > (enriched.gallery || []).length) {
+          enriched.gallery = mergedGallery;
+          enriched.img = mergedGallery[0] || enriched.img;
+          break;
+        }
+      } catch (error) {
+        console.warn(`No se pudieron recuperar imagenes legacy para la propiedad ${id} usando ${legacyId}.`, error);
       }
-    } catch (error) {
-      console.warn(`No se pudieron recuperar imagenes legacy para la propiedad ${id}.`, error);
     }
   }
 
