@@ -25,7 +25,7 @@
       --shadow-soft:0 10px 30px rgba(15,43,91,.08);
       --radius:16px;
       --nav-height:88px;
-      --display-font:'Bebas Neue','Oswald',sans-serif;
+      --display-font:'Oswald','Bebas Neue',sans-serif;
     }
 
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -677,7 +677,7 @@
     .map-popup-head strong{display:block;color:var(--white);font-size:.92rem}
     .map-popup-head span{display:block;margin-top:3px;color:rgba(255,255,255,.72);font-size:.8rem}
     .map-popup-body{background:var(--white);padding:12px 16px}
-    .map-popup-body .pp{font-family:'Bebas Neue',sans-serif;font-size:1.35rem;letter-spacing:.04em}
+    .map-popup-body .pp{font-family:var(--display-font);font-size:1.35rem;letter-spacing:.04em}
 
     .contact-section{
       background:
@@ -947,7 +947,7 @@
     }
     .modal-top{display:flex;justify-content:space-between;gap:18px;flex-wrap:wrap;align-items:flex-start}
     .modal-name{
-      font-family:'Bebas Neue',sans-serif;
+      font-family:var(--display-font);
       font-size:2.1rem;
       letter-spacing:.04em;
       line-height:1.02;
@@ -962,7 +962,7 @@
       max-width:520px;
     }
     .modal-price{
-      font-family:'Bebas Neue',sans-serif;
+      font-family:var(--display-font);
       font-size:2.4rem;
       letter-spacing:.04em;
       white-space:nowrap;
@@ -996,7 +996,7 @@
     }
     .modal-attr strong{
       display:block;
-      font-family:'Bebas Neue',sans-serif;
+      font-family:var(--display-font);
       font-size:1.45rem;
       letter-spacing:.04em;
     }
@@ -1042,7 +1042,7 @@
       background:var(--gold);
       color:var(--navy);
       cursor:pointer;
-      font-family:'Bebas Neue',sans-serif;
+      font-family:var(--display-font);
       font-size:1.08rem;
       letter-spacing:.11em;
     }
@@ -1069,7 +1069,7 @@
       background:linear-gradient(90deg, var(--gold), var(--gold-2));
     }
     .contact-modal h3{
-      font-family:'Bebas Neue',sans-serif;
+      font-family:var(--display-font);
       font-size:1.9rem;
       letter-spacing:.05em;
       margin-bottom:6px;
@@ -1110,7 +1110,7 @@
       background:var(--gold);
       color:var(--navy);
       cursor:pointer;
-      font-family:'Bebas Neue',sans-serif;
+      font-family:var(--display-font);
       font-size:1.05rem;
       letter-spacing:.1em;
       margin-top:6px;
@@ -1119,7 +1119,7 @@
     .c-note{text-align:center;font-size:.8rem;color:rgba(255,255,255,.56);margin-top:10px}
     .c-success{display:none;text-align:center;padding:12px 0 4px}
     .c-success h4{
-      font-family:'Bebas Neue',sans-serif;
+      font-family:var(--display-font);
       font-size:1.6rem;
       letter-spacing:.05em;
       margin-bottom:8px;
@@ -1310,7 +1310,7 @@
           </select>
         </div>
         <div class="filter-group">
-          <label for="fM2">M² mínimos</label>
+          <label for="fM2">M2 mínimos</label>
           <input id="fM2" class="filter-control" type="number" min="0" placeholder="Ej: 70"/>
         </div>
         <div class="filter-group">
@@ -1536,8 +1536,8 @@
           <div class="modal-attrs">
             <div class="modal-attr"><strong id="mDorm">0</strong><span>Dormitorios</span></div>
             <div class="modal-attr"><strong id="mBanos">0</strong><span>Baños</span></div>
-            <div class="modal-attr"><strong id="mM2">0 m²</strong><span>M² construidos</span></div>
-            <div class="modal-attr"><strong id="mTerreno">0 m²</strong><span>M² terreno</span></div>
+            <div class="modal-attr"><strong id="mM2">0 m2</strong><span>M2 construidos</span></div>
+            <div class="modal-attr"><strong id="mTerreno">0 m2</strong><span>M2 terreno</span></div>
           </div>
           <div class="modal-desc" id="mDesc"></div>
           <div class="modal-features" id="mFeatures"></div>
@@ -1956,17 +1956,48 @@ function normalizeOption(raw, fallbackType) {
 function getImageCandidates(raw) {
   const candidates = [];
   const imageKeyPattern = /(imagen|image|foto|photo|archivo|adjunto|galeria|gallery)/i;
-  const imageValuePattern = /^https?:\/\/.+\.(jpg|jpeg|png|webp|gif)(\?.*)?$/i;
+  const imageExtensionPattern = /\.(jpg|jpeg|png|webp|gif|avif|bmp|svg)(\?.*)?$/i;
+  const visited = new WeakSet();
 
-  function pushImageCandidate(value) {
+  function isLikelyImageReference(value, keyHint = '') {
+    if (!value) return false;
+    const normalizedValue = String(value).trim();
+    const normalizedKey = String(keyHint || '').trim();
+    if (!normalizedValue) return false;
+
+    const isAbsoluteUrl = /^https?:\/\//i.test(normalizedValue);
+    const isProtocolRelative = /^\/\//.test(normalizedValue);
+    const isRelativePath = /^(\.\/|\.\.\/|\/)/.test(normalizedValue) || /^[A-Za-z0-9_-]+\/.+/.test(normalizedValue);
+    const hasImageExtension = imageExtensionPattern.test(normalizedValue);
+    const keySuggestsImage = imageKeyPattern.test(normalizedKey);
+
+    if (hasImageExtension && (isAbsoluteUrl || isProtocolRelative || isRelativePath || normalizedValue.includes('/'))) {
+      return true;
+    }
+
+    if (keySuggestsImage && (isAbsoluteUrl || isProtocolRelative || isRelativePath || hasImageExtension)) {
+      return true;
+    }
+
+    return false;
+  }
+
+  function normalizeMediaPath(value) {
+    const normalizedValue = String(value || '').trim();
+    if (!normalizedValue) return '';
+    if (/^\/\//.test(normalizedValue)) return `https:${normalizedValue}`;
+    return normalizedValue;
+  }
+
+  function pushImageCandidate(value, keyHint = '') {
     if (typeof value !== 'string') return;
     const trimmed = value.trim();
     if (!trimmed) return;
 
     const parts = trimmed.split(/[|,;]/).map(item => item.trim()).filter(Boolean);
     parts.forEach(part => {
-      if (part.startsWith('http://') || part.startsWith('https://') || imageValuePattern.test(part)) {
-        candidates.push(part);
+      if (isLikelyImageReference(part, keyHint)) {
+        candidates.push(normalizeMediaPath(part));
       }
     });
   }
@@ -1991,7 +2022,7 @@ function getImageCandidates(raw) {
     raw?.Foto5
   ];
   direct.forEach(item => {
-    pushImageCandidate(item);
+    pushImageCandidate(item, 'imagen');
   });
 
   const imageBuckets = [
@@ -2011,33 +2042,46 @@ function getImageCandidates(raw) {
         if (entry && typeof entry === 'object') {
           Object.entries(entry).forEach(([key, value]) => {
             if (imageKeyPattern.test(key)) {
-              pushImageCandidate(value);
+              pushImageCandidate(value, key);
             }
           });
         }
         const imageValue = entry?.Imagen ?? entry?.imagen ?? entry?.Url ?? entry?.url ?? entry?.Foto ?? entry?.foto ?? entry?.archivo ?? entry;
-        pushImageCandidate(imageValue);
+        pushImageCandidate(imageValue, 'imagen');
       });
     } else if (typeof bucket === 'string' && bucket.trim()) {
-      pushImageCandidate(bucket);
+      pushImageCandidate(bucket, 'imagen');
     }
   });
 
-  Object.entries(raw || {}).forEach(([key, value]) => {
-    if (!imageKeyPattern.test(key)) return;
+  function scanNode(node, keyHint = '') {
+    if (!node) return;
 
-    if (Array.isArray(value)) {
-      value.forEach(pushImageCandidate);
+    if (typeof node === 'string') {
+      pushImageCandidate(node, keyHint);
       return;
     }
 
-    if (value && typeof value === 'object') {
-      Object.values(value).forEach(pushImageCandidate);
+    if (Array.isArray(node)) {
+      node.forEach(item => scanNode(item, keyHint));
       return;
     }
 
-    pushImageCandidate(value);
-  });
+    if (typeof node !== 'object') return;
+    if (visited.has(node)) return;
+    visited.add(node);
+
+    Object.entries(node).forEach(([key, value]) => {
+      const nextKeyHint = keyHint || key;
+      if (typeof value === 'string') {
+        pushImageCandidate(value, key);
+      } else {
+        scanNode(value, nextKeyHint);
+      }
+    });
+  }
+
+  scanNode(raw);
 
   return uniqueBy(candidates.filter(Boolean), item => item);
 }
@@ -2416,7 +2460,7 @@ function renderProperties(properties) {
       <div class="prop-attrs">
         <div class="prop-attr"><strong>${escapeHtml(property.dorm || 0)}</strong><span>Dorm.</span></div>
         <div class="prop-attr"><strong>${escapeHtml(property.banos || 0)}</strong><span>Baños</span></div>
-        <div class="prop-attr"><strong>${escapeHtml(property.m2 || 0)}</strong><span>M²</span></div>
+        <div class="prop-attr"><strong>${escapeHtml(property.m2 || 0)}</strong><span>M2</span></div>
       </div>
       <div class="prop-cta-row">
         <button class="prop-btn-detail" type="button" onclick="openDetail('${escapeHtml(property.id)}')">Ver ficha</button>
@@ -2702,8 +2746,8 @@ async function openDetail(id) {
   document.getElementById('mPrice').innerHTML = `<span>${escapeHtml(property.moneda)}</span> ${escapeHtml(Number(property.precio || 0).toLocaleString('es-CL'))}`;
   document.getElementById('mDorm').textContent = property.dorm || 0;
   document.getElementById('mBanos').textContent = property.banos || 0;
-  document.getElementById('mM2').textContent = `${property.m2 || 0} m²`;
-  document.getElementById('mTerreno').textContent = `${property.terreno || 0} m²`;
+  document.getElementById('mM2').textContent = `${property.m2 || 0} m2`;
+  document.getElementById('mTerreno').textContent = `${property.terreno || 0} m2`;
   document.getElementById('mDesc').textContent = property.desc;
   document.getElementById('mBadges').innerHTML = [
     property.operacion,
