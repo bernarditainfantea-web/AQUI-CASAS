@@ -85,12 +85,38 @@ function ensureProviderConfigured(res) {
 }
 
 async function parseJsonResponse(response) {
-  const bodyText = await response.text();
-  try {
-    return JSON.parse(bodyText);
-  } catch (error) {
-    throw new Error(`Upstream respondió con un payload inválido (${response.status}): ${bodyText.slice(0, 200)}`);
+  const buffer = Buffer.from(await response.arrayBuffer());
+  const contentType = response.headers.get('content-type') || '';
+  const charsetMatch = contentType.match(/charset=([^;]+)/i);
+  const charset = (charsetMatch?.[1] || '').trim().toLowerCase();
+  const preferredEncoding = charset.includes('8859') || charset.includes('1252') || charset.includes('latin1')
+    ? 'latin1'
+    : 'utf8';
+  const fallbackEncoding = preferredEncoding === 'utf8' ? 'latin1' : 'utf8';
+  const encodingsToTry = [preferredEncoding, fallbackEncoding].filter((value, index, list) => list.indexOf(value) === index);
+
+  let lastError = null;
+  let bestText = '';
+
+  for (const encoding of encodingsToTry) {
+    const bodyText = buffer.toString(encoding);
+    bestText = bodyText;
+
+    try {
+      const parsed = JSON.parse(bodyText);
+      const hasReplacementChars = bodyText.includes('�');
+
+      if (!hasReplacementChars || encoding === fallbackEncoding) {
+        return parsed;
+      }
+
+      lastError = new Error(`Texto decodificado con caracteres inválidos usando ${encoding}.`);
+    } catch (error) {
+      lastError = error;
+    }
   }
+
+  throw new Error(`Upstream respondió con un payload inválido (${response.status}): ${bestText.slice(0, 200)}${lastError ? ` | ${lastError.message}` : ''}`);
 }
 
 async function requestOfinet(endpoint) {
