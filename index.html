@@ -500,8 +500,8 @@
     .featured-viewport{
       display:grid;
       grid-auto-flow:column;
-      grid-auto-columns:minmax(84%, 1fr);
-      gap:18px;
+      grid-auto-columns:minmax(190px, 220px);
+      gap:16px;
       overflow-x:auto;
       scroll-snap-type:x mandatory;
       scrollbar-width:none;
@@ -518,39 +518,61 @@
       border:1px solid rgba(15,43,91,.06);
     }
     .featured-card{
-      display:grid;
-      grid-template-columns:minmax(280px,.95fr) minmax(0,1.05fr);
+      display:flex;
+      flex-direction:column;
       scroll-snap-align:start;
-      min-height:340px;
+      min-height:100%;
+    }
+    .featured-card-media{
+      aspect-ratio:1 / 1;
+      overflow:hidden;
+      background:var(--navy-2);
     }
     .featured-card img{width:100%;height:100%;object-fit:cover}
-    .featured-card-body{padding:28px}
+    .featured-card-body{
+      padding:14px 14px 16px;
+      display:grid;
+      gap:10px;
+      align-content:start;
+    }
     .featured-card h3{
       font-family:var(--display-font);
-      font-size:1.85rem;
+      font-size:1.35rem;
       letter-spacing:.04em;
-      margin-bottom:8px;
+      margin:0;
+      text-align:center;
     }
-    .featured-card p{color:var(--ink);line-height:1.7;max-width:560px}
+    .featured-card p{
+      color:var(--ink);
+      line-height:1.45;
+      font-size:.88rem;
+      margin:0;
+      text-align:center;
+    }
     .featured-meta{
-      margin-top:18px;
       display:flex;
       flex-wrap:wrap;
-      gap:10px;
+      gap:8px;
+      justify-content:center;
     }
     .featured-meta span{
-      padding:7px 12px;
+      padding:6px 10px;
       border-radius:999px;
       background:rgba(15,43,91,.06);
-      font-size:.84rem;
+      font-size:.78rem;
       font-weight:700;
       color:var(--ink);
     }
     .featured-card-actions{
-      margin-top:22px;
       display:flex;
+      flex-direction:column;
       gap:10px;
-      flex-wrap:wrap;
+    }
+    .featured-card-actions .btn-primary,
+    .featured-card-actions .btn-ghost{
+      width:100%;
+      min-height:42px;
+      padding-inline:14px;
     }
 
     .about-grid{
@@ -1364,7 +1386,6 @@
       .modal-grid{grid-template-columns:1fr}
       .hero-card{justify-self:start;max-width:480px}
       .trust-detail-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
-      .featured-card{grid-template-columns:1fr}
       .filter-grid{grid-template-columns:repeat(4,minmax(0,1fr))}
       .filter-actions{grid-column:span 4;justify-content:stretch}
       .filter-actions .btn-primary,
@@ -1395,7 +1416,7 @@
       .modal-attrs,
       .modal-features,
       .c-row{grid-template-columns:1fr}
-      .featured-viewport{grid-auto-columns:100%}
+      .featured-viewport{grid-auto-columns:minmax(180px, 62vw)}
       .section,
       .map-section,
       .contact-section{padding:74px 4vw}
@@ -2826,18 +2847,17 @@ function renderFeaturedProperties() {
 
   container.innerHTML = featured.map((item, index) => `
     <article class="featured-card" data-featured-index="${index}">
-      <img src="${escapeHtml(item.image)}" alt="${escapeHtml(item.comuna)}"/>
+      <div class="featured-card-media">
+        <img src="${escapeHtml(item.image)}" alt="${escapeHtml(item.comuna)}"/>
+      </div>
       <div class="featured-card-body">
         <h3>${escapeHtml(item.comuna)}</h3>
-        <p>${escapeHtml(item.region)} · ${item.total} propiedad${item.total === 1 ? '' : 'es'} disponibles para explorar.</p>
+        <p>${item.total} propiedad${item.total === 1 ? '' : 'es'} en ${escapeHtml(item.region)}</p>
         <div class="featured-meta">
           <span>Desde ${escapeHtml(formatPrice(item.fromPrice, item.sample.moneda))}</span>
-          <span>${escapeHtml(item.sample.tipo)}</span>
-          <span>Ver comuna</span>
         </div>
         <div class="featured-card-actions">
           <button class="btn-primary" type="button" onclick="applyFeaturedComunaFilter('${escapeHtml(item.sample.region)}','${escapeHtml(item.sample.comunaKey)}')">Ver propiedades</button>
-          <button class="btn-ghost" type="button" onclick="openDetail('${escapeHtml(item.sample.id)}')">Abrir ficha</button>
         </div>
       </div>
     </article>
