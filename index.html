@@ -399,6 +399,67 @@
       background:rgba(212,169,64,.14);
       color:var(--gold-2);
     }
+    .filter-tools{
+      display:grid;
+      justify-items:end;
+      gap:12px;
+    }
+    .price-display{
+      display:grid;
+      gap:8px;
+      justify-items:end;
+    }
+    .price-display-top{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      flex-wrap:wrap;
+      justify-content:flex-end;
+    }
+    .price-display-label{
+      font-size:.72rem;
+      font-weight:700;
+      letter-spacing:.14em;
+      text-transform:uppercase;
+      color:var(--navy);
+    }
+    .price-display-buttons{
+      display:inline-flex;
+      padding:4px;
+      border-radius:999px;
+      background:rgba(15,43,91,.06);
+      border:1px solid rgba(15,43,91,.08);
+    }
+    .price-display-buttons button{
+      min-width:88px;
+      min-height:38px;
+      border:none;
+      border-radius:999px;
+      background:transparent;
+      color:var(--ink);
+      font-weight:700;
+      letter-spacing:.06em;
+      cursor:pointer;
+      transition:background .2s,color .2s,transform .2s;
+    }
+    .price-display-buttons button.active{
+      background:var(--navy);
+      color:var(--white);
+      box-shadow:0 8px 18px rgba(15,43,91,.18);
+    }
+    .price-display-buttons button:disabled{
+      opacity:.45;
+      cursor:not-allowed;
+      box-shadow:none;
+    }
+    .price-display-note{
+      font-size:.84rem;
+      color:var(--muted);
+      text-align:right;
+      line-height:1.45;
+      min-height:20px;
+    }
+    .price-display-note.error{color:#b15b4f}
     .filter-grid{
       display:grid;
       grid-template-columns:repeat(8,minmax(0,1fr));
@@ -1386,6 +1447,10 @@
       .modal-grid{grid-template-columns:1fr}
       .hero-card{justify-self:start;max-width:480px}
       .trust-detail-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+      .filter-tools{justify-items:start}
+      .price-display,
+      .price-display-top{justify-content:flex-start;justify-items:start}
+      .price-display-note{text-align:left}
       .filter-grid{grid-template-columns:repeat(4,minmax(0,1fr))}
       .filter-actions{grid-column:span 4;justify-content:stretch}
       .filter-actions .btn-primary,
@@ -1423,6 +1488,12 @@
       .filter-section{top:var(--nav-height);padding:14px 4vw 16px}
       .filter-shell{padding:18px}
       .filter-top{margin-bottom:14px}
+      .filter-tools,
+      .price-display{width:100%}
+      .price-display-top{justify-content:space-between}
+      .price-display-buttons{width:100%}
+      .price-display-buttons button{flex:1;min-width:0}
+      .price-display-note{text-align:left}
       .filter-grid{grid-template-columns:1fr}
       .filter-actions{grid-column:auto}
       .filter-actions .btn-primary,
@@ -1504,8 +1575,8 @@
             <span>Orientación comercial y acompañamiento en cada consulta.</span>
           </div>
           <div class="hero-point">
-            <strong>Búsqueda simple</strong>
-            <span>Filtros ordenados y fichas más completas para decidir mejor.</span>
+            <strong>BONO PIE</strong>
+            <span>Te ayudamos con el pie de propiedades seleccionadas.</span>
           </div>
         </div>
         <div class="hero-actions">
@@ -1548,7 +1619,19 @@
           <div class="filter-title">Buscador de propiedades</div>
           <p class="filter-helper">Primero selecciona región y comuna para evitar combinaciones inválidas. Cuando tengas listos los filtros, presiona <strong>Buscar</strong>.</p>
         </div>
-        <div class="filter-status" id="filterStatus">Mostrando la búsqueda actual</div>
+        <div class="filter-tools">
+          <div class="filter-status" id="filterStatus">Mostrando la búsqueda actual</div>
+          <div class="price-display">
+            <div class="price-display-top">
+              <span class="price-display-label">Mostrar precios en</span>
+              <div class="price-display-buttons" id="priceDisplayButtons">
+                <button type="button" class="active" data-price-mode="UF">UF</button>
+                <button type="button" data-price-mode="CLP">Pesos</button>
+              </div>
+            </div>
+            <div class="price-display-note" id="priceDisplayNote">UF referencial: $ 40.000. Puede variar según el valor del día.</div>
+          </div>
+        </div>
       </div>
       <div class="filter-grid">
         <div class="filter-group">
@@ -1593,10 +1676,10 @@
           <input id="fM2" class="filter-control" type="number" min="0" placeholder="Ej: 70"/>
         </div>
         <div class="filter-group">
-          <label for="fPrecioMin">Precio</label>
+          <label for="fPrecioMin" id="priceFilterLabel">Precio en UF</label>
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-            <input id="fPrecioMin" class="filter-control" type="number" min="0" placeholder="Desde"/>
-            <input id="fPrecioMax" class="filter-control" type="number" min="0" placeholder="Hasta"/>
+            <input id="fPrecioMin" class="filter-control" type="number" min="0" placeholder="Desde UF"/>
+            <input id="fPrecioMax" class="filter-control" type="number" min="0" placeholder="Hasta UF"/>
           </div>
         </div>
         <div class="filter-actions">
@@ -2092,6 +2175,13 @@ const STATE = {
   activeGallery: [],
   activeGalleryIndex: 0,
   isLightboxOpen: false,
+  priceDisplay: 'UF',
+  ufIndicator: {
+    value: 40000,
+    date: '',
+    source: 'referencial',
+    available: true
+  },
   mainMap: null,
   detailMap: null,
   detailMarker: null
@@ -2133,11 +2223,135 @@ function getApiBaseUrl() {
   return API_CONFIG.baseUrl.replace(/\/$/, '');
 }
 
+function formatDisplayAmount(value, currency = 'UF') {
+  const numeric = Number(value);
+  if (!Number.isFinite(numeric)) {
+    return currency === 'CLP' ? '--' : '--';
+  }
+
+  if (currency === 'CLP') {
+    return Math.round(numeric).toLocaleString('es-CL');
+  }
+
+  return numeric.toLocaleString('es-CL', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  });
+}
+
 function formatPrice(value, currency = 'UF') {
   if (!Number.isFinite(Number(value))) {
-    return `${currency} --`;
+    return currency === 'CLP' ? '$ --' : `${currency} --`;
   }
-  return `${currency} ${Number(value).toLocaleString('es-CL')}`;
+  return currency === 'CLP'
+    ? `$ ${formatDisplayAmount(value, currency)}`
+    : `${currency} ${formatDisplayAmount(value, currency)}`;
+}
+
+function getPropertyPriceForMode(property, mode = STATE.priceDisplay) {
+  if (!property) {
+    return { value: NaN, currency: mode, converted: false };
+  }
+
+  const ufValue = Number(STATE.ufIndicator.value) || 0;
+  const nativeCurrency = property.moneda === 'CLP' ? 'CLP' : 'UF';
+  const nativeValue = nativeCurrency === 'CLP'
+    ? Number(property.precioClp || property.precio || 0)
+    : Number(property.precioUf || property.precio || 0);
+
+  if (mode === 'CLP') {
+    const clpValue = Number(property.precioClp || 0);
+    if (clpValue > 0) {
+      return { value: clpValue, currency: 'CLP', converted: nativeCurrency !== 'CLP' };
+    }
+    if (ufValue > 0 && Number(property.precioUf || 0) > 0) {
+      return { value: Number(property.precioUf) * ufValue, currency: 'CLP', converted: true };
+    }
+  }
+
+  if (mode === 'UF') {
+    const ufAmount = Number(property.precioUf || 0);
+    if (ufAmount > 0) {
+      return { value: ufAmount, currency: 'UF', converted: nativeCurrency !== 'UF' };
+    }
+    if (ufValue > 0 && Number(property.precioClp || 0) > 0) {
+      return { value: Number(property.precioClp) / ufValue, currency: 'UF', converted: true };
+    }
+  }
+
+  return {
+    value: nativeValue,
+    currency: nativeCurrency,
+    converted: false
+  };
+}
+
+function formatPropertyPrice(property, mode = STATE.priceDisplay) {
+  const price = getPropertyPriceForMode(property, mode);
+  return formatPrice(price.value, price.currency);
+}
+
+function getFormattedPropertyPriceParts(property, mode = STATE.priceDisplay) {
+  const price = getPropertyPriceForMode(property, mode);
+  return {
+    currency: price.currency === 'CLP' ? '$' : price.currency,
+    amount: formatDisplayAmount(price.value, price.currency),
+    converted: price.converted
+  };
+}
+
+function convertPriceValueBetweenModes(value, fromMode, toMode) {
+  const numeric = Number(value);
+  const ufValue = Number(STATE.ufIndicator.value) || 0;
+  if (!Number.isFinite(numeric) || !ufValue || fromMode === toMode) return numeric;
+  return fromMode === 'UF' ? numeric * ufValue : numeric / ufValue;
+}
+
+function formatPriceInputValue(value, mode) {
+  if (!Number.isFinite(Number(value))) return '';
+  return mode === 'CLP'
+    ? String(Math.round(Number(value)))
+    : Number(value).toFixed(2).replace(/\.00$/, '');
+}
+
+function syncPriceFilterUI() {
+  const isClp = STATE.priceDisplay === 'CLP';
+  document.getElementById('priceFilterLabel').textContent = isClp ? 'Precio en pesos' : 'Precio en UF';
+  document.getElementById('fPrecioMin').placeholder = isClp ? 'Desde $' : 'Desde UF';
+  document.getElementById('fPrecioMax').placeholder = isClp ? 'Hasta $' : 'Hasta UF';
+}
+
+function syncPriceDisplayButtons() {
+  document.querySelectorAll('[data-price-mode]').forEach(button => {
+    button.classList.toggle('active', button.dataset.priceMode === STATE.priceDisplay);
+  });
+}
+
+function formatUfIndicatorDate(value) {
+  if (!value) return '';
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return '';
+  return new Intl.DateTimeFormat('es-CL', {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric'
+  }).format(date);
+}
+
+function updatePriceDisplayNote() {
+  const note = document.getElementById('priceDisplayNote');
+  note.classList.remove('error');
+  note.textContent = `UF referencial: $ ${formatDisplayAmount(STATE.ufIndicator.value, 'CLP')}. Puede variar según el valor del día.`;
+}
+
+function syncPriceInputsForModeChange(previousMode, nextMode) {
+  if (previousMode === nextMode) return;
+  ['fPrecioMin', 'fPrecioMax'].forEach(id => {
+    const input = document.getElementById(id);
+    if (!input.value) return;
+    const converted = convertPriceValueBetweenModes(input.value, previousMode, nextMode);
+    input.value = formatPriceInputValue(converted, nextMode);
+  });
 }
 
 function humanizeRegionLabel(regionCode, fallbackName = '') {
@@ -2432,10 +2646,10 @@ function normalizeProperty(raw) {
     raw?.code
   ].filter(value => value !== undefined && value !== null && String(value).trim()), value => String(value).trim()).map(value => String(value).trim());
   const precioPesos = toNumber(raw.ValorPesos ?? raw.PrecioPesos ?? raw.precioPesos, 0);
-  const precioUf = toNumber(raw.ValorUf ?? raw.PrecioUF ?? raw.precioUf ?? raw.precio, 0);
+  const precioUfRaw = toNumber(raw.ValorUf ?? raw.PrecioUF ?? raw.precioUf ?? raw.precio, 0);
   const monedaRaw = String(raw.moneda ?? raw.Pactado ?? raw.Moneda ?? '').trim().toUpperCase();
   const moneda = ['PESOS', 'CLP', '$'].includes(monedaRaw) ? 'CLP' : 'UF';
-  const precio = moneda === 'CLP' ? (precioPesos || precioUf) : (precioUf || precioPesos);
+  const precio = moneda === 'CLP' ? (precioPesos || precioUfRaw) : (precioUfRaw || precioPesos);
   const description = String(raw.desc ?? raw.Descripcion ?? raw.DescripcionCorta ?? raw.Observaciones ?? '').trim() || 'Sin descripción disponible.';
   const features = [
     ...(Array.isArray(raw.features) ? raw.features : []),
@@ -2460,6 +2674,8 @@ function normalizeProperty(raw) {
     operacion,
     precio,
     moneda,
+    precioUf: precioUfRaw || (moneda === 'UF' ? precio : 0),
+    precioClp: precioPesos || (moneda === 'CLP' ? precio : 0),
     dorm: toNumber(raw.dorm ?? raw.Dormitorios ?? raw.Habitaciones, 0),
     banos: toNumber(raw.banos ?? raw.Banos ?? raw.Baños ?? raw.Bathroom, 0),
     m2: toNumber(
@@ -2515,7 +2731,8 @@ async function fetchJson(endpoint) {
     headers.Authorization = `Bearer ${API_CONFIG.token}`;
   }
 
-  const response = await fetch(`${getApiBaseUrl()}/${endpoint}`, { headers });
+  const isAbsolutePath = String(endpoint || '').startsWith('/');
+  const response = await fetch(isAbsolutePath ? endpoint : `${getApiBaseUrl()}/${endpoint}`, { headers });
   let data;
 
   try {
@@ -2827,7 +3044,10 @@ function renderFeaturedProperties() {
 
   const featured = [...groups.entries()].slice(0, 8).map(([comuna, properties]) => {
     const first = properties[0];
-    const lowestPrice = properties.reduce((min, property) => Math.min(min, Number(property.precio) || min), Number(first.precio) || 0);
+    const availablePrices = properties
+      .map(property => getPropertyPriceForMode(property, STATE.priceDisplay).value)
+      .filter(value => Number.isFinite(value) && value > 0);
+    const lowestPrice = availablePrices.length ? Math.min(...availablePrices) : getPropertyPriceForMode(first, STATE.priceDisplay).value;
     return {
       comuna,
       properties,
@@ -2854,7 +3074,7 @@ function renderFeaturedProperties() {
         <h3>${escapeHtml(item.comuna)}</h3>
         <p>${item.total} propiedad${item.total === 1 ? '' : 'es'} en ${escapeHtml(item.region)}</p>
         <div class="featured-meta">
-          <span>Desde ${escapeHtml(formatPrice(item.fromPrice, item.sample.moneda))}</span>
+          <span>Desde ${escapeHtml(formatPrice(item.fromPrice, STATE.priceDisplay))}</span>
         </div>
         <div class="featured-card-actions">
           <button class="btn-primary" type="button" onclick="applyFeaturedComunaFilter('${escapeHtml(item.sample.region)}','${escapeHtml(item.sample.comunaKey)}')">Ver propiedades</button>
@@ -2910,7 +3130,7 @@ function renderProperties(properties) {
         <span class="prop-tag">${escapeHtml(property.tipo)}</span>
       </div>
       <div class="prop-body">
-        <div class="prop-price">${escapeHtml(formatPrice(property.precio, property.moneda))}</div>
+        <div class="prop-price">${escapeHtml(formatPropertyPrice(property))}</div>
         <div class="prop-name">${escapeHtml(property.name)}</div>
         <div class="prop-loc">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
@@ -2942,7 +3162,8 @@ function filterProperties(filters) {
     const matchesM2 = !filters.m2 || property.m2 >= Number(filters.m2);
     const minPrice = filters.precioMin ? Number(filters.precioMin) : 0;
     const maxPrice = filters.precioMax ? Number(filters.precioMax) : Infinity;
-    const matchesPrice = property.precio >= minPrice && property.precio <= maxPrice;
+    const displayPrice = getPropertyPriceForMode(property, STATE.priceDisplay).value;
+    const matchesPrice = Number.isFinite(displayPrice) && displayPrice >= minPrice && displayPrice <= maxPrice;
 
     return matchesRegion && matchesComuna && matchesOperacion && matchesTipo && matchesDorm && matchesBanos && matchesM2 && matchesPrice;
   });
@@ -2980,6 +3201,41 @@ function applyFilters(options = {}) {
   }
 }
 
+function refreshActivePropertyViews() {
+  if (STATE.activePropertyId && document.getElementById('detailOverlay').classList.contains('open')) {
+    const property = STATE.propertyMap[STATE.activePropertyId];
+    if (property) {
+      const detailPrice = getFormattedPropertyPriceParts(property);
+      document.getElementById('mPrice').innerHTML = `<span>${escapeHtml(detailPrice.currency)}</span> ${escapeHtml(detailPrice.amount)}`;
+    }
+  }
+
+  if (document.getElementById('contactOverlay').classList.contains('open')) {
+    const property = STATE.propertyMap[currentContactProp];
+    const label = !currentContactProp || !property ? 'Consulta general' : `${property.name} · ${formatPropertyPrice(property)}`;
+    document.getElementById('cPropName').textContent = label;
+  }
+}
+
+function refreshDisplayedPrices() {
+  renderFeaturedProperties();
+  renderProperties(STATE.filteredProperties);
+  updateMap(STATE.filteredProperties);
+  refreshActivePropertyViews();
+  markPendingFilters();
+}
+
+function setPriceDisplay(mode) {
+  if (mode === 'CLP' && !STATE.ufIndicator.available) return;
+  if (!['UF', 'CLP'].includes(mode) || STATE.priceDisplay === mode) return;
+  const previousMode = STATE.priceDisplay;
+  STATE.priceDisplay = mode;
+  syncPriceInputsForModeChange(previousMode, mode);
+  syncPriceDisplayButtons();
+  syncPriceFilterUI();
+  refreshDisplayedPrices();
+}
+
 function resetFilters() {
   ['fRegion', 'fComuna', 'fOperacion', 'fTipo', 'fDorm', 'fBanos', 'fM2', 'fPrecioMin', 'fPrecioMax'].forEach(id => {
     document.getElementById(id).value = '';
@@ -3010,6 +3266,9 @@ function hydrateFilterEvents() {
   document.getElementById('fRegion').addEventListener('change', handleRegionChange);
   document.getElementById('searchButton').addEventListener('click', () => applyFilters({ scrollToResults: true }));
   document.getElementById('resetButton').addEventListener('click', resetFilters);
+  document.querySelectorAll('[data-price-mode]').forEach(button => {
+    button.addEventListener('click', () => setPriceDisplay(button.dataset.priceMode));
+  });
 }
 
 function createMapIcon() {
@@ -3039,7 +3298,7 @@ function updateMap(properties) {
   const located = properties.filter(property => property.lat && property.lng);
   located.forEach(property => {
     const marker = L.marker([property.lat, property.lng], { icon }).addTo(STATE.mainMap).bindPopup(
-      `<div class="map-popup"><div class="map-popup-head"><strong>${escapeHtml(property.name)}</strong><span>${escapeHtml(property.locationNote || property.loc)}</span></div><div class="map-popup-body"><span class="pp">${escapeHtml(formatPrice(property.precio, property.moneda))}</span></div></div>`
+      `<div class="map-popup"><div class="map-popup-head"><strong>${escapeHtml(property.name)}</strong><span>${escapeHtml(property.locationNote || property.loc)}</span></div><div class="map-popup-body"><span class="pp">${escapeHtml(formatPropertyPrice(property))}</span></div></div>`
     );
     STATE.markers.push(marker);
   });
@@ -3241,7 +3500,8 @@ async function openDetail(id) {
   document.getElementById('mImg').alt = property.name;
   document.getElementById('mName').textContent = property.name;
   document.getElementById('mLocText').textContent = property.loc;
-  document.getElementById('mPrice').innerHTML = `<span>${escapeHtml(property.moneda)}</span> ${escapeHtml(Number(property.precio || 0).toLocaleString('es-CL'))}`;
+  const detailPrice = getFormattedPropertyPriceParts(property);
+  document.getElementById('mPrice').innerHTML = `<span>${escapeHtml(detailPrice.currency)}</span> ${escapeHtml(detailPrice.amount)}`;
   document.getElementById('mDorm').textContent = property.dorm || 0;
   document.getElementById('mBanos').textContent = property.banos || 0;
   document.getElementById('mM2').textContent = `${property.m2 || 0} m2`;
@@ -3281,7 +3541,7 @@ function openContact(id, event) {
   if (event) event.stopPropagation();
   currentContactProp = id;
   const property = STATE.propertyMap[id];
-  const label = !id || !property ? 'Consulta general' : `${property.name} · ${formatPrice(property.precio, property.moneda)}`;
+  const label = !id || !property ? 'Consulta general' : `${property.name} · ${formatPropertyPrice(property)}`;
   document.getElementById('cPropName').textContent = label;
   document.getElementById('cForm').style.display = 'block';
   document.getElementById('cSuccess').style.display = 'none';
@@ -3354,6 +3614,9 @@ async function bootstrap() {
   hydrateFilterEvents();
   attachGalleryEvents();
   bindGlobalEvents();
+  syncPriceDisplayButtons();
+  syncPriceFilterUI();
+  updatePriceDisplayNote();
 
   try {
     await loadCatalogs();

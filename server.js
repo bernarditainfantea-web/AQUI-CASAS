@@ -182,6 +182,35 @@ async function requestLegacyPublicPropertyImages(id) {
   };
 }
 
+async function requestUfIndicator() {
+  const response = await fetch('https://mindicador.cl/api/uf', {
+    headers: {
+      Accept: 'application/json'
+    }
+  });
+  const data = await parseJsonResponse(response);
+
+  if (!response.ok) {
+    const message = data?.message || `Error HTTP ${response.status}`;
+    throw new Error(message);
+  }
+
+  const latest = Array.isArray(data?.serie) ? data.serie[0] : null;
+  if (!latest || typeof latest.valor !== 'number') {
+    throw new Error('No se pudo obtener el valor actual de la UF.');
+  }
+
+  return {
+    responseCode: 0,
+    codigo: 'uf',
+    nombre: 'Unidad de fomento (UF)',
+    unidad_medida: 'Pesos',
+    fecha: latest.fecha,
+    valor: latest.valor,
+    fuente: 'mindicador.cl'
+  };
+}
+
 function parseInteger(value, fallback) {
   const parsed = Number.parseInt(value, 10);
   return Number.isFinite(parsed) ? parsed : fallback;
@@ -354,6 +383,17 @@ app.get('/api/ofinet/propiedades/:id/legacy-images', async (req, res) => {
     makeErrorResponse(res, error.message, 502, {
       provider: 'legacy_public_site',
       resource: 'legacy_images'
+    });
+  }
+});
+
+app.get('/api/indicators/uf', async (_req, res) => {
+  try {
+    res.json(await requestUfIndicator());
+  } catch (error) {
+    makeErrorResponse(res, error.message, 502, {
+      provider: 'mindicador',
+      resource: 'uf'
     });
   }
 });
