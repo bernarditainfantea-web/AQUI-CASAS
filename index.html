@@ -925,11 +925,16 @@
       transition:transform .22s,box-shadow .22s,border-color .22s;
       display:flex;
       flex-direction:column;
+      cursor:pointer;
     }
     .prop-card:hover{
       transform:translateY(-5px);
       box-shadow:var(--shadow);
       border-color:rgba(212,169,64,.3);
+    }
+    .prop-card:focus-visible{
+      outline:3px solid rgba(212,169,64,.5);
+      outline-offset:3px;
     }
     .prop-img{
       position:relative;
@@ -1760,7 +1765,7 @@
             <span>Orientación comercial y acompañamiento en cada consulta.</span>
           </div>
           <div class="hero-point">
-            <strong>BONO PIE</strong>
+            <strong>Te ayudamos</strong>
             <span>Te ayudamos con el pie de propiedades seleccionadas.</span>
           </div>
         </div>
@@ -3388,7 +3393,7 @@ function applyFeaturedComunaFilter(region, comunaKey) {
 function renderProperties(properties) {
   const grid = document.getElementById('propsGrid');
   grid.innerHTML = properties.map(property => `
-    <article class="prop-card">
+    <article class="prop-card" role="link" tabindex="0" onclick="goToProperty('${escapeHtml(property.id)}')" onkeydown="handlePropertyCardKeydown(event, '${escapeHtml(property.id)}')">
       <div class="prop-img">
         <img src="${escapeHtml(property.img)}" alt="${escapeHtml(property.name)}"/>
         <span class="prop-badge">${escapeHtml(property.operacion || 'Disponible')}</span>
@@ -3409,7 +3414,7 @@ function renderProperties(properties) {
         <div class="prop-attr"><strong>${escapeHtml(property.m2 || 0)}</strong><span>M2</span></div>
       </div>
       <div class="prop-cta-row">
-        <button class="prop-btn-detail" type="button" onclick="goToProperty('${escapeHtml(property.id)}')">Ver ficha</button>
+        <button class="prop-btn-detail" type="button" onclick="event.stopPropagation(); goToProperty('${escapeHtml(property.id)}')">Ver ficha</button>
         <button class="prop-btn-contact" type="button" onclick="openContact('${escapeHtml(property.id)}', event)">Me interesa</button>
       </div>
     </article>
@@ -3496,6 +3501,12 @@ function refreshDisplayedPrices() {
   updateMap(STATE.filteredProperties);
   refreshActivePropertyViews();
   markPendingFilters();
+}
+
+function handlePropertyCardKeydown(event, id) {
+  if (event.key !== 'Enter' && event.key !== ' ') return;
+  event.preventDefault();
+  goToProperty(id);
 }
 
 function setPriceDisplay(mode) {
