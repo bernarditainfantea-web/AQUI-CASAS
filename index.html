@@ -238,9 +238,9 @@
       display:flex;
       align-items:center;
       justify-content:center;
-      background:rgba(212,169,64,.16);
-      color:var(--gold);
-      box-shadow:inset 0 0 0 1px rgba(212,169,64,.18);
+      background:rgba(255,255,255,.12);
+      color:var(--white);
+      box-shadow:inset 0 0 0 1px rgba(255,255,255,.16);
     }
     .hero-point-icon svg{
       width:28px;
@@ -256,7 +256,7 @@
       font-family:var(--display-font);
       font-size:2rem;
       line-height:1;
-      color:var(--gold);
+      color:var(--white);
       letter-spacing:.04em;
     }
     .hero-actions{display:flex;gap:14px;flex-wrap:wrap}
@@ -794,6 +794,190 @@
     .property-page-actions .btn-ghost{
       min-height:50px;
       padding-inline:24px;
+    }
+    .property-page-actions .btn-secondary{
+      min-height:50px;
+      padding-inline:24px;
+      background:rgba(15,43,91,.06);
+      color:var(--navy);
+      border:1px solid rgba(15,43,91,.14);
+    }
+    .property-page-actions .btn-secondary:hover{
+      background:rgba(15,43,91,.1);
+      color:var(--navy);
+      border-color:rgba(15,43,91,.22);
+    }
+    .property-calculator-toggle{
+      justify-content:center;
+      white-space:nowrap;
+    }
+    .property-page-actions .btn-ghost{
+      min-height:auto;
+      padding:0;
+      border:none;
+      border-radius:0;
+      background:transparent;
+      box-shadow:none;
+      text-decoration:underline;
+      text-underline-offset:4px;
+      justify-content:flex-start;
+    }
+    .property-page-actions .btn-ghost:hover{
+      background:transparent;
+      color:var(--gold-2);
+    }
+    .property-mortgage{
+      display:grid;
+      gap:18px;
+      padding:22px;
+      margin-top:4px;
+      border-radius:24px;
+      background:linear-gradient(180deg, #fbfaf7, #f3ede2);
+      border:1px solid rgba(15,43,91,.08);
+      box-shadow:inset 0 1px 0 rgba(255,255,255,.5);
+    }
+    .mortgage-header{
+      display:grid;
+      gap:8px;
+    }
+    .mortgage-title{
+      font-family:var(--display-font);
+      font-size:1.45rem;
+      letter-spacing:.05em;
+      color:var(--navy);
+    }
+    .mortgage-subtitle{
+      color:var(--muted);
+      line-height:1.65;
+      font-size:.95rem;
+    }
+    .mortgage-grid{
+      display:grid;
+      grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr);
+      gap:16px;
+    }
+    .mortgage-controls,
+    .mortgage-results{
+      display:grid;
+      gap:14px;
+    }
+    .mortgage-field{
+      padding:16px;
+      border-radius:18px;
+      background:rgba(255,255,255,.92);
+      border:1px solid rgba(15,43,91,.08);
+    }
+    .mortgage-field-top{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      margin-bottom:10px;
+    }
+    .mortgage-field-top label{
+      color:var(--navy);
+      font-weight:700;
+      font-size:.92rem;
+    }
+    .mortgage-field-top strong{
+      color:var(--gold-2);
+      font-family:var(--display-font);
+      font-size:1.05rem;
+      letter-spacing:.05em;
+    }
+    .mortgage-input-shell{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      min-height:48px;
+      padding:0 14px;
+      border-radius:15px;
+      background:#f7f4ef;
+      border:1px solid rgba(15,43,91,.08);
+    }
+    .mortgage-input-shell span{
+      flex-shrink:0;
+      color:var(--muted);
+      font-weight:700;
+      font-size:.9rem;
+    }
+    .mortgage-input-shell input[type="number"]{
+      width:100%;
+      border:none;
+      outline:none;
+      background:transparent;
+      color:var(--navy);
+      font-size:1rem;
+      font-weight:700;
+    }
+    .mortgage-range{
+      width:100%;
+      accent-color:var(--gold);
+    }
+    .mortgage-range-scale{
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+      margin-top:8px;
+      color:var(--muted);
+      font-size:.82rem;
+    }
+    .mortgage-double{
+      display:grid;
+      gap:12px;
+    }
+    .mortgage-term-buttons{
+      display:grid;
+      grid-template-columns:repeat(5,minmax(0,1fr));
+      gap:8px;
+    }
+    .mortgage-term-button{
+      min-height:44px;
+      border-radius:14px;
+      border:1px solid rgba(15,43,91,.1);
+      background:#f7f4ef;
+      color:var(--navy);
+      font-weight:700;
+      cursor:pointer;
+      transition:transform .18s,background .18s,color .18s,border-color .18s;
+    }
+    .mortgage-term-button.active{
+      background:var(--navy);
+      color:var(--white);
+      border-color:var(--navy);
+      box-shadow:0 12px 24px rgba(15,43,91,.18);
+    }
+    .mortgage-result-card{
+      padding:16px 18px;
+      border-radius:18px;
+      background:rgba(255,255,255,.94);
+      border:1px solid rgba(15,43,91,.08);
+    }
+    .mortgage-result-card span{
+      display:block;
+      color:var(--muted);
+      font-size:.88rem;
+      margin-bottom:6px;
+    }
+    .mortgage-result-card strong{
+      display:block;
+      color:var(--navy);
+      font-family:var(--display-font);
+      font-size:1.55rem;
+      letter-spacing:.04em;
+      line-height:1.05;
+    }
+    .mortgage-result-card.featured{
+      background:linear-gradient(135deg, var(--navy), #204b92);
+    }
+    .mortgage-result-card.featured span,
+    .mortgage-result-card.featured strong{
+      color:var(--white);
+    }
+    .mortgage-disclaimer{
+      color:var(--muted);
+      font-size:.84rem;
+      line-height:1.65;
     }
     .property-page-empty{
       background:var(--white);
@@ -1669,20 +1853,35 @@
       }
       .hero-grid{gap:24px}
       .hero-head{max-width:none}
-      .hero h1{font-size:clamp(2.7rem,10vw,4.1rem)}
-      .hero-points{grid-template-columns:1fr}
+      .hero h1{
+        font-size:clamp(2.45rem,8vw,3.5rem);
+        line-height:1;
+      }
+      .hero-points{
+        grid-template-columns:repeat(3,minmax(0,1fr));
+        gap:10px;
+      }
       .props-carousel{grid-auto-columns:minmax(280px, 82vw)}
       .hero-point{
-        grid-template-columns:auto 1fr;
-        align-items:center;
-        gap:14px;
+        grid-template-columns:1fr;
+        justify-items:center;
+        text-align:center;
+        gap:10px;
+        padding:14px 10px;
       }
       .hero-point-icon{
-        width:48px;
-        height:48px;
-        border-radius:14px;
+        width:42px;
+        height:42px;
+        border-radius:12px;
       }
-      .hero-point strong{font-size:1.55rem}
+      .hero-point-icon svg{
+        width:22px;
+        height:22px;
+      }
+      .hero-point strong{
+        font-size:1.02rem;
+        line-height:1.05;
+      }
       .hero-card{max-width:none}
       .trust-detail-grid,
       .reviews-grid,
@@ -1718,6 +1917,8 @@
       .property-page-price{font-size:2.2rem}
       .property-page-attrs{grid-template-columns:repeat(2,minmax(0,1fr))}
       .property-page-description{padding:22px}
+      .mortgage-grid{grid-template-columns:1fr}
+      .mortgage-term-buttons{grid-template-columns:repeat(3,minmax(0,1fr))}
       #map{height:380px}
       .contact-panel{padding:22px}
       .footer-logo .logo-mark{width:190px}
@@ -1736,8 +1937,8 @@
     }
 
     @media (max-width:480px){
-      .hero h1{font-size:2.45rem}
-      .hero-point strong{font-size:1.3rem}
+      .hero h1{font-size:2.2rem}
+      .hero-point strong{font-size:.92rem}
       .section-title{font-size:2.35rem}
       .value-card,
       .trust-detail-card{padding:20px}
@@ -1783,19 +1984,19 @@
   <section class="hero" id="inicio">
     <div class="hero-grid">
       <div class="hero-head">
-        <h1>ENCUENTRA TU <span>PRÓXIMA PROPIEDAD</span> CON RESPALDO REAL</h1>
+        <h1>TU <span>PRÓXIMO HOGAR</span> CADA VEZ MÁS CERCA</h1>
       </div>
       <div class="hero-copy">
         <div class="hero-points">
           <div class="hero-point">
             <div class="hero-point-icon" aria-hidden="true">
-              <svg viewBox="0 0 24 24"><path d="M3 7.5 12 3l9 4.5v9L12 21l-9-4.5z"/><path d="M12 3v18"/><path d="M3 7.5 12 12l9-4.5"/></svg>
+              <svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 11-9 11S3 17 3 10a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
             </div>
             <strong>Múltiples regiones</strong>
           </div>
           <div class="hero-point">
             <div class="hero-point-icon" aria-hidden="true">
-              <svg viewBox="0 0 24 24"><path d="M12 21a8.5 8.5 0 1 0 0-17 8.5 8.5 0 0 0 0 17Z"/><path d="M8.5 11a3.5 3.5 0 0 1 7 0c0 2-1.3 2.9-2.3 3.6-.8.5-1.2 1-1.2 1.9"/><path d="M12 17.5h.01"/></svg>
+              <svg viewBox="0 0 24 24"><path d="m5 12 4.2 4.2L19 6.5"/><path d="M12 22a10 10 0 1 0-10-10"/><path d="M22 12a10 10 0 0 1-10 10"/></svg>
             </div>
             <strong>Atención cercana</strong>
           </div>
@@ -1803,7 +2004,7 @@
             <div class="hero-point-icon" aria-hidden="true">
               <svg viewBox="0 0 24 24"><path d="M12 3v18"/><path d="M17 8.5c0-1.9-2.2-3.5-5-3.5S7 6.6 7 8.5 9.2 12 12 12s5 1.6 5 3.5S14.8 19 12 19s-5-1.6-5-3.5"/></svg>
             </div>
-            <strong>Te ayudamos</strong>
+            <strong>Te ayudamos con el pie</strong>
           </div>
         </div>
         <div class="hero-actions">
@@ -2230,6 +2431,7 @@
             </div>
             <div class="property-page-actions">
               <button class="btn-primary" type="button" id="pCtaBtn">Me interesa esta propiedad</button>
+              <button class="btn-secondary property-calculator-toggle" type="button" id="pMortgageToggleBtn">Calcula el dividendo de esta propiedad</button>
               <button class="btn-ghost" type="button" id="pShareBtn">Copiar enlace</button>
             </div>
           </div>
@@ -2255,6 +2457,78 @@
             </div>
             <div id="propertyDetailMap"></div>
             <p class="detail-map-note" id="propertyDetailMapNote"></p>
+          </div>
+          <div class="property-mortgage" id="propertyMortgageCalculator">
+            <div class="mortgage-header">
+              <div class="mortgage-title">Calculadora de dividendo</div>
+              <div class="mortgage-subtitle">Usa el precio de esta propiedad como base y ajusta pie, tasa y plazo para simular tu crédito.</div>
+            </div>
+            <div class="mortgage-grid">
+              <div class="mortgage-controls">
+                <div class="mortgage-field">
+                  <div class="mortgage-field-top">
+                    <label for="mortgagePriceRange">Precio de la propiedad</label>
+                    <strong id="mortgagePriceValue">UF 0</strong>
+                  </div>
+                  <input class="mortgage-range" id="mortgagePriceRange" type="range" min="1000" max="30000" step="100"/>
+                  <div class="mortgage-range-scale"><span>UF 1.000</span><span>UF 30.000</span></div>
+                </div>
+                <div class="mortgage-field">
+                  <div class="mortgage-field-top">
+                    <label for="mortgageDownPaymentUf">Pie disponible</label>
+                    <strong id="mortgageDownPaymentPercentValue">20%</strong>
+                  </div>
+                  <div class="mortgage-double">
+                    <div class="mortgage-input-shell">
+                      <span>UF</span>
+                      <input id="mortgageDownPaymentUf" type="number" min="0" step="10" inputmode="decimal"/>
+                    </div>
+                    <input class="mortgage-range" id="mortgageDownPaymentPercent" type="range" min="10" max="40" step="1"/>
+                  </div>
+                  <div class="mortgage-range-scale"><span>10%</span><span>40%</span></div>
+                </div>
+                <div class="mortgage-field">
+                  <div class="mortgage-field-top">
+                    <label for="mortgageRate">Tasa de interés anual</label>
+                  </div>
+                  <div class="mortgage-input-shell">
+                    <input id="mortgageRate" type="number" min="0" step="0.1" inputmode="decimal"/>
+                    <span>%</span>
+                  </div>
+                </div>
+                <div class="mortgage-field">
+                  <div class="mortgage-field-top">
+                    <label>Plazo</label>
+                  </div>
+                  <div class="mortgage-term-buttons" id="mortgageTermButtons">
+                    <button class="mortgage-term-button" type="button" data-years="10">10</button>
+                    <button class="mortgage-term-button" type="button" data-years="15">15</button>
+                    <button class="mortgage-term-button active" type="button" data-years="20">20</button>
+                    <button class="mortgage-term-button" type="button" data-years="25">25</button>
+                    <button class="mortgage-term-button" type="button" data-years="30">30</button>
+                  </div>
+                </div>
+              </div>
+              <div class="mortgage-results">
+                <div class="mortgage-result-card">
+                  <span>Monto a financiar</span>
+                  <strong id="mortgageLoanAmount">UF 0</strong>
+                </div>
+                <div class="mortgage-result-card featured">
+                  <span>Dividendo mensual</span>
+                  <strong id="mortgageMonthlyPayment">UF 0</strong>
+                </div>
+                <div class="mortgage-result-card">
+                  <span>Total pagado</span>
+                  <strong id="mortgageTotalPaid">UF 0</strong>
+                </div>
+                <div class="mortgage-result-card">
+                  <span>Interés total</span>
+                  <strong id="mortgageTotalInterest">UF 0</strong>
+                </div>
+              </div>
+            </div>
+            <div class="mortgage-disclaimer">Cálculo referencial. El dividendo real puede variar según institución financiera, seguros de desgravamen e incendio, comisiones y condiciones específicas del crédito.</div>
           </div>
         </div>
       </div>
@@ -2585,6 +2859,14 @@ const STATE = {
   filteredProperties: [],
   appliedFilters: {},
   activePropertyId: null,
+  propertyMortgage: {
+    visible: false,
+    propertyId: null,
+    priceUf: 1000,
+    downPaymentPercent: 20,
+    annualRate: 4.5,
+    termYears: 20
+  },
   activeGallery: [],
   activeGalleryIndex: 0,
   isLightboxOpen: false,
@@ -2626,6 +2908,14 @@ function slugify(value) {
 function toNumber(value, fallback = 0) {
   const numeric = Number(String(value ?? '').replace(/[^\d.-]/g, ''));
   return Number.isFinite(numeric) ? numeric : fallback;
+}
+
+function toBooleanFlag(value) {
+  if (typeof value === 'boolean') return value;
+  if (typeof value === 'number') return value > 0;
+
+  const normalized = normalizeText(value);
+  return ['1', 'si', 'sí', 'true', 'yes', 'activo', 'destacado', 'principal', 'home'].includes(normalized);
 }
 
 function buildEndpoint(endpoint, params = {}) {
@@ -3033,6 +3323,21 @@ function getVideoUrl(raw) {
     raw?.video_url ??
     raw?.TourVirtual ??
     raw?.tourVirtual ??
+    raw?.url_video ??
+    raw?.URLVideo ??
+    raw?.videoYoutube ??
+    raw?.VideoYoutube ??
+    raw?.youtube ??
+    raw?.Youtube ??
+    raw?.youTube ??
+    raw?.video_youtube ??
+    raw?.VideoYouTube ??
+    raw?.Tour ??
+    raw?.tour ??
+    raw?.Multimedia ??
+    raw?.multimedia ??
+    raw?.IframeVideo ??
+    raw?.iframeVideo ??
     ''
   ).trim();
 }
@@ -3075,6 +3380,24 @@ function normalizeProperty(raw) {
   const monedaRaw = String(raw.moneda ?? raw.Pactado ?? raw.Moneda ?? '').trim().toUpperCase();
   const moneda = ['PESOS', 'CLP', '$'].includes(monedaRaw) ? 'CLP' : 'UF';
   const precio = moneda === 'CLP' ? (precioPesos || precioUfRaw) : (precioUfRaw || precioPesos);
+  const isFeatured = [
+    raw.destacada,
+    raw.destacado,
+    raw.Destacada,
+    raw.Destacado,
+    raw.esDestacada,
+    raw.EsDestacada,
+    raw.esDestacado,
+    raw.EsDestacado,
+    raw.home,
+    raw.Home,
+    raw.enHome,
+    raw.EnHome,
+    raw.publicarHome,
+    raw.PublicarHome,
+    raw.principal,
+    raw.Principal
+  ].some(toBooleanFlag);
   const description = String(raw.desc ?? raw.Descripcion ?? raw.DescripcionCorta ?? raw.Observaciones ?? '').trim() || 'Sin descripción disponible.';
   const features = [
     ...(Array.isArray(raw.features) ? raw.features : []),
@@ -3144,7 +3467,8 @@ function normalizeProperty(raw) {
     comunaKey: slugify(comuna),
     tipoKey: slugify(tipo),
     operacionKey: slugify(operacion),
-    legacyIdCandidates
+    legacyIdCandidates,
+    isFeatured
   };
 
   return normalized;
@@ -3261,6 +3585,22 @@ async function loadPropertyDetail(id) {
         }
       } catch (error) {
         console.warn(`No se pudieron recuperar imagenes legacy para la propiedad ${id} usando ${legacyId}.`, error);
+      }
+    }
+  }
+
+  if (!getEmbedVideoUrl(enriched.video)) {
+    for (const legacyId of enriched.legacyIdCandidates || [id]) {
+      try {
+        const legacyVideoPayload = await fetchJson(`${API_CONFIG.endpoints.propiedades}/${encodeURIComponent(legacyId)}/legacy-video`);
+        const legacyVideoUrl = getVideoUrl(legacyVideoPayload) || String(legacyVideoPayload?.video || '').trim();
+
+        if (getEmbedVideoUrl(legacyVideoUrl)) {
+          enriched.video = legacyVideoUrl;
+          break;
+        }
+      } catch (error) {
+        console.warn(`No se pudo recuperar video legacy para la propiedad ${id} usando ${legacyId}.`, error);
       }
     }
   }
@@ -3582,7 +3922,8 @@ function renderProperties(properties) {
 }
 
 function renderHomePreviewProperties() {
-  const previewItems = STATE.properties.slice(0, 6);
+  const featuredItems = STATE.properties.filter(property => property.isFeatured);
+  const previewItems = (featuredItems.length ? featuredItems : STATE.properties).slice(0, 6);
   document.getElementById('homePropsGrid').innerHTML = buildPropertyCardsMarkup(previewItems);
   startHomePreviewCarousel();
 }
@@ -3822,12 +4163,25 @@ function getEmbedVideoUrl(url) {
   if (!value) return '';
   if (value.includes('youtube.com/embed') || value.includes('player.vimeo.com/video')) return value;
 
+  const iframeMatch = value.match(/src=["']([^"']+)["']/i);
+  if (iframeMatch?.[1]) {
+    return getEmbedVideoUrl(iframeMatch[1]);
+  }
+
+  if (/^[A-Za-z0-9_-]{11}$/.test(value)) {
+    return `https://www.youtube.com/embed/${value}`;
+  }
+
   try {
     const parsed = new URL(value);
     if (parsed.hostname.includes('youtu.be')) {
       return `https://www.youtube.com/embed/${parsed.pathname.replace('/', '')}`;
     }
     if (parsed.hostname.includes('youtube.com')) {
+      if (parsed.pathname.startsWith('/shorts/')) {
+        const shortId = parsed.pathname.split('/').filter(Boolean).pop();
+        return shortId ? `https://www.youtube.com/embed/${shortId}` : '';
+      }
       const videoId = parsed.searchParams.get('v');
       return videoId ? `https://www.youtube.com/embed/${videoId}` : '';
     }
@@ -4044,6 +4398,132 @@ function renderPropertyPageVideo(property) {
   container.innerHTML = `<iframe src="${escapeHtml(embed)}" title="Video de ${escapeHtml(property.name)}" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>`;
 }
 
+function clampMortgagePriceUf(value) {
+  const normalized = Number(value) || 1000;
+  const stepped = Math.round(normalized / 100) * 100;
+  return Math.min(Math.max(stepped, 1000), 30000);
+}
+
+function clampMortgagePercent(value) {
+  return Math.min(Math.max(Number(value) || 20, 10), 40);
+}
+
+function getPropertyPriceInUf(property) {
+  const price = getPropertyPriceForMode(property, 'UF');
+  return clampMortgagePriceUf(price.value);
+}
+
+function formatUfValue(value) {
+  return `UF ${Number(value || 0).toLocaleString('es-CL', {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 2
+  })}`;
+}
+
+function getMortgageDownPaymentUf() {
+  const mortgage = STATE.propertyMortgage;
+  return mortgage.priceUf * (mortgage.downPaymentPercent / 100);
+}
+
+function renderPropertyMortgageCalculator() {
+  const mortgage = STATE.propertyMortgage;
+  const priceRange = document.getElementById('mortgagePriceRange');
+  const downPaymentUfInput = document.getElementById('mortgageDownPaymentUf');
+  const downPaymentPercentRange = document.getElementById('mortgageDownPaymentPercent');
+  const rateInput = document.getElementById('mortgageRate');
+  const calculator = document.getElementById('propertyMortgageCalculator');
+  if (!calculator) return;
+
+  priceRange.value = String(mortgage.priceUf);
+  downPaymentPercentRange.value = String(mortgage.downPaymentPercent);
+  downPaymentUfInput.value = String(Math.round(getMortgageDownPaymentUf()));
+  rateInput.value = String(mortgage.annualRate);
+
+  document.getElementById('mortgagePriceValue').textContent = formatUfValue(mortgage.priceUf);
+  document.getElementById('mortgageDownPaymentPercentValue').textContent = `${Math.round(mortgage.downPaymentPercent)}%`;
+
+  document.querySelectorAll('#mortgageTermButtons .mortgage-term-button').forEach(button => {
+    button.classList.toggle('active', Number(button.dataset.years) === mortgage.termYears);
+  });
+
+  const loanAmount = Math.max(mortgage.priceUf - getMortgageDownPaymentUf(), 0);
+  const monthlyRate = Math.max(Number(mortgage.annualRate) || 0, 0) / 12 / 100;
+  const installments = mortgage.termYears * 12;
+  let monthlyPayment = 0;
+
+  if (loanAmount > 0 && installments > 0) {
+    if (monthlyRate === 0) {
+      monthlyPayment = loanAmount / installments;
+    } else {
+      const growth = (1 + monthlyRate) ** installments;
+      monthlyPayment = loanAmount * ((monthlyRate * growth) / (growth - 1));
+    }
+  }
+
+  const totalPaid = monthlyPayment * installments;
+  const totalInterest = Math.max(totalPaid - loanAmount, 0);
+
+  document.getElementById('mortgageLoanAmount').textContent = formatUfValue(loanAmount);
+  document.getElementById('mortgageMonthlyPayment').textContent = formatUfValue(monthlyPayment);
+  document.getElementById('mortgageTotalPaid').textContent = formatUfValue(totalPaid);
+  document.getElementById('mortgageTotalInterest').textContent = formatUfValue(totalInterest);
+}
+
+function initializePropertyMortgageCalculator(property) {
+  STATE.propertyMortgage = {
+    visible: true,
+    propertyId: String(property.id),
+    priceUf: getPropertyPriceInUf(property),
+    downPaymentPercent: 20,
+    annualRate: 4.5,
+    termYears: 20
+  };
+  renderPropertyMortgageCalculator();
+}
+
+function togglePropertyMortgageCalculator() {
+  const calculator = document.getElementById('propertyMortgageCalculator');
+  if (!calculator) return;
+  calculator.scrollIntoView({
+    behavior: 'smooth',
+    block: 'start'
+  });
+}
+
+function hydratePropertyMortgageCalculatorEvents() {
+  document.getElementById('pMortgageToggleBtn').addEventListener('click', togglePropertyMortgageCalculator);
+
+  document.getElementById('mortgagePriceRange').addEventListener('input', event => {
+    STATE.propertyMortgage.priceUf = clampMortgagePriceUf(event.target.value);
+    renderPropertyMortgageCalculator();
+  });
+
+  document.getElementById('mortgageDownPaymentPercent').addEventListener('input', event => {
+    STATE.propertyMortgage.downPaymentPercent = clampMortgagePercent(event.target.value);
+    renderPropertyMortgageCalculator();
+  });
+
+  document.getElementById('mortgageDownPaymentUf').addEventListener('input', event => {
+    const priceUf = Math.max(STATE.propertyMortgage.priceUf, 1000);
+    const nextUf = Math.min(Math.max(Number(event.target.value) || 0, 0), priceUf);
+    const nextPercent = clampMortgagePercent((nextUf / priceUf) * 100);
+    STATE.propertyMortgage.downPaymentPercent = Math.round(nextPercent);
+    renderPropertyMortgageCalculator();
+  });
+
+  document.getElementById('mortgageRate').addEventListener('input', event => {
+    STATE.propertyMortgage.annualRate = Math.max(Number(event.target.value) || 0, 0);
+    renderPropertyMortgageCalculator();
+  });
+
+  document.querySelectorAll('#mortgageTermButtons .mortgage-term-button').forEach(button => {
+    button.addEventListener('click', () => {
+      STATE.propertyMortgage.termYears = Number(button.dataset.years) || 20;
+      renderPropertyMortgageCalculator();
+    });
+  });
+}
+
 function showHomePage() {
   STATE.activePropertyId = null;
   document.getElementById('homePage').style.display = '';
@@ -4098,6 +4578,7 @@ function showPropertyPage(property) {
   renderPropertyPageMedia(property);
   renderPropertyPageVideo(property);
   updatePropertyPageMap(property);
+  initializePropertyMortgageCalculator(property);
   document.getElementById('pCtaBtn').onclick = () => openContact(property.id);
   document.getElementById('pShareBtn').onclick = async () => {
     try {
@@ -4327,6 +4808,7 @@ async function bootstrap() {
   initMainMap();
   hydrateFilterEvents();
   hydrateHomeFilterEvents();
+  hydratePropertyMortgageCalculatorEvents();
   attachGalleryEvents();
   bindGlobalEvents();
   syncPriceDisplayButtons();

@@ -182,6 +182,37 @@ async function requestLegacyPublicPropertyImages(id) {
   };
 }
 
+async function requestLegacyPublicPropertyVideo(id) {
+  const response = await fetch(`${LEGACY_PUBLIC_SITE_URL}/property.asp?idPro=${encodeURIComponent(id)}`, {
+    headers: {
+      Accept: 'text/html,application/xhtml+xml'
+    }
+  });
+
+  if (!response.ok) {
+    throw new Error(`No se pudo consultar la ficha publica legacy (${response.status}).`);
+  }
+
+  const html = await response.text();
+  const iframeSources = [...html.matchAll(/<iframe[^>]+src=["']([^"']+)["']/gi)]
+    .map(match => match[1])
+    .filter(Boolean);
+
+  const directVideoUrls = [...html.matchAll(/https?:\/\/[^\s"'<>]+/gi)]
+    .map(match => match[0])
+    .filter(Boolean);
+
+  const candidates = [...new Set([...iframeSources, ...directVideoUrls])]
+    .map(url => url.startsWith('//') ? `https:${url}` : url)
+    .filter(url => /youtube\.com|youtu\.be|vimeo\.com/i.test(url));
+
+  return {
+    responseCode: 0,
+    id,
+    video: candidates[0] || ''
+  };
+}
+
 async function requestUfIndicator() {
   const response = await fetch('https://mindicador.cl/api/uf', {
     headers: {
@@ -383,6 +414,17 @@ app.get('/api/ofinet/propiedades/:id/legacy-images', async (req, res) => {
     makeErrorResponse(res, error.message, 502, {
       provider: 'legacy_public_site',
       resource: 'legacy_images'
+    });
+  }
+});
+
+app.get('/api/ofinet/propiedades/:id/legacy-video', async (req, res) => {
+  try {
+    res.json(await requestLegacyPublicPropertyVideo(req.params.id));
+  } catch (error) {
+    makeErrorResponse(res, error.message, 502, {
+      provider: 'legacy_public_site',
+      resource: 'legacy_video'
     });
   }
 });
