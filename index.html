@@ -3309,7 +3309,7 @@ function renderFeaturedProperties() {
     groups.get(comuna).push(property);
   });
 
-  const featured = [...groups.entries()].slice(0, 8).map(([comuna, properties]) => {
+  const featured = [...groups.entries()].map(([comuna, properties]) => {
     const first = properties[0];
     const availablePrices = properties
       .map(property => getPropertyPriceForMode(property, STATE.priceDisplay).value)
