@@ -157,8 +157,8 @@
       min-height:100vh;
       padding:calc(var(--nav-height) + 42px) 5vw 72px;
       background:
-        linear-gradient(118deg, rgba(10,31,66,.96) 0%, rgba(10,31,66,.88) 48%, rgba(10,31,66,.72) 100%),
-        url('https://images.unsplash.com/photo-1600585154526-990dced4db0d?auto=format&fit=crop&w=1800&q=80') center/cover;
+        linear-gradient(115deg, rgba(24,18,14,.74) 0%, rgba(28,22,17,.58) 46%, rgba(34,26,20,.46) 100%),
+        url('https://images.unsplash.com/photo-1568605114967-8130f3a36994?auto=format&fit=crop&w=1800&q=80') center/cover;
       color:var(--white);
       overflow:hidden;
     }
@@ -227,6 +227,29 @@
       border-radius:18px;
       background:rgba(255,255,255,.08);
       border:1px solid rgba(255,255,255,.08);
+      display:grid;
+      gap:16px;
+      align-content:start;
+    }
+    .hero-point-icon{
+      width:54px;
+      height:54px;
+      border-radius:16px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      background:rgba(212,169,64,.16);
+      color:var(--gold);
+      box-shadow:inset 0 0 0 1px rgba(212,169,64,.18);
+    }
+    .hero-point-icon svg{
+      width:28px;
+      height:28px;
+      stroke:currentColor;
+      fill:none;
+      stroke-width:1.9;
+      stroke-linecap:round;
+      stroke-linejoin:round;
     }
     .hero-point strong{
       display:block;
@@ -235,13 +258,6 @@
       line-height:1;
       color:var(--gold);
       letter-spacing:.04em;
-    }
-    .hero-point span{
-      display:block;
-      margin-top:8px;
-      font-size:.82rem;
-      letter-spacing:.05em;
-      color:rgba(255,255,255,.72);
     }
     .hero-actions{display:flex;gap:14px;flex-wrap:wrap}
     .btn-primary,
@@ -812,8 +828,58 @@
       margin-bottom:10px;
     }
     .trust-detail-card p{line-height:1.7;color:rgba(255,255,255,.76)}
+    .reviews-grid{
+      display:grid;
+      grid-template-columns:repeat(3,minmax(0,1fr));
+      gap:20px;
+    }
+    .review-card{
+      background:var(--white);
+      border-radius:24px;
+      border:1px solid rgba(15,43,91,.06);
+      box-shadow:var(--shadow-soft);
+      padding:24px;
+      display:grid;
+      gap:14px;
+    }
+    .review-stars{
+      display:flex;
+      gap:6px;
+      color:var(--gold);
+    }
+    .review-stars svg{
+      width:18px;
+      height:18px;
+      fill:currentColor;
+    }
+    .review-card p{
+      color:var(--ink);
+      line-height:1.75;
+      font-size:.98rem;
+    }
+    .review-author{
+      font-family:var(--display-font);
+      font-size:1.15rem;
+      letter-spacing:.04em;
+      color:var(--navy);
+    }
 
     .properties{padding-top:52px}
+    .catalog-hero{
+      padding:calc(var(--nav-height) + 34px) 5vw 24px;
+      background:linear-gradient(180deg, #f8f3eb 0%, #f4efe7 100%);
+    }
+    .catalog-hero-shell{
+      max-width:1260px;
+      margin:0 auto;
+      display:grid;
+      gap:12px;
+    }
+    .catalog-hero p{
+      max-width:640px;
+      color:var(--muted);
+      line-height:1.7;
+    }
     .results-bar{
       display:flex;
       justify-content:space-between;
@@ -841,6 +907,22 @@
       color:var(--navy);
     }
     .results-context{color:var(--muted);line-height:1.6}
+    .catalog-preview-actions{
+      margin-top:28px;
+      display:flex;
+      justify-content:center;
+    }
+    .props-carousel{
+      display:grid;
+      grid-auto-flow:column;
+      grid-auto-columns:minmax(290px, 360px);
+      gap:24px;
+      overflow-x:auto;
+      padding-bottom:8px;
+      scroll-snap-type:x mandatory;
+      scrollbar-width:none;
+    }
+    .props-carousel::-webkit-scrollbar{display:none}
     .props-grid{
       display:grid;
       grid-template-columns:repeat(auto-fill,minmax(290px,1fr));
@@ -857,6 +939,7 @@
       flex-direction:column;
       cursor:pointer;
     }
+    .props-carousel .prop-card{scroll-snap-align:start}
     .prop-card:hover{
       transform:translateY(-5px);
       box-shadow:var(--shadow);
@@ -1581,12 +1664,28 @@
       .hero{
         padding:calc(var(--nav-height) + 24px) 4vw 60px;
         background:
-          linear-gradient(180deg, rgba(10,31,66,.94) 0%, rgba(10,31,66,.88) 48%, rgba(10,31,66,.82) 100%),
-          url('https://images.unsplash.com/photo-1600585154526-990dced4db0d?auto=format&fit=crop&w=1800&q=80') center/cover;
+          linear-gradient(180deg, rgba(24,18,14,.78) 0%, rgba(28,22,17,.64) 50%, rgba(34,26,20,.54) 100%),
+          url('https://images.unsplash.com/photo-1568605114967-8130f3a36994?auto=format&fit=crop&w=1800&q=80') center/cover;
       }
+      .hero-grid{gap:24px}
+      .hero-head{max-width:none}
+      .hero h1{font-size:clamp(2.7rem,10vw,4.1rem)}
       .hero-points{grid-template-columns:1fr}
+      .props-carousel{grid-auto-columns:minmax(280px, 82vw)}
+      .hero-point{
+        grid-template-columns:auto 1fr;
+        align-items:center;
+        gap:14px;
+      }
+      .hero-point-icon{
+        width:48px;
+        height:48px;
+        border-radius:14px;
+      }
+      .hero-point strong{font-size:1.55rem}
       .hero-card{max-width:none}
       .trust-detail-grid,
+      .reviews-grid,
       .value-grid,
       .footer-top,
       .modal-attrs,
@@ -1595,6 +1694,7 @@
       .section,
       .map-section,
       .contact-section{padding:74px 4vw}
+      .catalog-hero{padding:calc(var(--nav-height) + 26px) 4vw 18px}
       .filter-section{top:var(--nav-height);padding:14px 4vw 16px}
       .filter-shell{padding:18px}
       .filter-top{margin-bottom:14px}
@@ -1636,7 +1736,8 @@
     }
 
     @media (max-width:480px){
-      .hero h1{font-size:3.05rem}
+      .hero h1{font-size:2.45rem}
+      .hero-point strong{font-size:1.3rem}
       .section-title{font-size:2.35rem}
       .value-card,
       .trust-detail-card{padding:20px}
@@ -1655,8 +1756,8 @@
     </div>
     <div class="nav-links">
       <a href="#inicio">Inicio</a>
-      <a href="#propiedades">Propiedades</a>
-      <a href="#empresa">Empresa</a>
+      <a href="/propiedades">Propiedades</a>
+      <a href="#empresa">Nosotros</a>
       <a href="#mapa">Cobertura</a>
       <a href="#contacto" class="nav-cta">Contactar</a>
     </div>
@@ -1669,14 +1770,15 @@
   <div class="mobile-nav" id="mobileNav">
     <div class="mobile-nav-links">
       <a href="#inicio" onclick="closeMobileMenu()">Inicio</a>
-      <a href="#propiedades" onclick="closeMobileMenu()">Propiedades</a>
-      <a href="#empresa" onclick="closeMobileMenu()">Empresa</a>
+      <a href="/propiedades" onclick="closeMobileMenu()">Propiedades</a>
+      <a href="#empresa" onclick="closeMobileMenu()">Nosotros</a>
       <a href="#mapa" onclick="closeMobileMenu()">Cobertura</a>
       <a href="#contacto" class="mobile-nav-cta" onclick="closeMobileMenu()">Contactar</a>
     </div>
   </div>
 
   <div id="homePage">
+  <div id="landingSections">
 
   <section class="hero" id="inicio">
     <div class="hero-grid">
@@ -1686,20 +1788,26 @@
       <div class="hero-copy">
         <div class="hero-points">
           <div class="hero-point">
+            <div class="hero-point-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><path d="M3 7.5 12 3l9 4.5v9L12 21l-9-4.5z"/><path d="M12 3v18"/><path d="M3 7.5 12 12l9-4.5"/></svg>
+            </div>
             <strong>Múltiples regiones</strong>
-            <span>Cobertura activa en Región Metropolitana, Coquimbo y Biobío.</span>
           </div>
           <div class="hero-point">
+            <div class="hero-point-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><path d="M12 21a8.5 8.5 0 1 0 0-17 8.5 8.5 0 0 0 0 17Z"/><path d="M8.5 11a3.5 3.5 0 0 1 7 0c0 2-1.3 2.9-2.3 3.6-.8.5-1.2 1-1.2 1.9"/><path d="M12 17.5h.01"/></svg>
+            </div>
             <strong>Atención cercana</strong>
-            <span>Orientación comercial y acompañamiento en cada consulta.</span>
           </div>
           <div class="hero-point">
+            <div class="hero-point-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><path d="M12 3v18"/><path d="M17 8.5c0-1.9-2.2-3.5-5-3.5S7 6.6 7 8.5 9.2 12 12 12s5 1.6 5 3.5S14.8 19 12 19s-5-1.6-5-3.5"/></svg>
+            </div>
             <strong>Te ayudamos</strong>
-            <span>Te ayudamos con el pie de propiedades seleccionadas.</span>
           </div>
         </div>
         <div class="hero-actions">
-          <button class="btn-primary" onclick="document.getElementById('propiedades').scrollIntoView({behavior:'smooth'})">Ver propiedades</button>
+          <button class="btn-primary" onclick="goToCatalog()">Ver propiedades</button>
           <button class="btn-secondary" onclick="document.getElementById('contacto').scrollIntoView({behavior:'smooth'})">Hablar con un ejecutivo</button>
         </div>
       </div>
@@ -1720,16 +1828,16 @@
   <section class="section alt">
     <div class="section-header">
       <div>
-        <div class="section-label">Propiedades destacadas</div>
-        <h2 class="section-title">OPORTUNIDADES POR COMUNA</h2>
+        <div class="section-label">Selección destacada</div>
+        <h2 class="section-title">PROPIEDADES DESTACADAS</h2>
       </div>
     </div>
-    <div class="featured-showcase">
-      <div class="featured-menu" id="featuredMenu"></div>
+    <div class="props-carousel" id="homePropsGrid"></div>
+    <div class="catalog-preview-actions">
+      <button class="btn-primary" type="button" onclick="goToCatalog()">Ver más propiedades</button>
     </div>
   </section>
 
-  <div class="filter-anchor" id="propiedades"></div>
   <section class="filter-section">
     <div class="filter-shell">
       <div class="filter-top">
@@ -1738,39 +1846,39 @@
           <p class="filter-helper">Primero selecciona región y comuna para evitar combinaciones inválidas. Cuando tengas listos los filtros, presiona <strong>Buscar</strong>.</p>
         </div>
         <div class="filter-tools">
-          <div class="filter-status" id="filterStatus">Mostrando la búsqueda actual</div>
+          <div class="filter-status">Filtra y entra al catálogo completo</div>
           <div class="price-display">
             <div class="price-display-top">
               <span class="price-display-label">Mostrar precios en</span>
-              <div class="price-display-buttons" id="priceDisplayButtons">
+              <div class="price-display-buttons" id="homePriceDisplayButtons">
                 <button type="button" class="active" data-price-mode="UF">UF</button>
                 <button type="button" data-price-mode="CLP">Pesos</button>
               </div>
             </div>
-            <div class="price-display-note" id="priceDisplayNote">UF referencial: $ 40.000. Puede variar según el valor del día.</div>
+            <div class="price-display-note" id="homePriceDisplayNote">UF referencial: $ 40.000. Puede variar según el valor del día.</div>
           </div>
         </div>
       </div>
       <div class="filter-grid">
         <div class="filter-group">
-          <label for="fRegion">Región</label>
-          <select id="fRegion" class="filter-control"></select>
+          <label for="homeFRegion">Región</label>
+          <select id="homeFRegion" class="filter-control"></select>
         </div>
         <div class="filter-group">
-          <label for="fComuna">Comuna</label>
-          <select id="fComuna" class="filter-control" disabled></select>
+          <label for="homeFComuna">Comuna</label>
+          <select id="homeFComuna" class="filter-control" disabled></select>
         </div>
         <div class="filter-group">
-          <label for="fOperacion">Operación</label>
-          <select id="fOperacion" class="filter-control"></select>
+          <label for="homeFOperacion">Operación</label>
+          <select id="homeFOperacion" class="filter-control"></select>
         </div>
         <div class="filter-group">
-          <label for="fTipo">Tipo</label>
-          <select id="fTipo" class="filter-control"></select>
+          <label for="homeFTipo">Tipo</label>
+          <select id="homeFTipo" class="filter-control"></select>
         </div>
         <div class="filter-group">
-          <label for="fDorm">Dormitorios</label>
-          <select id="fDorm" class="filter-control">
+          <label for="homeFDorm">Dormitorios</label>
+          <select id="homeFDorm" class="filter-control">
             <option value="">Todos</option>
             <option value="1">1+</option>
             <option value="2">2+</option>
@@ -1780,8 +1888,8 @@
           </select>
         </div>
         <div class="filter-group">
-          <label for="fBanos">Baños</label>
-          <select id="fBanos" class="filter-control">
+          <label for="homeFBanos">Baños</label>
+          <select id="homeFBanos" class="filter-control">
             <option value="">Todos</option>
             <option value="1">1+</option>
             <option value="2">2+</option>
@@ -1790,44 +1898,33 @@
           </select>
         </div>
         <div class="filter-group">
-          <label for="fM2">M2 mínimos</label>
-          <input id="fM2" class="filter-control" type="number" min="0" placeholder="Ej: 70"/>
+          <label for="homeFM2">M2 mínimos</label>
+          <input id="homeFM2" class="filter-control" type="number" min="0" placeholder="Ej: 70"/>
         </div>
         <div class="filter-group">
-          <label for="fPrecioMin" id="priceFilterLabel">Precio en UF</label>
+          <label for="homePrecioMin" id="homePriceFilterLabel">Precio en UF</label>
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-            <input id="fPrecioMin" class="filter-control" type="number" min="0" placeholder="Desde UF"/>
-            <input id="fPrecioMax" class="filter-control" type="number" min="0" placeholder="Hasta UF"/>
+            <input id="homePrecioMin" class="filter-control" type="number" min="0" placeholder="Desde UF"/>
+            <input id="homePrecioMax" class="filter-control" type="number" min="0" placeholder="Hasta UF"/>
           </div>
         </div>
         <div class="filter-actions">
-          <button class="btn-primary" id="searchButton" type="button">Buscar</button>
-          <button class="btn-ghost" id="resetButton" type="button">Limpiar</button>
+          <button class="btn-primary" id="homeSearchButton" type="button">Buscar</button>
+          <button class="btn-ghost" id="homeResetButton" type="button">Limpiar</button>
         </div>
       </div>
     </div>
   </section>
 
-  <section class="section properties">
+  <section class="section map-section deep" id="mapa">
     <div class="section-header">
       <div>
-        <h2 class="section-title">PROPIEDADES</h2>
+        <div class="section-label">Cobertura</div>
+        <h2 class="section-title light">DÓNDE ESTAMOS PRESENTES</h2>
       </div>
+      <p class="section-sub light">Ubica rápidamente las zonas con propiedades activas.</p>
     </div>
-
-    <div class="results-bar">
-      <div class="results-summary">
-        <div class="results-count" id="filterCount">0 propiedades</div>
-        <p class="results-context" id="resultsContext">Explora la selección disponible en Aquí Casas.</p>
-      </div>
-    </div>
-
-    <div class="props-grid" id="propsGrid"></div>
-    <div class="no-results" id="noResults">
-      <h3>No encontramos propiedades con esa combinación</h3>
-      <p>Prueba modificando la comuna, ampliando el rango de precio o limpiando los filtros para volver a ver toda la oferta disponible.</p>
-      <button class="btn-primary" type="button" onclick="resetFilters()">Limpiar filtros</button>
-    </div>
+    <div id="map"></div>
   </section>
 
   <section class="section alt" id="empresa">
@@ -1859,6 +1956,51 @@
     </div>
   </section>
 
+  <section class="section">
+    <div class="section-header">
+      <div>
+        <div class="section-label">Opiniones</div>
+        <h2 class="section-title">LO QUE DICEN NUESTROS CLIENTES</h2>
+      </div>
+      <p class="section-sub">Reseñas de referencia para visualizar cómo se verán los testimonios dentro del sitio.</p>
+    </div>
+    <div class="reviews-grid">
+      <article class="review-card">
+        <div class="review-stars" aria-label="5 estrellas">
+          <svg viewBox="0 0 24 24"><path d="m12 2.8 2.8 5.68 6.27.91-4.54 4.43 1.07 6.24L12 17.1 6.4 20.06l1.07-6.24L2.93 9.39l6.27-.91Z"/></svg>
+          <svg viewBox="0 0 24 24"><path d="m12 2.8 2.8 5.68 6.27.91-4.54 4.43 1.07 6.24L12 17.1 6.4 20.06l1.07-6.24L2.93 9.39l6.27-.91Z"/></svg>
+          <svg viewBox="0 0 24 24"><path d="m12 2.8 2.8 5.68 6.27.91-4.54 4.43 1.07 6.24L12 17.1 6.4 20.06l1.07-6.24L2.93 9.39l6.27-.91Z"/></svg>
+          <svg viewBox="0 0 24 24"><path d="m12 2.8 2.8 5.68 6.27.91-4.54 4.43 1.07 6.24L12 17.1 6.4 20.06l1.07-6.24L2.93 9.39l6.27-.91Z"/></svg>
+          <svg viewBox="0 0 24 24"><path d="m12 2.8 2.8 5.68 6.27.91-4.54 4.43 1.07 6.24L12 17.1 6.4 20.06l1.07-6.24L2.93 9.39l6.27-.91Z"/></svg>
+        </div>
+        <p>“Nos acompañaron con mucha claridad desde la primera visita hasta el cierre. Siempre sentimos que había alguien pendiente de resolver dudas y ayudarnos a avanzar tranquilos.”</p>
+        <div class="review-author">Camila Rojas</div>
+      </article>
+      <article class="review-card">
+        <div class="review-stars" aria-label="5 estrellas">
+          <svg viewBox="0 0 24 24"><path d="m12 2.8 2.8 5.68 6.27.91-4.54 4.43 1.07 6.24L12 17.1 6.4 20.06l1.07-6.24L2.93 9.39l6.27-.91Z"/></svg>
+          <svg viewBox="0 0 24 24"><path d="m12 2.8 2.8 5.68 6.27.91-4.54 4.43 1.07 6.24L12 17.1 6.4 20.06l1.07-6.24L2.93 9.39l6.27-.91Z"/></svg>
+          <svg viewBox="0 0 24 24"><path d="m12 2.8 2.8 5.68 6.27.91-4.54 4.43 1.07 6.24L12 17.1 6.4 20.06l1.07-6.24L2.93 9.39l6.27-.91Z"/></svg>
+          <svg viewBox="0 0 24 24"><path d="m12 2.8 2.8 5.68 6.27.91-4.54 4.43 1.07 6.24L12 17.1 6.4 20.06l1.07-6.24L2.93 9.39l6.27-.91Z"/></svg>
+          <svg viewBox="0 0 24 24"><path d="m12 2.8 2.8 5.68 6.27.91-4.54 4.43 1.07 6.24L12 17.1 6.4 20.06l1.07-6.24L2.93 9.39l6.27-.91Z"/></svg>
+        </div>
+        <p>“Lo que más valoramos fue la cercanía. Nos mostraron alternativas reales, explicaron muy bien cada paso y nos hicieron sentir seguros durante todo el proceso de compra.”</p>
+        <div class="review-author">Felipe Navarro</div>
+      </article>
+      <article class="review-card">
+        <div class="review-stars" aria-label="5 estrellas">
+          <svg viewBox="0 0 24 24"><path d="m12 2.8 2.8 5.68 6.27.91-4.54 4.43 1.07 6.24L12 17.1 6.4 20.06l1.07-6.24L2.93 9.39l6.27-.91Z"/></svg>
+          <svg viewBox="0 0 24 24"><path d="m12 2.8 2.8 5.68 6.27.91-4.54 4.43 1.07 6.24L12 17.1 6.4 20.06l1.07-6.24L2.93 9.39l6.27-.91Z"/></svg>
+          <svg viewBox="0 0 24 24"><path d="m12 2.8 2.8 5.68 6.27.91-4.54 4.43 1.07 6.24L12 17.1 6.4 20.06l1.07-6.24L2.93 9.39l6.27-.91Z"/></svg>
+          <svg viewBox="0 0 24 24"><path d="m12 2.8 2.8 5.68 6.27.91-4.54 4.43 1.07 6.24L12 17.1 6.4 20.06l1.07-6.24L2.93 9.39l6.27-.91Z"/></svg>
+          <svg viewBox="0 0 24 24"><path d="m12 2.8 2.8 5.68 6.27.91-4.54 4.43 1.07 6.24L12 17.1 6.4 20.06l1.07-6.24L2.93 9.39l6.27-.91Z"/></svg>
+        </div>
+        <p>“Tuvimos una experiencia muy ordenada y profesional. La información fue clara, la respuesta rápida y el acompañamiento constante hasta encontrar la propiedad indicada.”</p>
+        <div class="review-author">María José Herrera</div>
+      </article>
+    </div>
+  </section>
+
   <section class="section deep">
     <div class="section-header">
       <div>
@@ -1881,17 +2023,6 @@
         <p>Contacto más simple y una experiencia más cercana.</p>
       </article>
     </div>
-  </section>
-
-  <section class="section map-section deep" id="mapa">
-    <div class="section-header">
-      <div>
-        <div class="section-label">Cobertura</div>
-        <h2 class="section-title light">DÓNDE ESTAMOS PRESENTES</h2>
-      </div>
-      <p class="section-sub light">Ubica rápidamente las zonas con propiedades activas.</p>
-    </div>
-    <div id="map"></div>
   </section>
 
   <section class="section contact-section" id="contacto">
@@ -1919,6 +2050,113 @@
     </div>
   </section>
 
+  </div>
+
+  <div id="catalogSections" style="display:none">
+    <section class="catalog-hero">
+      <div class="catalog-hero-shell">
+        <div class="section-label">Catálogo</div>
+        <h1 class="section-title">PROPIEDADES</h1>
+        <p>Revisa toda la oferta disponible y usa los filtros para encontrar una propiedad según comuna, tipo, precio y atributos clave.</p>
+      </div>
+    </section>
+
+    <div class="filter-anchor" id="propiedades"></div>
+    <section class="filter-section">
+      <div class="filter-shell">
+        <div class="filter-top">
+          <div>
+            <div class="filter-title">Buscador de propiedades</div>
+            <p class="filter-helper">Primero selecciona región y comuna para evitar combinaciones inválidas. Cuando tengas listos los filtros, presiona <strong>Buscar</strong>.</p>
+          </div>
+          <div class="filter-tools">
+            <div class="filter-status" id="filterStatus">Mostrando la búsqueda actual</div>
+            <div class="price-display">
+              <div class="price-display-top">
+                <span class="price-display-label">Mostrar precios en</span>
+                <div class="price-display-buttons" id="priceDisplayButtons">
+                  <button type="button" class="active" data-price-mode="UF">UF</button>
+                  <button type="button" data-price-mode="CLP">Pesos</button>
+                </div>
+              </div>
+              <div class="price-display-note" id="priceDisplayNote">UF referencial: $ 40.000. Puede variar según el valor del día.</div>
+            </div>
+          </div>
+        </div>
+        <div class="filter-grid">
+          <div class="filter-group">
+            <label for="fRegion">Región</label>
+            <select id="fRegion" class="filter-control"></select>
+          </div>
+          <div class="filter-group">
+            <label for="fComuna">Comuna</label>
+            <select id="fComuna" class="filter-control" disabled></select>
+          </div>
+          <div class="filter-group">
+            <label for="fOperacion">Operación</label>
+            <select id="fOperacion" class="filter-control"></select>
+          </div>
+          <div class="filter-group">
+            <label for="fTipo">Tipo</label>
+            <select id="fTipo" class="filter-control"></select>
+          </div>
+          <div class="filter-group">
+            <label for="fDorm">Dormitorios</label>
+            <select id="fDorm" class="filter-control">
+              <option value="">Todos</option>
+              <option value="1">1+</option>
+              <option value="2">2+</option>
+              <option value="3">3+</option>
+              <option value="4">4+</option>
+              <option value="5">5+</option>
+            </select>
+          </div>
+          <div class="filter-group">
+            <label for="fBanos">Baños</label>
+            <select id="fBanos" class="filter-control">
+              <option value="">Todos</option>
+              <option value="1">1+</option>
+              <option value="2">2+</option>
+              <option value="3">3+</option>
+              <option value="4">4+</option>
+            </select>
+          </div>
+          <div class="filter-group">
+            <label for="fM2">M2 mínimos</label>
+            <input id="fM2" class="filter-control" type="number" min="0" placeholder="Ej: 70"/>
+          </div>
+          <div class="filter-group">
+            <label for="fPrecioMin" id="priceFilterLabel">Precio en UF</label>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+              <input id="fPrecioMin" class="filter-control" type="number" min="0" placeholder="Desde UF"/>
+              <input id="fPrecioMax" class="filter-control" type="number" min="0" placeholder="Hasta UF"/>
+            </div>
+          </div>
+          <div class="filter-actions">
+            <button class="btn-primary" id="searchButton" type="button">Buscar</button>
+            <button class="btn-ghost" id="resetButton" type="button">Limpiar</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section properties">
+      <div class="results-bar">
+        <div class="results-summary">
+          <div class="results-count" id="filterCount">0 propiedades</div>
+          <p class="results-context" id="resultsContext">Explora la selección disponible en Aquí Casas.</p>
+        </div>
+      </div>
+
+      <div class="props-grid" id="propsGrid"></div>
+      <div class="no-results" id="noResults">
+        <h3>No encontramos propiedades con esa combinación</h3>
+        <p>Prueba modificando la comuna, ampliando el rango de precio o limpiando los filtros para volver a ver toda la oferta disponible.</p>
+        <button class="btn-primary" type="button" onclick="resetFilters()">Limpiar filtros</button>
+      </div>
+    </section>
+  </div>
+
   <footer>
     <div class="footer-top">
       <div class="footer-brand">
@@ -1936,8 +2174,8 @@
         <h4>Navegación</h4>
         <ul>
           <li><a href="#inicio">Inicio</a></li>
-          <li><a href="#propiedades">Propiedades</a></li>
-          <li><a href="#empresa">Empresa</a></li>
+          <li><a href="/propiedades">Propiedades</a></li>
+          <li><a href="#empresa">Nosotros</a></li>
           <li><a href="#mapa">Cobertura</a></li>
           <li><a href="#contacto">Contacto</a></li>
         </ul>
@@ -2336,6 +2574,7 @@ const STATE = {
   properties: [],
   propertyMap: {},
   markers: [],
+  homePreviewCarouselTimer: null,
   catalogs: {
     comunas: [],
     tipos: [],
@@ -2490,9 +2729,18 @@ function formatPriceInputValue(value, mode) {
 
 function syncPriceFilterUI() {
   const isClp = STATE.priceDisplay === 'CLP';
-  document.getElementById('priceFilterLabel').textContent = isClp ? 'Precio en pesos' : 'Precio en UF';
-  document.getElementById('fPrecioMin').placeholder = isClp ? 'Desde $' : 'Desde UF';
-  document.getElementById('fPrecioMax').placeholder = isClp ? 'Hasta $' : 'Hasta UF';
+  ['priceFilterLabel', 'homePriceFilterLabel'].forEach(id => {
+    const label = document.getElementById(id);
+    if (label) label.textContent = isClp ? 'Precio en pesos' : 'Precio en UF';
+  });
+  ['fPrecioMin', 'homePrecioMin'].forEach(id => {
+    const input = document.getElementById(id);
+    if (input) input.placeholder = isClp ? 'Desde $' : 'Desde UF';
+  });
+  ['fPrecioMax', 'homePrecioMax'].forEach(id => {
+    const input = document.getElementById(id);
+    if (input) input.placeholder = isClp ? 'Hasta $' : 'Hasta UF';
+  });
 }
 
 function syncPriceDisplayButtons() {
@@ -2513,16 +2761,19 @@ function formatUfIndicatorDate(value) {
 }
 
 function updatePriceDisplayNote() {
-  const note = document.getElementById('priceDisplayNote');
-  note.classList.remove('error');
-  note.textContent = `UF referencial: $ ${formatDisplayAmount(STATE.ufIndicator.value, 'CLP')}. Puede variar según el valor del día.`;
+  ['priceDisplayNote', 'homePriceDisplayNote'].forEach(id => {
+    const note = document.getElementById(id);
+    if (!note) return;
+    note.classList.remove('error');
+    note.textContent = `UF referencial: $ ${formatDisplayAmount(STATE.ufIndicator.value, 'CLP')}. Puede variar según el valor del día.`;
+  });
 }
 
 function syncPriceInputsForModeChange(previousMode, nextMode) {
   if (previousMode === nextMode) return;
-  ['fPrecioMin', 'fPrecioMax'].forEach(id => {
+  ['fPrecioMin', 'fPrecioMax', 'homePrecioMin', 'homePrecioMax'].forEach(id => {
     const input = document.getElementById(id);
-    if (!input.value) return;
+    if (!input || !input.value) return;
     const converted = convertPriceValueBetweenModes(input.value, previousMode, nextMode);
     input.value = formatPriceInputValue(converted, nextMode);
   });
@@ -3117,6 +3368,7 @@ function syncFilterOptions() {
   fillSelectOptions('fOperacion', STATE.catalogs.operaciones, 'Todas las operaciones');
   fillSelectOptions('fTipo', STATE.catalogs.tipos, 'Todos los tipos');
   refreshComunaOptions();
+  syncHomeFilterOptions();
 }
 
 function refreshComunaOptions() {
@@ -3129,6 +3381,35 @@ function refreshComunaOptions() {
         .sort((a, b) => a.label.localeCompare(b.label, 'es'));
 
   fillSelectOptions('fComuna', options, regionValue ? 'Todas las comunas' : 'Selecciona una región primero');
+  comunaSelect.disabled = !regionValue && options.length === 0;
+  if (!regionValue) {
+    comunaSelect.value = '';
+    comunaSelect.disabled = true;
+  } else {
+    const selectedComuna = comunaSelect.value;
+    const valid = options.some(option => option.value === selectedComuna);
+    if (!valid) comunaSelect.value = '';
+    comunaSelect.disabled = false;
+  }
+}
+
+function syncHomeFilterOptions() {
+  fillSelectOptions('homeFRegion', STATE.regions, 'Todas las regiones');
+  fillSelectOptions('homeFOperacion', STATE.catalogs.operaciones, 'Todas las operaciones');
+  fillSelectOptions('homeFTipo', STATE.catalogs.tipos, 'Todos los tipos');
+  refreshHomeComunaOptions();
+}
+
+function refreshHomeComunaOptions() {
+  const regionValue = document.getElementById('homeFRegion').value;
+  const regionKey = slugify(regionValue);
+  const comunaSelect = document.getElementById('homeFComuna');
+  const options = regionValue
+    ? (STATE.comunasByRegion[regionKey] || [])
+    : uniqueBy(Object.values(STATE.comunasByRegion).flat(), item => item.key)
+        .sort((a, b) => a.label.localeCompare(b.label, 'es'));
+
+  fillSelectOptions('homeFComuna', options, regionValue ? 'Todas las comunas' : 'Selecciona una región primero');
   comunaSelect.disabled = !regionValue && options.length === 0;
   if (!regionValue) {
     comunaSelect.value = '';
@@ -3155,8 +3436,33 @@ function collectFiltersFromUI() {
   };
 }
 
+function collectHomeFiltersFromUI() {
+  return {
+    region: document.getElementById('homeFRegion').value,
+    comuna: document.getElementById('homeFComuna').value,
+    operacion: document.getElementById('homeFOperacion').value,
+    tipo: document.getElementById('homeFTipo').value,
+    dorm: document.getElementById('homeFDorm').value,
+    banos: document.getElementById('homeFBanos').value,
+    m2: document.getElementById('homeFM2').value,
+    precioMin: document.getElementById('homePrecioMin').value,
+    precioMax: document.getElementById('homePrecioMax').value
+  };
+}
+
 function buildPropertyPath(id) {
   return `/propiedad/${encodeURIComponent(id)}`;
+}
+
+function buildCatalogPath(filters = {}) {
+  const params = new URLSearchParams();
+  Object.entries(filters).forEach(([key, value]) => {
+    if (value !== undefined && value !== null && String(value).trim() !== '') {
+      params.set(key, String(value));
+    }
+  });
+  const query = params.toString();
+  return `/propiedades${query ? `?${query}` : ''}`;
 }
 
 function getRoutePropertyId() {
@@ -3164,8 +3470,41 @@ function getRoutePropertyId() {
   return match ? decodeURIComponent(match[1]) : '';
 }
 
+function isCatalogRoute() {
+  return /^\/propiedades\/?$/.test(window.location.pathname);
+}
+
+function getCatalogFiltersFromRoute() {
+  const params = new URLSearchParams(window.location.search);
+  return {
+    region: params.get('region') || '',
+    comuna: params.get('comuna') || '',
+    operacion: params.get('operacion') || '',
+    tipo: params.get('tipo') || '',
+    dorm: params.get('dorm') || '',
+    banos: params.get('banos') || '',
+    m2: params.get('m2') || '',
+    precioMin: params.get('precioMin') || '',
+    precioMax: params.get('precioMax') || ''
+  };
+}
+
+function setFiltersInUI(filters = {}) {
+  document.getElementById('fRegion').value = filters.region || '';
+  refreshComunaOptions();
+  document.getElementById('fComuna').value = filters.comuna || '';
+  document.getElementById('fOperacion').value = filters.operacion || '';
+  document.getElementById('fTipo').value = filters.tipo || '';
+  document.getElementById('fDorm').value = filters.dorm || '';
+  document.getElementById('fBanos').value = filters.banos || '';
+  document.getElementById('fM2').value = filters.m2 || '';
+  document.getElementById('fPrecioMin').value = filters.precioMin || '';
+  document.getElementById('fPrecioMax').value = filters.precioMax || '';
+}
+
 function syncAnchorsForRoute() {
   const propertyRoute = Boolean(getRoutePropertyId());
+  const offHomeRoute = propertyRoute || isCatalogRoute();
   document.querySelectorAll('a').forEach(link => {
     const currentHref = link.getAttribute('href') || '';
     if (!link.dataset.originalHref && currentHref.startsWith('#')) {
@@ -3173,7 +3512,7 @@ function syncAnchorsForRoute() {
     }
     const originalHref = link.dataset.originalHref || '';
     if (!originalHref.startsWith('#')) return;
-    link.setAttribute('href', propertyRoute ? `/${originalHref}` : originalHref);
+    link.setAttribute('href', offHomeRoute ? `/${originalHref}` : originalHref);
   });
 }
 
@@ -3207,53 +3546,8 @@ function getResultsContext(filters, count) {
   return pieces.length ? `Resultados filtrados por ${pieces.join(', ')}.` : 'Explora la selección disponible en Aquí Casas.';
 }
 
-function updateFeaturedComunaButtons(activeComunaKey = '') {
-  document.querySelectorAll('.featured-chip').forEach(button => {
-    button.classList.toggle('active', button.dataset.comunaKey === activeComunaKey);
-  });
-}
-
-function renderFeaturedProperties() {
-  const menu = document.getElementById('featuredMenu');
-  const groups = new Map();
-
-  STATE.properties.forEach(property => {
-    const comuna = property.comuna || humanizeRegionLabel(property.region);
-    if (!groups.has(comuna)) {
-      groups.set(comuna, []);
-    }
-    groups.get(comuna).push(property);
-  });
-
-  const featured = [...groups.entries()].map(([comuna, properties]) => {
-    const first = properties[0];
-    return {
-      comuna,
-      properties,
-      region: humanizeRegionLabel(first.region),
-      sample: first
-    };
-  });
-
-  menu.innerHTML = featured.map(item => `
-    <button class="featured-chip" type="button" data-comuna-key="${escapeHtml(item.sample.comunaKey)}" onclick="applyFeaturedComunaFilter('${escapeHtml(item.sample.region)}','${escapeHtml(item.sample.comunaKey)}')">
-      ${escapeHtml(item.comuna)}
-    </button>
-  `).join('');
-  updateFeaturedComunaButtons(STATE.appliedFilters.comuna || '');
-}
-
-function applyFeaturedComunaFilter(region, comunaKey) {
-  document.getElementById('fRegion').value = region;
-  refreshComunaOptions();
-  document.getElementById('fComuna').value = comunaKey;
-  updateFeaturedComunaButtons(comunaKey);
-  applyFilters({ scrollToResults: true });
-}
-
-function renderProperties(properties) {
-  const grid = document.getElementById('propsGrid');
-  grid.innerHTML = properties.map(property => `
+function buildPropertyCardsMarkup(properties) {
+  return properties.map(property => `
     <article class="prop-card" role="link" tabindex="0" onclick="goToProperty('${escapeHtml(property.id)}')" onkeydown="handlePropertyCardKeydown(event, '${escapeHtml(property.id)}')">
       <div class="prop-img">
         <img src="${escapeHtml(property.img)}" alt="${escapeHtml(property.name)}"/>
@@ -3282,6 +3576,44 @@ function renderProperties(properties) {
   `).join('');
 }
 
+function renderProperties(properties) {
+  const grid = document.getElementById('propsGrid');
+  grid.innerHTML = buildPropertyCardsMarkup(properties);
+}
+
+function renderHomePreviewProperties() {
+  const previewItems = STATE.properties.slice(0, 6);
+  document.getElementById('homePropsGrid').innerHTML = buildPropertyCardsMarkup(previewItems);
+  startHomePreviewCarousel();
+}
+
+function startHomePreviewCarousel() {
+  if (STATE.homePreviewCarouselTimer) {
+    clearInterval(STATE.homePreviewCarouselTimer);
+    STATE.homePreviewCarouselTimer = null;
+  }
+
+  const carousel = document.getElementById('homePropsGrid');
+  const cards = carousel ? [...carousel.querySelectorAll('.prop-card')] : [];
+  if (!carousel || cards.length <= 1) return;
+
+  STATE.homePreviewCarouselTimer = window.setInterval(() => {
+    if (document.getElementById('landingSections').style.display === 'none') return;
+
+    const firstCard = cards[0];
+    const cardWidth = firstCard ? firstCard.getBoundingClientRect().width : 0;
+    const gap = 24;
+    const step = cardWidth + gap;
+    const maxScrollLeft = carousel.scrollWidth - carousel.clientWidth;
+    const nextScrollLeft = carousel.scrollLeft + step;
+
+    carousel.scrollTo({
+      left: nextScrollLeft >= maxScrollLeft - 4 ? 0 : nextScrollLeft,
+      behavior: 'smooth'
+    });
+  }, 3000);
+}
+
 function filterProperties(filters) {
   return STATE.properties.filter(property => {
     const matchesRegion = !filters.region || property.region === filters.region;
@@ -3304,7 +3636,6 @@ function updateResultsUI(properties, filters) {
   STATE.filteredProperties = properties;
   renderProperties(properties);
   updateMap(properties);
-  updateFeaturedComunaButtons(filters.comuna || '');
   document.getElementById('filterCount').textContent = `${properties.length} propiedad${properties.length === 1 ? '' : 'es'}`;
   document.getElementById('resultsContext').textContent = getResultsContext(filters, properties.length);
   document.getElementById('noResults').style.display = properties.length ? 'none' : 'block';
@@ -3358,7 +3689,7 @@ function refreshActivePropertyViews() {
 }
 
 function refreshDisplayedPrices() {
-  renderFeaturedProperties();
+  renderHomePreviewProperties();
   renderProperties(STATE.filteredProperties);
   updateMap(STATE.filteredProperties);
   refreshActivePropertyViews();
@@ -3390,9 +3721,20 @@ function resetFilters() {
   applyFilters();
 }
 
+function resetHomeFilters() {
+  ['homeFRegion', 'homeFComuna', 'homeFOperacion', 'homeFTipo', 'homeFDorm', 'homeFBanos', 'homeFM2', 'homePrecioMin', 'homePrecioMax'].forEach(id => {
+    document.getElementById(id).value = '';
+  });
+  refreshHomeComunaOptions();
+}
+
 function handleRegionChange() {
   refreshComunaOptions();
   markPendingFilters();
+}
+
+function handleHomeRegionChange() {
+  refreshHomeComunaOptions();
 }
 
 function hydrateFilterEvents() {
@@ -3415,6 +3757,23 @@ function hydrateFilterEvents() {
   document.querySelectorAll('[data-price-mode]').forEach(button => {
     button.addEventListener('click', () => setPriceDisplay(button.dataset.priceMode));
   });
+}
+
+function hydrateHomeFilterEvents() {
+  const filterIds = ['homeFOperacion', 'homeFTipo', 'homeFComuna', 'homeFDorm', 'homeFBanos', 'homeFM2', 'homePrecioMin', 'homePrecioMax'];
+  filterIds.forEach(id => {
+    const element = document.getElementById(id);
+    element.addEventListener('keydown', event => {
+      if (event.key === 'Enter') {
+        event.preventDefault();
+        goToCatalog(collectHomeFiltersFromUI());
+      }
+    });
+  });
+
+  document.getElementById('homeFRegion').addEventListener('change', handleHomeRegionChange);
+  document.getElementById('homeSearchButton').addEventListener('click', () => goToCatalog(collectHomeFiltersFromUI()));
+  document.getElementById('homeResetButton').addEventListener('click', resetHomeFilters);
 }
 
 function createMapIcon() {
@@ -3688,10 +4047,30 @@ function renderPropertyPageVideo(property) {
 function showHomePage() {
   STATE.activePropertyId = null;
   document.getElementById('homePage').style.display = '';
+  document.getElementById('landingSections').style.display = '';
+  document.getElementById('catalogSections').style.display = 'none';
   document.getElementById('propertyPage').classList.remove('open');
   document.getElementById('propertyPageContent').style.display = 'none';
   document.getElementById('propertyPageEmpty').style.display = 'none';
   document.body.style.overflow = '';
+  if (STATE.mainMap) {
+    setTimeout(() => STATE.mainMap.invalidateSize(), 120);
+  }
+  syncAnchorsForRoute();
+}
+
+function showCatalogPage(filters = getCatalogFiltersFromRoute()) {
+  STATE.activePropertyId = null;
+  document.getElementById('homePage').style.display = '';
+  document.getElementById('landingSections').style.display = 'none';
+  document.getElementById('catalogSections').style.display = '';
+  document.getElementById('propertyPage').classList.remove('open');
+  document.getElementById('propertyPageContent').style.display = 'none';
+  document.getElementById('propertyPageEmpty').style.display = 'none';
+  document.body.style.overflow = '';
+  setFiltersInUI(filters);
+  applyFilters();
+  window.scrollTo({ top: 0, behavior: 'auto' });
   syncAnchorsForRoute();
 }
 
@@ -3766,7 +4145,11 @@ function renderPropertyNotFound() {
 async function handleRouteChange() {
   const propertyId = getRoutePropertyId();
   if (!propertyId) {
-    showHomePage();
+    if (isCatalogRoute()) {
+      showCatalogPage();
+    } else {
+      showHomePage();
+    }
     return;
   }
 
@@ -3782,6 +4165,16 @@ function goHome(event) {
   if (event) event.preventDefault();
   history.pushState({}, '', '/');
   handleRouteChange();
+}
+
+function goToCatalog(filters = {}, options = {}) {
+  const { pushState = true } = options;
+  const nextPath = buildCatalogPath(filters);
+  if (pushState) {
+    history.pushState({ catalog: true }, '', nextPath);
+  }
+  closeMobileMenu();
+  showCatalogPage(filters);
 }
 
 function renderDetailVideo(property) {
@@ -3933,6 +4326,7 @@ function bindGlobalEvents() {
 async function bootstrap() {
   initMainMap();
   hydrateFilterEvents();
+  hydrateHomeFilterEvents();
   attachGalleryEvents();
   bindGlobalEvents();
   syncPriceDisplayButtons();
@@ -3950,7 +4344,7 @@ async function bootstrap() {
   STATE.propertyMap = Object.fromEntries(STATE.properties.map(property => [String(property.id), property]));
   buildPropertyIndexes();
   syncFilterOptions();
-  renderFeaturedProperties();
+  renderHomePreviewProperties();
   applyFilters();
   await handleRouteChange();
 }
