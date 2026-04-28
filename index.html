@@ -177,13 +177,13 @@
       z-index:1;
       display:grid;
       grid-template-columns:minmax(0,1.15fr) minmax(320px,.85fr);
-      align-items:end;
+      align-items:start;
       gap:42px;
       max-width:1260px;
       margin:0 auto;
     }
-    .hero-copy{max-width:720px}
-    .eyebrow,
+    .hero-head{grid-column:1 / -1; max-width:1180px}
+    .hero-copy{max-width:none}
     .section-label{
       display:inline-flex;
       align-items:center;
@@ -194,7 +194,6 @@
       text-transform:uppercase;
       color:var(--gold);
     }
-    .eyebrow::before,
     .section-label::before{
       content:'';
       width:22px;
@@ -203,10 +202,10 @@
       display:block;
     }
     .hero h1{
-      margin-top:18px;
+      margin-top:0;
       font-family:var(--display-font);
-      font-size:clamp(3.35rem,8vw,6.4rem);
-      line-height:.92;
+      font-size:clamp(2.9rem,6.3vw,5.35rem);
+      line-height:.94;
       letter-spacing:.03em;
     }
     .hero h1 span{color:var(--gold)}
@@ -536,15 +535,15 @@
     .featured-menu{
       display:flex;
       gap:10px;
-      overflow-x:auto;
+      flex-wrap:wrap;
       padding-bottom:6px;
       scrollbar-width:none;
     }
     .featured-menu::-webkit-scrollbar{display:none}
     .featured-chip{
       border:none;
-      min-height:42px;
-      padding:0 18px;
+      min-height:48px;
+      padding:0 20px;
       border-radius:999px;
       background:rgba(15,43,91,.06);
       color:var(--navy);
@@ -558,18 +557,6 @@
       background:var(--navy);
       color:var(--white);
     }
-    .featured-viewport{
-      display:grid;
-      grid-auto-flow:column;
-      grid-auto-columns:minmax(190px, 220px);
-      gap:16px;
-      overflow-x:auto;
-      scroll-snap-type:x mandatory;
-      scrollbar-width:none;
-      padding-bottom:8px;
-    }
-    .featured-viewport::-webkit-scrollbar{display:none}
-    .featured-card,
     .value-card,
     .trust-detail-card{
       background:var(--white);
@@ -577,63 +564,6 @@
       overflow:hidden;
       box-shadow:var(--shadow-soft);
       border:1px solid rgba(15,43,91,.06);
-    }
-    .featured-card{
-      display:flex;
-      flex-direction:column;
-      scroll-snap-align:start;
-      min-height:100%;
-    }
-    .featured-card-media{
-      aspect-ratio:1 / 1;
-      overflow:hidden;
-      background:var(--navy-2);
-    }
-    .featured-card img{width:100%;height:100%;object-fit:cover}
-    .featured-card-body{
-      padding:14px 14px 16px;
-      display:grid;
-      gap:10px;
-      align-content:start;
-    }
-    .featured-card h3{
-      font-family:var(--display-font);
-      font-size:1.35rem;
-      letter-spacing:.04em;
-      margin:0;
-      text-align:center;
-    }
-    .featured-card p{
-      color:var(--ink);
-      line-height:1.45;
-      font-size:.88rem;
-      margin:0;
-      text-align:center;
-    }
-    .featured-meta{
-      display:flex;
-      flex-wrap:wrap;
-      gap:8px;
-      justify-content:center;
-    }
-    .featured-meta span{
-      padding:6px 10px;
-      border-radius:999px;
-      background:rgba(15,43,91,.06);
-      font-size:.78rem;
-      font-weight:700;
-      color:var(--ink);
-    }
-    .featured-card-actions{
-      display:flex;
-      flex-direction:column;
-      gap:10px;
-    }
-    .featured-card-actions .btn-primary,
-    .featured-card-actions .btn-ghost{
-      width:100%;
-      min-height:42px;
-      padding-inline:14px;
     }
 
     .about-grid{
@@ -1662,7 +1592,6 @@
       .modal-attrs,
       .modal-features,
       .c-row{grid-template-columns:1fr}
-      .featured-viewport{grid-auto-columns:minmax(180px, 62vw)}
       .section,
       .map-section,
       .contact-section{padding:74px 4vw}
@@ -1751,9 +1680,10 @@
 
   <section class="hero" id="inicio">
     <div class="hero-grid">
-      <div class="hero-copy">
-        <div class="eyebrow">Asesoría inmobiliaria cercana y clara</div>
+      <div class="hero-head">
         <h1>ENCUENTRA TU <span>PRÓXIMA PROPIEDAD</span> CON RESPALDO REAL</h1>
+      </div>
+      <div class="hero-copy">
         <div class="hero-points">
           <div class="hero-point">
             <strong>Múltiples regiones</strong>
@@ -1796,7 +1726,6 @@
     </div>
     <div class="featured-showcase">
       <div class="featured-menu" id="featuredMenu"></div>
-      <div class="featured-viewport" id="featuredGrid"></div>
     </div>
   </section>
 
@@ -3278,26 +3207,13 @@ function getResultsContext(filters, count) {
   return pieces.length ? `Resultados filtrados por ${pieces.join(', ')}.` : 'Explora la selección disponible en Aquí Casas.';
 }
 
-const FEATURED_COMUNA_IMAGES = {
-  'puente alto': 'https://images.unsplash.com/photo-1511818966892-d7d671e672a2?auto=format&fit=crop&w=1200&q=80',
-  'peñaflor': 'https://images.unsplash.com/photo-1448630360428-65456885c650?auto=format&fit=crop&w=1200&q=80',
-  'huechuraba': 'Comunas/huechuraba.jpg',
-  'coquimbo': 'Comunas/coquimbo.jpeg',
-  'la serena': 'Comunas/la-serena.jpg',
-  'lampa': 'Comunas/lampa.jpeg',
-  'buin': 'Comunas/buin.jpeg',
-  'quilicura': 'Comunas/quilicura.jpg',
-  'los angeles': 'https://images.unsplash.com/photo-1470770841072-f978cf4d019e?auto=format&fit=crop&w=1200&q=80',
-  'padre hurtado': 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1200&q=80',
-  'la florida': 'https://images.unsplash.com/photo-1449824913935-59a10b8d2000?auto=format&fit=crop&w=1200&q=80'
-};
-
-function getFeaturedComunaImage(comuna, fallbackImage) {
-  return FEATURED_COMUNA_IMAGES[normalizeText(comuna)] || fallbackImage;
+function updateFeaturedComunaButtons(activeComunaKey = '') {
+  document.querySelectorAll('.featured-chip').forEach(button => {
+    button.classList.toggle('active', button.dataset.comunaKey === activeComunaKey);
+  });
 }
 
 function renderFeaturedProperties() {
-  const container = document.getElementById('featuredGrid');
   const menu = document.getElementById('featuredMenu');
   const groups = new Map();
 
@@ -3311,79 +3227,27 @@ function renderFeaturedProperties() {
 
   const featured = [...groups.entries()].map(([comuna, properties]) => {
     const first = properties[0];
-    const availablePrices = properties
-      .map(property => getPropertyPriceForMode(property, STATE.priceDisplay).value)
-      .filter(value => Number.isFinite(value) && value > 0);
-    const lowestPrice = availablePrices.length ? Math.min(...availablePrices) : getPropertyPriceForMode(first, STATE.priceDisplay).value;
     return {
       comuna,
       properties,
-      image: getFeaturedComunaImage(comuna, first.img),
       region: humanizeRegionLabel(first.region),
-      total: properties.length,
-      fromPrice: lowestPrice,
       sample: first
     };
   });
 
-  menu.innerHTML = featured.map((item, index) => `
-    <button class="featured-chip ${index === 0 ? 'active' : ''}" type="button" onclick="scrollFeaturedTo(${index})">
+  menu.innerHTML = featured.map(item => `
+    <button class="featured-chip" type="button" data-comuna-key="${escapeHtml(item.sample.comunaKey)}" onclick="applyFeaturedComunaFilter('${escapeHtml(item.sample.region)}','${escapeHtml(item.sample.comunaKey)}')">
       ${escapeHtml(item.comuna)}
     </button>
   `).join('');
-
-  container.innerHTML = featured.map((item, index) => `
-    <article class="featured-card" data-featured-index="${index}">
-      <div class="featured-card-media">
-        <img src="${escapeHtml(item.image)}" alt="${escapeHtml(item.comuna)}"/>
-      </div>
-      <div class="featured-card-body">
-        <h3>${escapeHtml(item.comuna)}</h3>
-        <p>${item.total} propiedad${item.total === 1 ? '' : 'es'} en ${escapeHtml(item.region)}</p>
-        <div class="featured-meta">
-          <span>Desde ${escapeHtml(formatPrice(item.fromPrice, STATE.priceDisplay))}</span>
-        </div>
-        <div class="featured-card-actions">
-          <button class="btn-primary" type="button" onclick="applyFeaturedComunaFilter('${escapeHtml(item.sample.region)}','${escapeHtml(item.sample.comunaKey)}')">Ver propiedades</button>
-        </div>
-      </div>
-    </article>
-  `).join('');
-
-  container.onscroll = () => syncFeaturedMenu();
-  syncFeaturedMenu();
-}
-
-function syncFeaturedMenu() {
-  const viewport = document.getElementById('featuredGrid');
-  const cards = [...viewport.querySelectorAll('.featured-card')];
-  const chips = [...document.querySelectorAll('.featured-chip')];
-  if (!cards.length || !chips.length) return;
-
-  let activeIndex = 0;
-  let bestOffset = Number.POSITIVE_INFINITY;
-  cards.forEach((card, index) => {
-    const offset = Math.abs(card.getBoundingClientRect().left - viewport.getBoundingClientRect().left);
-    if (offset < bestOffset) {
-      bestOffset = offset;
-      activeIndex = index;
-    }
-  });
-
-  chips.forEach((chip, index) => chip.classList.toggle('active', index === activeIndex));
-}
-
-function scrollFeaturedTo(index) {
-  const viewport = document.getElementById('featuredGrid');
-  const card = viewport.querySelector(`[data-featured-index="${index}"]`);
-  if (!card) return;
-  card.scrollIntoView({ behavior: 'smooth', inline: 'start', block: 'nearest' });
+  updateFeaturedComunaButtons(STATE.appliedFilters.comuna || '');
 }
 
 function applyFeaturedComunaFilter(region, comunaKey) {
   document.getElementById('fRegion').value = region;
   refreshComunaOptions();
   document.getElementById('fComuna').value = comunaKey;
+  updateFeaturedComunaButtons(comunaKey);
   applyFilters({ scrollToResults: true });
 }
 
@@ -3440,6 +3304,7 @@ function updateResultsUI(properties, filters) {
   STATE.filteredProperties = properties;
   renderProperties(properties);
   updateMap(properties);
+  updateFeaturedComunaButtons(filters.comuna || '');
   document.getElementById('filterCount').textContent = `${properties.length} propiedad${properties.length === 1 ? '' : 'es'}`;
   document.getElementById('resultsContext').textContent = getResultsContext(filters, properties.length);
   document.getElementById('noResults').style.display = properties.length ? 'none' : 'block';
