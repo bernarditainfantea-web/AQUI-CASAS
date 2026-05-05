@@ -196,11 +196,17 @@ async function requestOfinetBackofficePropertyImages(id) {
   }
 
   const html = await response.text();
+  const idPrefix = String(id || '').trim().toLowerCase();
   const matches = [...html.matchAll(/<img[^>]+src=["']([^"']*fotos\/[^"']+)["']/gi)];
   const images = [...new Set(matches
     .map(match => match[1])
     .filter(Boolean)
-    .map(src => src.startsWith('http') ? src : `${OFINET_BACKOFFICE_SITE_URL}/${src.replace(/^\/+/, '')}`))];
+    .map(src => src.startsWith('http') ? src : `${OFINET_BACKOFFICE_SITE_URL}/${src.replace(/^\/+/, '')}`)
+    .filter(src => {
+      if (!idPrefix) return true;
+      const filename = src.split('/').pop()?.toLowerCase() || '';
+      return filename.startsWith(idPrefix);
+    }))];
 
   return {
     responseCode: 0,
@@ -517,19 +523,19 @@ app.get('/api/ofinet/propiedades/:id', async (req, res) => {
 
 app.get('/api/ofinet/propiedades/:id/legacy-images', async (req, res) => {
   try {
-    let payload = await requestLegacyPublicPropertyImages(req.params.id);
+    let payload = await requestOfinetBackofficePropertyImages(req.params.id);
 
     if (!Array.isArray(payload.images) || payload.images.length === 0) {
-      payload = await requestOfinetBackofficePropertyImages(req.params.id);
+      payload = await requestLegacyPublicPropertyImages(req.params.id);
     }
 
     res.json(payload);
   } catch (error) {
     try {
-      res.json(await requestOfinetBackofficePropertyImages(req.params.id));
+      res.json(await requestLegacyPublicPropertyImages(req.params.id));
     } catch (fallbackError) {
       makeErrorResponse(res, fallbackError.message || error.message, 502, {
-        provider: 'ofinet_backoffice_site',
+        provider: 'legacy_public_site',
         resource: 'legacy_images'
       });
     }
@@ -538,19 +544,19 @@ app.get('/api/ofinet/propiedades/:id/legacy-images', async (req, res) => {
 
 app.get('/api/ofinet/propiedades/:id/legacy-video', async (req, res) => {
   try {
-    let payload = await requestLegacyPublicPropertyVideo(req.params.id);
+    let payload = await requestOfinetBackofficePropertyVideo(req.params.id);
 
     if (!String(payload.video || '').trim()) {
-      payload = await requestOfinetBackofficePropertyVideo(req.params.id);
+      payload = await requestLegacyPublicPropertyVideo(req.params.id);
     }
 
     res.json(payload);
   } catch (error) {
     try {
-      res.json(await requestOfinetBackofficePropertyVideo(req.params.id));
+      res.json(await requestLegacyPublicPropertyVideo(req.params.id));
     } catch (fallbackError) {
       makeErrorResponse(res, fallbackError.message || error.message, 502, {
-        provider: 'ofinet_backoffice_site',
+        provider: 'legacy_public_site',
         resource: 'legacy_video'
       });
     }
