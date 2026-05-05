@@ -872,6 +872,36 @@
       display:grid;
       gap:8px;
     }
+    .mortgage-mode-switch{
+      display:inline-flex;
+      width:max-content;
+      padding:4px;
+      border-radius:999px;
+      background:rgba(15,43,91,.06);
+      border:1px solid rgba(15,43,91,.08);
+    }
+    .mortgage-mode-switch button{
+      min-width:88px;
+      min-height:38px;
+      border:none;
+      border-radius:999px;
+      background:transparent;
+      color:var(--ink);
+      font-weight:700;
+      letter-spacing:.06em;
+      cursor:pointer;
+      transition:background .2s,color .2s,transform .2s;
+    }
+    .mortgage-mode-switch button.active{
+      background:var(--navy);
+      color:var(--white);
+      box-shadow:0 8px 18px rgba(15,43,91,.18);
+    }
+    .mortgage-mode-switch button:disabled{
+      opacity:.45;
+      cursor:not-allowed;
+      box-shadow:none;
+    }
     .mortgage-title{
       font-family:var(--display-font);
       font-size:1.45rem;
@@ -2497,6 +2527,10 @@
             <div class="mortgage-header">
               <div class="mortgage-title">Calculadora de dividendo</div>
               <div class="mortgage-subtitle">Usa el precio de esta propiedad como base y ajusta pie, tasa y plazo para simular tu crédito.</div>
+              <div class="mortgage-mode-switch" id="mortgageModeButtons">
+                <button class="active" type="button" data-mortgage-mode="UF">UF</button>
+                <button type="button" data-mortgage-mode="CLP">Pesos</button>
+              </div>
             </div>
             <div class="mortgage-grid">
               <div class="mortgage-controls">
@@ -2506,7 +2540,7 @@
                     <strong id="mortgagePriceValue">UF 0</strong>
                   </div>
                   <input class="mortgage-range" id="mortgagePriceRange" type="range" min="1000" max="30000" step="100"/>
-                  <div class="mortgage-range-scale"><span>UF 1.000</span><span>UF 30.000</span></div>
+                  <div class="mortgage-range-scale"><span id="mortgagePriceScaleMin">UF 1.000</span><span id="mortgagePriceScaleMax">UF 30.000</span></div>
                 </div>
                 <div class="mortgage-field">
                   <div class="mortgage-field-top">
@@ -2515,7 +2549,7 @@
                   </div>
                   <div class="mortgage-double">
                     <div class="mortgage-input-shell">
-                      <span>UF</span>
+                      <span id="mortgageDownPaymentCurrency">UF</span>
                       <input id="mortgageDownPaymentUf" type="number" min="0" step="10" inputmode="decimal"/>
                     </div>
                     <input class="mortgage-range" id="mortgageDownPaymentPercent" type="range" min="10" max="40" step="1"/>
@@ -2898,6 +2932,7 @@ const STATE = {
     visible: false,
     propertyId: null,
     priceUf: 1000,
+    displayMode: 'UF',
     downPaymentPercent: 20,
     annualRate: 4.5,
     termYears: 20
@@ -2959,6 +2994,38 @@ function buildEndpoint(endpoint, params = {}) {
 
 function getApiBaseUrl() {
   return API_CONFIG.baseUrl.replace(/\/$/, '');
+}
+
+function getMediaProxyBaseUrl() {
+  return `${window.location.origin}/api/media`;
+}
+
+function buildMediaProxyUrl(url) {
+  return `${getMediaProxyBaseUrl()}?url=${encodeURIComponent(url)}`;
+}
+
+function normalizeMediaUrl(value) {
+  const normalizedValue = String(value || '').trim();
+  if (!normalizedValue) return '';
+
+  const absoluteValue = normalizedValue.startsWith('//')
+    ? `http:${normalizedValue}`
+    : normalizedValue;
+
+  try {
+    const parsed = new URL(absoluteValue);
+    if (['ofinet.aquicasas.cl', 'www.aquicasas.cl', 'aquicasas.cl'].includes(parsed.hostname)) {
+      return buildMediaProxyUrl(parsed.href);
+    }
+  } catch (error) {
+    return normalizedValue;
+  }
+
+  return absoluteValue;
+}
+
+function isDirectVideoUrl(url) {
+  return /\.(mp4|webm|ogg|mov|m4v)(\?.*)?$/i.test(String(url || '').trim());
 }
 
 function formatDisplayAmount(value, currency = 'UF') {
@@ -3248,8 +3315,7 @@ function getImageCandidates(raw) {
   function normalizeMediaPath(value) {
     const normalizedValue = String(value || '').trim();
     if (!normalizedValue) return '';
-    if (/^\/\//.test(normalizedValue)) return `https:${normalizedValue}`;
-    return normalizedValue;
+    return normalizeMediaUrl(normalizedValue);
   }
 
   function pushImageCandidate(value, keyHint = '') {
@@ -3350,7 +3416,7 @@ function getImageCandidates(raw) {
 }
 
 function getVideoUrl(raw) {
-  return String(
+  const directValue = String(
     raw?.video ??
     raw?.Video ??
     raw?.VideoUrl ??
@@ -3375,6 +3441,47 @@ function getVideoUrl(raw) {
     raw?.iframeVideo ??
     ''
   ).trim();
+
+  if (directValue) {
+    return normalizeMediaUrl(directValue);
+  }
+
+  const visited = new WeakSet();
+  const videoHints = /(video|tour|youtube|vimeo|iframe|multimedia)/i;
+
+  function scanNode(node, keyHint = '') {
+    if (!node) return '';
+
+    if (typeof node === 'string') {
+      const trimmed = node.trim();
+      if (!trimmed) return '';
+      if (videoHints.test(keyHint) || getEmbedVideoUrl(trimmed) || isDirectVideoUrl(trimmed)) {
+        return normalizeMediaUrl(trimmed);
+      }
+      return '';
+    }
+
+    if (Array.isArray(node)) {
+      for (const item of node) {
+        const nested = scanNode(item, keyHint);
+        if (nested) return nested;
+      }
+      return '';
+    }
+
+    if (typeof node !== 'object') return '';
+    if (visited.has(node)) return '';
+    visited.add(node);
+
+    for (const [key, value] of Object.entries(node)) {
+      const nested = scanNode(value, keyHint || key);
+      if (nested) return nested;
+    }
+
+    return '';
+  }
+
+  return scanNode(raw);
 }
 
 function buildLocationLabel(parts) {
@@ -4230,6 +4337,24 @@ function getEmbedVideoUrl(url) {
   return '';
 }
 
+function renderVideoContent(container, propertyName, videoUrl) {
+  const embed = getEmbedVideoUrl(videoUrl);
+
+  if (embed) {
+    container.innerHTML = `<iframe src="${escapeHtml(embed)}" title="Video de ${escapeHtml(propertyName)}" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>`;
+    return true;
+  }
+
+  const directVideoUrl = normalizeMediaUrl(videoUrl);
+  if (isDirectVideoUrl(directVideoUrl)) {
+    container.innerHTML = `<video controls playsinline preload="metadata" style="display:block;width:100%;aspect-ratio:16/9;border:0;background:#000"><source src="${escapeHtml(directVideoUrl)}"></video>`;
+    return true;
+  }
+
+  container.innerHTML = '';
+  return false;
+}
+
 function renderGallery(property) {
   STATE.activeGallery = property.gallery && property.gallery.length ? property.gallery : [property.img];
   STATE.activeGalleryIndex = 0;
@@ -4421,16 +4546,13 @@ function setPropertyPageImage(index) {
 function renderPropertyPageVideo(property) {
   const block = document.getElementById('propertyVideoBlock');
   const container = document.getElementById('propertyVideoContainer');
-  const embed = getEmbedVideoUrl(property.video);
 
-  if (!embed) {
+  if (!renderVideoContent(container, property.name, property.video)) {
     block.style.display = 'none';
-    container.innerHTML = '';
     return;
   }
 
   block.style.display = 'block';
-  container.innerHTML = `<iframe src="${escapeHtml(embed)}" title="Video de ${escapeHtml(property.name)}" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>`;
 }
 
 function clampMortgagePriceUf(value) {
@@ -4441,6 +4563,11 @@ function clampMortgagePriceUf(value) {
 
 function clampMortgagePercent(value) {
   return Math.min(Math.max(Number(value) || 20, 10), 40);
+}
+
+function getMortgageDisplayMode() {
+  const requestedMode = STATE.propertyMortgage?.displayMode === 'CLP' ? 'CLP' : 'UF';
+  return requestedMode === 'CLP' && !STATE.ufIndicator.available ? 'UF' : requestedMode;
 }
 
 function getPropertyPriceInUf(property) {
@@ -4455,6 +4582,19 @@ function formatUfValue(value) {
   })}`;
 }
 
+function formatMortgageValue(valueUf, mode = getMortgageDisplayMode()) {
+  const amount = mode === 'CLP'
+    ? convertPriceValueBetweenModes(valueUf, 'UF', 'CLP')
+    : valueUf;
+  return formatPrice(amount, mode);
+}
+
+function getMortgagePriceStep(mode = getMortgageDisplayMode()) {
+  if (mode !== 'CLP') return 100;
+  const converted = convertPriceValueBetweenModes(100, 'UF', 'CLP');
+  return Math.max(Math.round(converted || 0), 1000);
+}
+
 function getMortgageDownPaymentUf() {
   const mortgage = STATE.propertyMortgage;
   return mortgage.priceUf * (mortgage.downPaymentPercent / 100);
@@ -4462,6 +4602,8 @@ function getMortgageDownPaymentUf() {
 
 function renderPropertyMortgageCalculator() {
   const mortgage = STATE.propertyMortgage;
+  const displayMode = getMortgageDisplayMode();
+  mortgage.displayMode = displayMode;
   const priceRange = document.getElementById('mortgagePriceRange');
   const downPaymentUfInput = document.getElementById('mortgageDownPaymentUf');
   const downPaymentPercentRange = document.getElementById('mortgageDownPaymentPercent');
@@ -4469,13 +4611,33 @@ function renderPropertyMortgageCalculator() {
   const calculator = document.getElementById('propertyMortgageCalculator');
   if (!calculator) return;
 
-  priceRange.value = String(mortgage.priceUf);
+  const priceMin = convertPriceValueBetweenModes(1000, 'UF', displayMode);
+  const priceMax = convertPriceValueBetweenModes(30000, 'UF', displayMode);
+  const priceStep = getMortgagePriceStep(displayMode);
+  const displayPriceValue = convertPriceValueBetweenModes(mortgage.priceUf, 'UF', displayMode);
+  const displayDownPayment = convertPriceValueBetweenModes(getMortgageDownPaymentUf(), 'UF', displayMode);
+
+  priceRange.min = String(Math.round(priceMin));
+  priceRange.max = String(Math.round(priceMax));
+  priceRange.step = String(priceStep);
+  priceRange.value = String(Math.round(displayPriceValue));
   downPaymentPercentRange.value = String(mortgage.downPaymentPercent);
-  downPaymentUfInput.value = String(Math.round(getMortgageDownPaymentUf()));
+  downPaymentUfInput.step = String(displayMode === 'CLP' ? 10000 : 10);
+  downPaymentUfInput.value = formatPriceInputValue(displayDownPayment, displayMode);
   rateInput.value = String(mortgage.annualRate);
 
-  document.getElementById('mortgagePriceValue').textContent = formatUfValue(mortgage.priceUf);
+  document.getElementById('mortgagePriceValue').textContent = formatMortgageValue(mortgage.priceUf, displayMode);
   document.getElementById('mortgageDownPaymentPercentValue').textContent = `${Math.round(mortgage.downPaymentPercent)}%`;
+  document.getElementById('mortgagePriceScaleMin').textContent = formatPrice(priceMin, displayMode);
+  document.getElementById('mortgagePriceScaleMax').textContent = formatPrice(priceMax, displayMode);
+  document.getElementById('mortgageDownPaymentCurrency').textContent = displayMode === 'CLP' ? '$' : 'UF';
+
+  document.querySelectorAll('#mortgageModeButtons [data-mortgage-mode]').forEach(button => {
+    const isActive = button.dataset.mortgageMode === displayMode;
+    const isDisabled = button.dataset.mortgageMode === 'CLP' && !STATE.ufIndicator.available;
+    button.classList.toggle('active', isActive);
+    button.disabled = isDisabled;
+  });
 
   document.querySelectorAll('#mortgageTermButtons .mortgage-term-button').forEach(button => {
     button.classList.toggle('active', Number(button.dataset.years) === mortgage.termYears);
@@ -4498,10 +4660,10 @@ function renderPropertyMortgageCalculator() {
   const totalPaid = monthlyPayment * installments;
   const totalInterest = Math.max(totalPaid - loanAmount, 0);
 
-  document.getElementById('mortgageLoanAmount').textContent = formatUfValue(loanAmount);
-  document.getElementById('mortgageMonthlyPayment').textContent = formatUfValue(monthlyPayment);
-  document.getElementById('mortgageTotalPaid').textContent = formatUfValue(totalPaid);
-  document.getElementById('mortgageTotalInterest').textContent = formatUfValue(totalInterest);
+  document.getElementById('mortgageLoanAmount').textContent = formatMortgageValue(loanAmount, displayMode);
+  document.getElementById('mortgageMonthlyPayment').textContent = formatMortgageValue(monthlyPayment, displayMode);
+  document.getElementById('mortgageTotalPaid').textContent = formatMortgageValue(totalPaid, displayMode);
+  document.getElementById('mortgageTotalInterest').textContent = formatMortgageValue(totalInterest, displayMode);
 }
 
 function initializePropertyMortgageCalculator(property) {
@@ -4509,6 +4671,7 @@ function initializePropertyMortgageCalculator(property) {
     visible: true,
     propertyId: String(property.id),
     priceUf: getPropertyPriceInUf(property),
+    displayMode: 'UF',
     downPaymentPercent: 20,
     annualRate: 4.5,
     termYears: 20
@@ -4529,7 +4692,11 @@ function hydratePropertyMortgageCalculatorEvents() {
   document.getElementById('pMortgageToggleBtn').addEventListener('click', togglePropertyMortgageCalculator);
 
   document.getElementById('mortgagePriceRange').addEventListener('input', event => {
-    STATE.propertyMortgage.priceUf = clampMortgagePriceUf(event.target.value);
+    const displayMode = getMortgageDisplayMode();
+    const nextValue = displayMode === 'CLP'
+      ? convertPriceValueBetweenModes(event.target.value, 'CLP', 'UF')
+      : Number(event.target.value);
+    STATE.propertyMortgage.priceUf = clampMortgagePriceUf(nextValue);
     renderPropertyMortgageCalculator();
   });
 
@@ -4540,7 +4707,11 @@ function hydratePropertyMortgageCalculatorEvents() {
 
   document.getElementById('mortgageDownPaymentUf').addEventListener('input', event => {
     const priceUf = Math.max(STATE.propertyMortgage.priceUf, 1000);
-    const nextUf = Math.min(Math.max(Number(event.target.value) || 0, 0), priceUf);
+    const displayMode = getMortgageDisplayMode();
+    const nextRaw = displayMode === 'CLP'
+      ? convertPriceValueBetweenModes(event.target.value, 'CLP', 'UF')
+      : Number(event.target.value);
+    const nextUf = Math.min(Math.max(Number(nextRaw) || 0, 0), priceUf);
     const nextPercent = clampMortgagePercent((nextUf / priceUf) * 100);
     STATE.propertyMortgage.downPaymentPercent = Math.round(nextPercent);
     renderPropertyMortgageCalculator();
@@ -4554,6 +4725,15 @@ function hydratePropertyMortgageCalculatorEvents() {
   document.querySelectorAll('#mortgageTermButtons .mortgage-term-button').forEach(button => {
     button.addEventListener('click', () => {
       STATE.propertyMortgage.termYears = Number(button.dataset.years) || 20;
+      renderPropertyMortgageCalculator();
+    });
+  });
+
+  document.querySelectorAll('#mortgageModeButtons [data-mortgage-mode]').forEach(button => {
+    button.addEventListener('click', () => {
+      const nextMode = button.dataset.mortgageMode === 'CLP' ? 'CLP' : 'UF';
+      if (nextMode === 'CLP' && !STATE.ufIndicator.available) return;
+      STATE.propertyMortgage.displayMode = nextMode;
       renderPropertyMortgageCalculator();
     });
   });
@@ -4696,16 +4876,13 @@ function goToCatalog(filters = {}, options = {}) {
 function renderDetailVideo(property) {
   const block = document.getElementById('videoBlock');
   const container = document.getElementById('videoContainer');
-  const embed = getEmbedVideoUrl(property.video);
 
-  if (!embed) {
+  if (!renderVideoContent(container, property.name, property.video)) {
     block.style.display = 'none';
-    container.innerHTML = '';
     return;
   }
 
   block.style.display = 'block';
-  container.innerHTML = `<iframe src="${escapeHtml(embed)}" title="Video de ${escapeHtml(property.name)}" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>`;
 }
 
 async function openDetail(id) {

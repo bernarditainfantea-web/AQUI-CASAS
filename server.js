@@ -33,8 +33,7 @@ const LEGACY_DEFAULT_PARAMS = {
   detallePropiedad: process.env.LEGACY_PARAMS_DETALLE || ''
 };
 const LEGACY_PUBLIC_SITE_URL = (process.env.LEGACY_PUBLIC_SITE_URL || 'https://www.aquicasas.cl').replace(/\/$/, '');
-const OFINET_IMAGE_URL_SOURCE = 'http://www.aquicasas.cl';
-const OFINET_IMAGE_URL_TARGET = 'http://ofinet.aquicasas.cl';
+const MEDIA_PROXY_ALLOWED_HOSTS = new Set(['ofinet.aquicasas.cl', 'www.aquicasas.cl', 'aquicasas.cl']);
 
 function resolveEndpoint(template, params = {}) {
   return template.replace(/\{(\w+)\}/g, (_, key) => encodeURIComponent(params[key] ?? ''));
@@ -51,24 +50,6 @@ function makeErrorResponse(res, message, status = 503, extra = {}) {
     ErrorMensaje: message,
     ...extra
   });
-}
-
-function rewriteOfinetImageUrls(value) {
-  if (typeof value === 'string') {
-    return value.replaceAll(OFINET_IMAGE_URL_SOURCE, OFINET_IMAGE_URL_TARGET);
-  }
-
-  if (Array.isArray(value)) {
-    return value.map(rewriteOfinetImageUrls);
-  }
-
-  if (value && typeof value === 'object') {
-    return Object.fromEntries(
-      Object.entries(value).map(([key, nestedValue]) => [key, rewriteOfinetImageUrls(nestedValue)])
-    );
-  }
-
-  return value;
 }
 
 function getProviderConfig() {
@@ -154,7 +135,7 @@ async function requestOfinet(endpoint) {
     throw new Error(message);
   }
 
-  return rewriteOfinetImageUrls(data);
+  return data;
 }
 
 async function requestOfinetPost(endpoint, payload) {
@@ -174,7 +155,7 @@ async function requestOfinetPost(endpoint, payload) {
     throw new Error(message);
   }
 
-  return rewriteOfinetImageUrls(data);
+  return data;
 }
 
 async function requestLegacyPublicPropertyImages(id) {
@@ -260,6 +241,56 @@ async function requestUfIndicator() {
     valor: latest.valor,
     fuente: 'mindicador.cl'
   };
+}
+
+async function proxyRemoteMedia(res, rawUrl) {
+  const mediaUrl = String(rawUrl || '').trim();
+
+  if (!mediaUrl) {
+    makeErrorResponse(res, 'Debes indicar una URL de medio para el proxy.', 400);
+    return;
+  }
+
+  let parsedUrl;
+
+  try {
+    parsedUrl = new URL(mediaUrl);
+  } catch (error) {
+    makeErrorResponse(res, 'La URL del medio no es válida.', 400);
+    return;
+  }
+
+  if (!['http:', 'https:'].includes(parsedUrl.protocol) || !MEDIA_PROXY_ALLOWED_HOSTS.has(parsedUrl.hostname)) {
+    makeErrorResponse(res, 'La URL del medio no está permitida.', 403);
+    return;
+  }
+
+  try {
+    const response = await fetch(parsedUrl, {
+      headers: {
+        Accept: '*/*'
+      }
+    });
+    const buffer = Buffer.from(await response.arrayBuffer());
+    const contentType = response.headers.get('content-type');
+    const cacheControl = response.headers.get('cache-control');
+
+    if (contentType) {
+      res.set('Content-Type', contentType);
+    }
+
+    if (cacheControl) {
+      res.set('Cache-Control', cacheControl);
+    } else {
+      res.set('Cache-Control', 'public, max-age=300');
+    }
+
+    res.status(response.status).send(buffer);
+  } catch (error) {
+    makeErrorResponse(res, `No se pudo obtener el medio remoto: ${error.message}`, 502, {
+      provider: 'media_proxy'
+    });
+  }
 }
 
 function parseInteger(value, fallback) {
@@ -458,6 +489,10 @@ app.get('/api/indicators/uf', async (_req, res) => {
       resource: 'uf'
     });
   }
+});
+
+app.get('/api/media', async (req, res) => {
+  await proxyRemoteMedia(res, req.query.url);
 });
 
 app.get('*', (_req, res) => {
