@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title">
+  <title>Aqui Casas favicon</title>
+  <rect width="64" height="64" rx="14" fill="#0a1f42"/>
+  <path d="M32 11.5c1.6 0 2.7.7 4 1.8l14.8 12.6c2.3 1.9 1 5.7-2 5.7h-2.4v17.2c0 2.4-2 4.4-4.4 4.4H21.9c-2.4 0-4.4-2-4.4-4.4V31.6H15c-3 0-4.2-3.8-2-5.7l14.9-12.6c1.3-1.1 2.5-1.8 4.1-1.8Z" fill="#d4a941"/>
+  <path d="M32 18.4 19 29.4h3.3v18.1c0 .6.5 1.1 1.1 1.1h17.2c.6 0 1.1-.5 1.1-1.1V29.4H45L32 18.4Z" fill="#0a1f42"/>
+  <circle cx="32" cy="35.2" r="5.2" fill="#fefefe"/>
+</svg>
