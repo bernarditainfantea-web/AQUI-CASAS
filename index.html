@@ -3004,9 +3004,19 @@ function buildMediaProxyUrl(url) {
   return `${getMediaProxyBaseUrl()}?url=${encodeURIComponent(url)}`;
 }
 
+function buildOfinetMediaUrl(path) {
+  const normalizedPath = String(path || '').trim().replace(/^\/+/, '');
+  return normalizedPath ? `http://ofinet.aquicasas.cl/${normalizedPath}` : '';
+}
+
 function normalizeMediaUrl(value) {
   const normalizedValue = String(value || '').trim();
   if (!normalizedValue) return '';
+
+  const isRelativeMediaPath = /^\/?(fotos?|imagenes?|images?|media)\//i.test(normalizedValue);
+  if (isRelativeMediaPath) {
+    return buildMediaProxyUrl(buildOfinetMediaUrl(normalizedValue));
+  }
 
   const absoluteValue = normalizedValue.startsWith('//')
     ? `http:${normalizedValue}`
