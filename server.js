@@ -33,6 +33,7 @@ const LEGACY_DEFAULT_PARAMS = {
   detallePropiedad: process.env.LEGACY_PARAMS_DETALLE || ''
 };
 const LEGACY_PUBLIC_SITE_URL = (process.env.LEGACY_PUBLIC_SITE_URL || 'https://www.aquicasas.cl').replace(/\/$/, '');
+const OFINET_BACKOFFICE_SITE_URL = (process.env.OFINET_BACKOFFICE_SITE_URL || 'http://ofinet.aquicasas.cl').replace(/\/$/, '');
 const MEDIA_PROXY_ALLOWED_HOSTS = new Set(['ofinet.aquicasas.cl', 'www.aquicasas.cl', 'aquicasas.cl']);
 
 function resolveEndpoint(template, params = {}) {
@@ -183,6 +184,31 @@ async function requestLegacyPublicPropertyImages(id) {
   };
 }
 
+async function requestOfinetBackofficePropertyImages(id) {
+  const response = await fetch(`${OFINET_BACKOFFICE_SITE_URL}/property.asp?idPro=${encodeURIComponent(id)}`, {
+    headers: {
+      Accept: 'text/html,application/xhtml+xml'
+    }
+  });
+
+  if (!response.ok) {
+    throw new Error(`No se pudo consultar la ficha del back office OFINET (${response.status}).`);
+  }
+
+  const html = await response.text();
+  const matches = [...html.matchAll(/<img[^>]+src=["']([^"']*fotos\/[^"']+)["']/gi)];
+  const images = [...new Set(matches
+    .map(match => match[1])
+    .filter(Boolean)
+    .map(src => src.startsWith('http') ? src : `${OFINET_BACKOFFICE_SITE_URL}/${src.replace(/^\/+/, '')}`))];
+
+  return {
+    responseCode: 0,
+    id,
+    images
+  };
+}
+
 async function requestLegacyPublicPropertyVideo(id) {
   const response = await fetch(`${LEGACY_PUBLIC_SITE_URL}/property.asp?idPro=${encodeURIComponent(id)}`, {
     headers: {
@@ -192,6 +218,37 @@ async function requestLegacyPublicPropertyVideo(id) {
 
   if (!response.ok) {
     throw new Error(`No se pudo consultar la ficha publica legacy (${response.status}).`);
+  }
+
+  const html = await response.text();
+  const iframeSources = [...html.matchAll(/<iframe[^>]+src=["']([^"']+)["']/gi)]
+    .map(match => match[1])
+    .filter(Boolean);
+
+  const directVideoUrls = [...html.matchAll(/https?:\/\/[^\s"'<>]+/gi)]
+    .map(match => match[0])
+    .filter(Boolean);
+
+  const candidates = [...new Set([...iframeSources, ...directVideoUrls])]
+    .map(url => url.startsWith('//') ? `https:${url}` : url)
+    .filter(url => /youtube\.com|youtu\.be|vimeo\.com/i.test(url));
+
+  return {
+    responseCode: 0,
+    id,
+    video: candidates[0] || ''
+  };
+}
+
+async function requestOfinetBackofficePropertyVideo(id) {
+  const response = await fetch(`${OFINET_BACKOFFICE_SITE_URL}/property.asp?idPro=${encodeURIComponent(id)}`, {
+    headers: {
+      Accept: 'text/html,application/xhtml+xml'
+    }
+  });
+
+  if (!response.ok) {
+    throw new Error(`No se pudo consultar la ficha del back office OFINET (${response.status}).`);
   }
 
   const html = await response.text();
@@ -460,23 +517,43 @@ app.get('/api/ofinet/propiedades/:id', async (req, res) => {
 
 app.get('/api/ofinet/propiedades/:id/legacy-images', async (req, res) => {
   try {
-    res.json(await requestLegacyPublicPropertyImages(req.params.id));
+    let payload = await requestLegacyPublicPropertyImages(req.params.id);
+
+    if (!Array.isArray(payload.images) || payload.images.length === 0) {
+      payload = await requestOfinetBackofficePropertyImages(req.params.id);
+    }
+
+    res.json(payload);
   } catch (error) {
-    makeErrorResponse(res, error.message, 502, {
-      provider: 'legacy_public_site',
-      resource: 'legacy_images'
-    });
+    try {
+      res.json(await requestOfinetBackofficePropertyImages(req.params.id));
+    } catch (fallbackError) {
+      makeErrorResponse(res, fallbackError.message || error.message, 502, {
+        provider: 'ofinet_backoffice_site',
+        resource: 'legacy_images'
+      });
+    }
   }
 });
 
 app.get('/api/ofinet/propiedades/:id/legacy-video', async (req, res) => {
   try {
-    res.json(await requestLegacyPublicPropertyVideo(req.params.id));
+    let payload = await requestLegacyPublicPropertyVideo(req.params.id);
+
+    if (!String(payload.video || '').trim()) {
+      payload = await requestOfinetBackofficePropertyVideo(req.params.id);
+    }
+
+    res.json(payload);
   } catch (error) {
-    makeErrorResponse(res, error.message, 502, {
-      provider: 'legacy_public_site',
-      resource: 'legacy_video'
-    });
+    try {
+      res.json(await requestOfinetBackofficePropertyVideo(req.params.id));
+    } catch (fallbackError) {
+      makeErrorResponse(res, fallbackError.message || error.message, 502, {
+        provider: 'ofinet_backoffice_site',
+        resource: 'legacy_video'
+      });
+    }
   }
 });
 
