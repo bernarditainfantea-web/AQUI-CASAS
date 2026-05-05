@@ -33,6 +33,8 @@ const LEGACY_DEFAULT_PARAMS = {
   detallePropiedad: process.env.LEGACY_PARAMS_DETALLE || ''
 };
 const LEGACY_PUBLIC_SITE_URL = (process.env.LEGACY_PUBLIC_SITE_URL || 'https://www.aquicasas.cl').replace(/\/$/, '');
+const OFINET_IMAGE_URL_SOURCE = 'http://www.aquicasas.cl';
+const OFINET_IMAGE_URL_TARGET = 'http://ofinet.aquicasas.cl';
 
 function resolveEndpoint(template, params = {}) {
   return template.replace(/\{(\w+)\}/g, (_, key) => encodeURIComponent(params[key] ?? ''));
@@ -49,6 +51,24 @@ function makeErrorResponse(res, message, status = 503, extra = {}) {
     ErrorMensaje: message,
     ...extra
   });
+}
+
+function rewriteOfinetImageUrls(value) {
+  if (typeof value === 'string') {
+    return value.replaceAll(OFINET_IMAGE_URL_SOURCE, OFINET_IMAGE_URL_TARGET);
+  }
+
+  if (Array.isArray(value)) {
+    return value.map(rewriteOfinetImageUrls);
+  }
+
+  if (value && typeof value === 'object') {
+    return Object.fromEntries(
+      Object.entries(value).map(([key, nestedValue]) => [key, rewriteOfinetImageUrls(nestedValue)])
+    );
+  }
+
+  return value;
 }
 
 function getProviderConfig() {
@@ -134,7 +154,7 @@ async function requestOfinet(endpoint) {
     throw new Error(message);
   }
 
-  return data;
+  return rewriteOfinetImageUrls(data);
 }
 
 async function requestOfinetPost(endpoint, payload) {
@@ -154,7 +174,7 @@ async function requestOfinetPost(endpoint, payload) {
     throw new Error(message);
   }
 
-  return data;
+  return rewriteOfinetImageUrls(data);
 }
 
 async function requestLegacyPublicPropertyImages(id) {
