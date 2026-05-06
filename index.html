@@ -3741,6 +3741,22 @@ async function loadPropertyDetail(id) {
     }
   }
 
+  if (!getEmbedVideoUrl(enriched.video)) {
+    for (const legacyId of enriched.legacyIdCandidates || [id]) {
+      try {
+        const legacyVideoPayload = await fetchJson(`${API_CONFIG.endpoints.propiedades}/${encodeURIComponent(legacyId)}/legacy-video`);
+        const legacyVideoUrl = getVideoUrl(legacyVideoPayload) || String(legacyVideoPayload?.video || '').trim();
+
+        if (getEmbedVideoUrl(legacyVideoUrl) || isDirectVideoUrl(legacyVideoUrl)) {
+          enriched.video = legacyVideoUrl;
+          break;
+        }
+      } catch (error) {
+        console.warn(`No se pudo recuperar video OFINET para la propiedad ${id} usando ${legacyId}.`, error);
+      }
+    }
+  }
+
   STATE.propertyMap[String(enriched.id)] = enriched;
   STATE.properties = STATE.properties.map(property => String(property.id) === String(enriched.id) ? enriched : property);
   return enriched;
