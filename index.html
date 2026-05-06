@@ -2449,7 +2449,7 @@
       <div class="footer-col">
         <h4>Accesos</h4>
         <ul>
-          <li><a href="http://ofinet.aquicasas.cl/intranet.asp" target="_blank" rel="noopener noreferrer">Administrador</a></li>
+          <li><a href="https://ofinet.aquicasas.cl/intranet.asp" target="_blank" rel="noopener noreferrer">Administrador</a></li>
           <li><a href="https://wa.me/56991776069" target="_blank" rel="noopener noreferrer">WhatsApp</a></li>
           <li><a href="mailto:ventas@aquicasas.cl">Solicitar contacto</a></li>
         </ul>
@@ -3006,7 +3006,7 @@ function buildMediaProxyUrl(url) {
 
 function buildOfinetMediaUrl(path) {
   const normalizedPath = String(path || '').trim().replace(/^\/+/, '');
-  return normalizedPath ? `http://ofinet.aquicasas.cl/${normalizedPath}` : '';
+  return normalizedPath ? `https://ofinet.aquicasas.cl/${normalizedPath}` : '';
 }
 
 function normalizeMediaUrl(value) {
@@ -3019,7 +3019,7 @@ function normalizeMediaUrl(value) {
   }
 
   const absoluteValue = normalizedValue.startsWith('//')
-    ? `http:${normalizedValue}`
+    ? `${window.location.protocol}${normalizedValue}`
     : normalizedValue;
 
   try {

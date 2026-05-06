@@ -33,7 +33,7 @@ const LEGACY_DEFAULT_PARAMS = {
   detallePropiedad: process.env.LEGACY_PARAMS_DETALLE || ''
 };
 const LEGACY_PUBLIC_SITE_URL = (process.env.LEGACY_PUBLIC_SITE_URL || 'https://www.aquicasas.cl').replace(/\/$/, '');
-const OFINET_BACKOFFICE_SITE_URL = (process.env.OFINET_BACKOFFICE_SITE_URL || 'http://ofinet.aquicasas.cl').replace(/\/$/, '');
+const OFINET_BACKOFFICE_SITE_URL = (process.env.OFINET_BACKOFFICE_SITE_URL || 'https://ofinet.aquicasas.cl').replace(/\/$/, '');
 const MEDIA_PROXY_ALLOWED_HOSTS = new Set(['ofinet.aquicasas.cl', 'www.aquicasas.cl', 'aquicasas.cl']);
 
 function resolveEndpoint(template, params = {}) {
