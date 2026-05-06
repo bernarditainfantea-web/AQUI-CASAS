@@ -4330,12 +4330,18 @@ function getEmbedVideoUrl(url) {
       return `https://www.youtube.com/embed/${parsed.pathname.replace('/', '')}`;
     }
     if (parsed.hostname.includes('youtube.com')) {
+      if (parsed.pathname.startsWith('/embed/')) {
+        const embedId = parsed.pathname.split('/').filter(Boolean).pop();
+        return embedId ? `https://www.youtube.com/embed/${embedId}` : '';
+      }
       if (parsed.pathname.startsWith('/shorts/')) {
         const shortId = parsed.pathname.split('/').filter(Boolean).pop();
         return shortId ? `https://www.youtube.com/embed/${shortId}` : '';
       }
       const videoId = parsed.searchParams.get('v');
-      return videoId ? `https://www.youtube.com/embed/${videoId}` : '';
+      if (videoId) return `https://www.youtube.com/embed/${videoId}`;
+      const pathId = parsed.pathname.split('/').filter(Boolean).pop();
+      return pathId ? `https://www.youtube.com/embed/${pathId}` : '';
     }
     if (parsed.hostname.includes('vimeo.com')) {
       const videoId = parsed.pathname.split('/').filter(Boolean).pop();

@@ -327,6 +327,9 @@ async function requestOfinetBackofficePropertyVideo(id) {
 }
 
 function extractVideoCandidatesFromHtml(html) {
+  const decodedHtml = String(html || '')
+    .replace(/&amp;/gi, '&')
+    .replace(/\\\//g, '/');
   const iframeSources = [...html.matchAll(/<iframe[^>]+src=["']([^"']+)["']/gi)]
     .map(match => match[1]);
   const anchorHrefs = [...html.matchAll(/<a[^>]+href=["']([^"']+)["']/gi)]
@@ -335,8 +338,10 @@ function extractVideoCandidatesFromHtml(html) {
     .map(match => match[1]);
   const directVideoUrls = [...html.matchAll(/https?:\/\/[^\s"'<>]+/gi)]
     .map(match => match[0]);
+  const genericQuotedUrls = [...decodedHtml.matchAll(/(?:https?:)?\/\/[^\s"'<>\\)]+/gi)]
+    .map(match => match[0]);
 
-  return [...new Set([...iframeSources, ...anchorHrefs, ...onclickAssignedUrls, ...directVideoUrls]
+  return [...new Set([...iframeSources, ...anchorHrefs, ...onclickAssignedUrls, ...directVideoUrls, ...genericQuotedUrls]
     .filter(Boolean)
     .map(url => url.startsWith('//') ? `https:${url}` : url)
     .filter(url => /youtube\.com|youtu\.be|vimeo\.com/i.test(url)))];
