@@ -6,7 +6,7 @@ const PORT = Number(process.env.PORT || 3000);
 
 const DATA_PROVIDER = process.env.DATA_PROVIDER || 'ofinet_rest';
 
-const OFINET_BASE_URL = (process.env.OFINET_BASE_URL || '').replace(/\/$/, '');
+const OFINET_BASE_URL = normalizeOfinetUrl(process.env.OFINET_BASE_URL || '');
 const OFINET_TOKEN = process.env.OFINET_TOKEN || '';
 const OFINET_ENDPOINTS = {
   comunas: process.env.OFINET_ENDPOINT_COMUNAS || 'Comuna',
@@ -33,8 +33,25 @@ const LEGACY_DEFAULT_PARAMS = {
   detallePropiedad: process.env.LEGACY_PARAMS_DETALLE || ''
 };
 const LEGACY_PUBLIC_SITE_URL = (process.env.LEGACY_PUBLIC_SITE_URL || 'https://www.aquicasas.cl').replace(/\/$/, '');
-const OFINET_BACKOFFICE_SITE_URL = (process.env.OFINET_BACKOFFICE_SITE_URL || 'https://ofinet.aquicasas.cl').replace(/\/$/, '');
+const OFINET_BACKOFFICE_SITE_URL = normalizeOfinetUrl(process.env.OFINET_BACKOFFICE_SITE_URL, 'https://ofinet.aquicasas.cl');
 const MEDIA_PROXY_ALLOWED_HOSTS = new Set(['ofinet.aquicasas.cl', 'www.aquicasas.cl', 'aquicasas.cl']);
+
+function normalizeOfinetUrl(rawUrl, fallback = '') {
+  const trimmed = String(rawUrl || fallback || '').trim().replace(/\/$/, '');
+  if (!trimmed) return '';
+
+  try {
+    const parsed = new URL(trimmed);
+    if (parsed.hostname === 'ofinet.aquicasas.cl' && parsed.protocol === 'http:') {
+      parsed.protocol = 'https:';
+      return parsed.toString().replace(/\/$/, '');
+    }
+  } catch (error) {
+    return trimmed;
+  }
+
+  return trimmed;
+}
 
 function resolveEndpoint(template, params = {}) {
   return template.replace(/\{(\w+)\}/g, (_, key) => encodeURIComponent(params[key] ?? ''));
