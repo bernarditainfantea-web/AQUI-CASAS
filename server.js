@@ -301,7 +301,7 @@ async function requestLegacyPublicPropertyVideo(id) {
   return {
     responseCode: 0,
     id,
-    video: candidates[0] || ''
+    video: toEmbedVideoUrl(candidates[0] || '')
   };
 }
 
@@ -322,7 +322,7 @@ async function requestOfinetBackofficePropertyVideo(id) {
   return {
     responseCode: 0,
     id,
-    video: candidates[0] || ''
+    video: toEmbedVideoUrl(candidates[0] || '')
   };
 }
 
@@ -345,6 +345,49 @@ function extractVideoCandidatesFromHtml(html) {
     .filter(Boolean)
     .map(url => url.startsWith('//') ? `https:${url}` : url)
     .filter(url => /youtube\.com|youtu\.be|vimeo\.com/i.test(url)))];
+}
+
+function toEmbedVideoUrl(rawUrl) {
+  const value = String(rawUrl || '').trim();
+  if (!value) return '';
+
+  if (value.includes('youtube.com/embed') || value.includes('player.vimeo.com/video')) {
+    return value;
+  }
+
+  if (/^[A-Za-z0-9_-]{11}$/.test(value)) {
+    return `https://www.youtube.com/embed/${value}`;
+  }
+
+  try {
+    const parsed = new URL(value);
+    if (parsed.hostname.includes('youtu.be')) {
+      const videoId = parsed.pathname.replace(/^\/+/, '');
+      return videoId ? `https://www.youtube.com/embed/${videoId}` : '';
+    }
+    if (parsed.hostname.includes('youtube.com')) {
+      if (parsed.pathname.startsWith('/embed/')) {
+        const embedId = parsed.pathname.split('/').filter(Boolean).pop();
+        return embedId ? `https://www.youtube.com/embed/${embedId}` : '';
+      }
+      if (parsed.pathname.startsWith('/shorts/')) {
+        const shortId = parsed.pathname.split('/').filter(Boolean).pop();
+        return shortId ? `https://www.youtube.com/embed/${shortId}` : '';
+      }
+      const videoId = parsed.searchParams.get('v');
+      if (videoId) return `https://www.youtube.com/embed/${videoId}`;
+      const pathId = parsed.pathname.split('/').filter(Boolean).pop();
+      return pathId ? `https://www.youtube.com/embed/${pathId}` : '';
+    }
+    if (parsed.hostname.includes('vimeo.com')) {
+      const videoId = parsed.pathname.split('/').filter(Boolean).pop();
+      return videoId ? `https://player.vimeo.com/video/${videoId}` : '';
+    }
+  } catch (error) {
+    return '';
+  }
+
+  return '';
 }
 
 async function requestUfIndicator() {
