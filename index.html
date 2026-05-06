@@ -683,6 +683,27 @@
       display:grid;
       gap:24px;
     }
+    .property-page-topbar{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:16px;
+      flex-wrap:wrap;
+    }
+    .property-page-brand{
+      display:inline-flex;
+      align-items:center;
+      width:max-content;
+      padding:14px 20px;
+      border-radius:22px;
+      background:rgba(255,255,255,.96);
+      border:1px solid rgba(15,43,91,.08);
+      box-shadow:var(--shadow-soft);
+    }
+    .property-page-brand .logo-mark{
+      height:44px;
+      max-width:min(280px, 55vw);
+    }
     .property-page-back{
       display:inline-flex;
       align-items:center;
@@ -1973,6 +1994,9 @@
       .prop-attrs{grid-template-columns:repeat(3,minmax(0,1fr))}
       .prop-cta-row{flex-direction:column}
       .property-page{padding:calc(var(--nav-height) + 18px) 4vw 60px}
+      .property-page-topbar{align-items:stretch}
+      .property-page-brand,
+      .property-page-back{width:100%;justify-content:center}
       .property-page-main{min-height:320px}
       .property-page-panel{position:static;padding:22px}
       .property-page-name{font-size:2.2rem}
@@ -2423,48 +2447,16 @@
     </section>
   </div>
 
-  <footer>
-    <div class="footer-top">
-      <div class="footer-brand">
-        <div class="footer-logo">
-          <img class="logo-mark" src="LOGO AQUI CASAS.png" alt="Aquí Casas"/>
-        </div>
-        <p>Propiedades seleccionadas con una experiencia de búsqueda más clara, cercana y profesional.</p>
-        <div class="footer-contacts">
-          <a href="tel:+56991776069">+56 9 9177 6069</a>
-          <a href="mailto:ventas@aquicasas.cl">ventas@aquicasas.cl</a>
-          <span>Teatinos 251 of 1008, Santiago</span>
-        </div>
-      </div>
-      <div class="footer-col">
-        <h4>Navegación</h4>
-        <ul>
-          <li><a href="#inicio">Inicio</a></li>
-          <li><a href="/propiedades">Propiedades</a></li>
-          <li><a href="#empresa">Nosotros</a></li>
-          <li><a href="#mapa">Cobertura</a></li>
-          <li><a href="#contacto">Contacto</a></li>
-        </ul>
-      </div>
-      <div class="footer-col">
-        <h4>Accesos</h4>
-        <ul>
-          <li><a href="https://ofinet.aquicasas.cl/intranet.asp" target="_blank" rel="noopener noreferrer">Administrador</a></li>
-          <li><a href="https://wa.me/56991776069" target="_blank" rel="noopener noreferrer">WhatsApp</a></li>
-          <li><a href="mailto:ventas@aquicasas.cl">Solicitar contacto</a></li>
-        </ul>
-      </div>
-    </div>
-    <div class="footer-bottom">
-      <span>© 2026 Aquí Casas. Todos los derechos reservados.</span>
-      <span>Santiago, Chile</span>
-    </div>
-  </footer>
   </div>
 
   <section class="property-page" id="propertyPage">
     <div class="property-page-shell">
-      <a class="property-page-back" href="/" onclick="goHome(event)">← Volver al inicio</a>
+      <div class="property-page-topbar">
+        <a class="property-page-brand" href="/" onclick="goHome(event)" aria-label="Volver al inicio">
+          <img class="logo-mark" src="LOGO AQUI CASAS.png" alt="Aquí Casas"/>
+        </a>
+        <a class="property-page-back" href="/" onclick="goHome(event)">← Volver al inicio</a>
+      </div>
       <div class="property-page-empty" id="propertyPageEmpty" style="display:none">
         <h2>Propiedad no encontrada</h2>
         <p>No pudimos cargar esta ficha. Puedes volver al inicio para seguir explorando propiedades disponibles.</p>
@@ -2588,21 +2580,56 @@
                   <strong id="mortgageMonthlyPayment">UF 0</strong>
                 </div>
                 <div class="mortgage-result-card">
-                  <span>Total pagado</span>
-                  <strong id="mortgageTotalPaid">UF 0</strong>
-                </div>
-                <div class="mortgage-result-card">
-                  <span>Interés total</span>
-                  <strong id="mortgageTotalInterest">UF 0</strong>
+                  <span>Renta minima requerida</span>
+                  <strong id="mortgageRequiredIncome">UF 0</strong>
+                  <small>Puedes complementar rentas con tu pareja u otro cotitular</small>
                 </div>
               </div>
             </div>
-            <div class="mortgage-disclaimer">Cálculo referencial. El dividendo real puede variar según institución financiera, seguros de desgravamen e incendio, comisiones y condiciones específicas del crédito.</div>
+            <div class="mortgage-disclaimer">Este es un calculo referencial. Siempre consulta con tu banco o ejecutivo hipotecario para validar tu caso especifico.</div>
           </div>
         </div>
       </div>
     </div>
   </section>
+
+  <footer>
+    <div class="footer-top">
+      <div class="footer-brand">
+        <div class="footer-logo">
+          <img class="logo-mark" src="LOGO AQUI CASAS.png" alt="Aquí Casas"/>
+        </div>
+        <p>Propiedades seleccionadas con una experiencia de búsqueda más clara, cercana y profesional.</p>
+        <div class="footer-contacts">
+          <a href="tel:+56991776069">+56 9 9177 6069</a>
+          <a href="mailto:ventas@aquicasas.cl">ventas@aquicasas.cl</a>
+          <span>Teatinos 251 of 1008, Santiago</span>
+        </div>
+      </div>
+      <div class="footer-col">
+        <h4>Navegación</h4>
+        <ul>
+          <li><a href="#inicio">Inicio</a></li>
+          <li><a href="/propiedades">Propiedades</a></li>
+          <li><a href="#empresa">Nosotros</a></li>
+          <li><a href="#mapa">Cobertura</a></li>
+          <li><a href="#contacto">Contacto</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Accesos</h4>
+        <ul>
+          <li><a href="https://ofinet.aquicasas.cl/intranet.asp" target="_blank" rel="noopener noreferrer">Administrador</a></li>
+          <li><a href="https://wa.me/56991776069" target="_blank" rel="noopener noreferrer">WhatsApp</a></li>
+          <li><a href="mailto:ventas@aquicasas.cl">Solicitar contacto</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 Aquí Casas. Todos los derechos reservados.</span>
+      <span>Santiago, Chile</span>
+    </div>
+  </footer>
 
   <a class="wa-btn" href="https://wa.me/56991776069" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp">
     <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413z"/></svg>
@@ -4677,13 +4704,11 @@ function renderPropertyMortgageCalculator() {
     }
   }
 
-  const totalPaid = monthlyPayment * installments;
-  const totalInterest = Math.max(totalPaid - loanAmount, 0);
+  const requiredIncome = monthlyPayment / 0.25;
 
   document.getElementById('mortgageLoanAmount').textContent = formatMortgageValue(loanAmount, displayMode);
   document.getElementById('mortgageMonthlyPayment').textContent = formatMortgageValue(monthlyPayment, displayMode);
-  document.getElementById('mortgageTotalPaid').textContent = formatMortgageValue(totalPaid, displayMode);
-  document.getElementById('mortgageTotalInterest').textContent = formatMortgageValue(totalInterest, displayMode);
+  document.getElementById('mortgageRequiredIncome').textContent = formatMortgageValue(requiredIncome, displayMode);
 }
 
 function initializePropertyMortgageCalculator(property) {
