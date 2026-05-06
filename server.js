@@ -296,17 +296,7 @@ async function requestLegacyPublicPropertyVideo(id) {
   }
 
   const html = await response.text();
-  const iframeSources = [...html.matchAll(/<iframe[^>]+src=["']([^"']+)["']/gi)]
-    .map(match => match[1])
-    .filter(Boolean);
-
-  const directVideoUrls = [...html.matchAll(/https?:\/\/[^\s"'<>]+/gi)]
-    .map(match => match[0])
-    .filter(Boolean);
-
-  const candidates = [...new Set([...iframeSources, ...directVideoUrls])]
-    .map(url => url.startsWith('//') ? `https:${url}` : url)
-    .filter(url => /youtube\.com|youtu\.be|vimeo\.com/i.test(url));
+  const candidates = extractVideoCandidatesFromHtml(html);
 
   return {
     responseCode: 0,
@@ -327,23 +317,29 @@ async function requestOfinetBackofficePropertyVideo(id) {
   }
 
   const html = await response.text();
-  const iframeSources = [...html.matchAll(/<iframe[^>]+src=["']([^"']+)["']/gi)]
-    .map(match => match[1])
-    .filter(Boolean);
-
-  const directVideoUrls = [...html.matchAll(/https?:\/\/[^\s"'<>]+/gi)]
-    .map(match => match[0])
-    .filter(Boolean);
-
-  const candidates = [...new Set([...iframeSources, ...directVideoUrls])]
-    .map(url => url.startsWith('//') ? `https:${url}` : url)
-    .filter(url => /youtube\.com|youtu\.be|vimeo\.com/i.test(url));
+  const candidates = extractVideoCandidatesFromHtml(html);
 
   return {
     responseCode: 0,
     id,
     video: candidates[0] || ''
   };
+}
+
+function extractVideoCandidatesFromHtml(html) {
+  const iframeSources = [...html.matchAll(/<iframe[^>]+src=["']([^"']+)["']/gi)]
+    .map(match => match[1]);
+  const anchorHrefs = [...html.matchAll(/<a[^>]+href=["']([^"']+)["']/gi)]
+    .map(match => match[1]);
+  const onclickAssignedUrls = [...html.matchAll(/(?:href|location|window\.open)\s*=\s*['"]([^'"]+)['"]/gi)]
+    .map(match => match[1]);
+  const directVideoUrls = [...html.matchAll(/https?:\/\/[^\s"'<>]+/gi)]
+    .map(match => match[0]);
+
+  return [...new Set([...iframeSources, ...anchorHrefs, ...onclickAssignedUrls, ...directVideoUrls]
+    .filter(Boolean)
+    .map(url => url.startsWith('//') ? `https:${url}` : url)
+    .filter(url => /youtube\.com|youtu\.be|vimeo\.com/i.test(url)))];
 }
 
 async function requestUfIndicator() {
