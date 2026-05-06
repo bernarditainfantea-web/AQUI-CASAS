@@ -70,6 +70,46 @@ function makeErrorResponse(res, message, status = 503, extra = {}) {
   });
 }
 
+function sanitizeMalformedVideoFields(bodyText) {
+  const videoFieldNames = [
+    'video',
+    'Video',
+    'VideoUrl',
+    'UrlVideo',
+    'video_url',
+    'TourVirtual',
+    'tourVirtual',
+    'url_video',
+    'URLVideo',
+    'videoYoutube',
+    'VideoYoutube',
+    'youtube',
+    'Youtube',
+    'youTube',
+    'video_youtube',
+    'VideoYouTube',
+    'Tour',
+    'tour',
+    'Multimedia',
+    'multimedia',
+    'IframeVideo',
+    'iframeVideo'
+  ];
+  const fieldPattern = new RegExp(
+    `("(?:${videoFieldNames.join('|')})"\\s*:\\s*")([\\s\\S]*?)("(?=\\s*,\\s*"[^"]+"\\s*:|\\s*[}\\]]))`,
+    'g'
+  );
+
+  return bodyText.replace(fieldPattern, (_match, prefix, value, suffix) => {
+    const normalizedValue = value
+      .replace(/\r?\n/g, ' ')
+      .replace(/\\"/g, '"')
+      .trim();
+
+    return `${prefix}${JSON.stringify(normalizedValue).slice(1, -1)}${suffix}`;
+  });
+}
+
 function getProviderConfig() {
   if (DATA_PROVIDER === 'legacy_asp') {
     return {
@@ -132,7 +172,19 @@ async function parseJsonResponse(response) {
 
       lastError = new Error(`Texto decodificado con caracteres inválidos usando ${encoding}.`);
     } catch (error) {
-      lastError = error;
+      try {
+        const sanitizedBodyText = sanitizeMalformedVideoFields(bodyText);
+        const parsed = JSON.parse(sanitizedBodyText);
+        const hasReplacementChars = sanitizedBodyText.includes('�');
+
+        if (!hasReplacementChars || encoding === fallbackEncoding) {
+          return parsed;
+        }
+
+        lastError = new Error(`Texto decodificado con caracteres inválidos usando ${encoding}.`);
+      } catch (sanitizedError) {
+        lastError = sanitizedError;
+      }
     }
   }
 
