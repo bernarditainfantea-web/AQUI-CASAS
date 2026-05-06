@@ -613,11 +613,19 @@ app.get('/api/ofinet/propiedades/:id/legacy-images', async (req, res) => {
 
 app.get('/api/ofinet/propiedades/:id/legacy-video', async (req, res) => {
   try {
-    res.json(await requestOfinetBackofficePropertyVideo(req.params.id));
+    const payload = await requestOfinetBackofficePropertyVideo(req.params.id);
+    res.json({
+      responseCode: 0,
+      id: req.params.id,
+      video: String(payload?.video || '').trim()
+    });
   } catch (error) {
-    makeErrorResponse(res, error.message, 502, {
-      provider: 'ofinet_backoffice',
-      resource: 'legacy_video'
+    res.json({
+      responseCode: 0,
+      id: req.params.id,
+      video: '',
+      warning: error.message,
+      provider: 'ofinet_backoffice'
     });
   }
 });
