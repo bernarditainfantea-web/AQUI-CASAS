@@ -3745,7 +3745,7 @@ async function loadPropertyDetail(id) {
     for (const legacyId of enriched.legacyIdCandidates || [id]) {
       try {
         const legacyVideoPayload = await fetchJson(`${API_CONFIG.endpoints.propiedades}/${encodeURIComponent(legacyId)}/legacy-video`);
-        const legacyVideoUrl = getVideoUrl(legacyVideoPayload) || String(legacyVideoPayload?.video || '').trim();
+        const legacyVideoUrl = String(legacyVideoPayload?.video || '').trim();
 
         if (getEmbedVideoUrl(legacyVideoUrl) || isDirectVideoUrl(legacyVideoUrl)) {
           enriched.video = legacyVideoUrl;
