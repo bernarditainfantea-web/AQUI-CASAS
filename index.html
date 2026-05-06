@@ -4349,15 +4349,19 @@ function getEmbedVideoUrl(url) {
 
 function renderVideoContent(container, propertyName, videoUrl) {
   const embed = getEmbedVideoUrl(videoUrl);
+  const rawVideoUrl = String(videoUrl || '').trim();
+  const videoLinkMarkup = rawVideoUrl
+    ? `<p style="margin:12px 0 0;font-size:.92rem;word-break:break-all"><a href="${escapeHtml(rawVideoUrl)}" target="_blank" rel="noopener noreferrer">${escapeHtml(rawVideoUrl)}</a></p>`
+    : '';
 
   if (embed) {
-    container.innerHTML = `<iframe src="${escapeHtml(embed)}" title="Video de ${escapeHtml(propertyName)}" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>`;
+    container.innerHTML = `<iframe src="${escapeHtml(embed)}" title="Video de ${escapeHtml(propertyName)}" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>${videoLinkMarkup}`;
     return true;
   }
 
   const directVideoUrl = normalizeMediaUrl(videoUrl);
   if (isDirectVideoUrl(directVideoUrl)) {
-    container.innerHTML = `<video controls playsinline preload="metadata" style="display:block;width:100%;aspect-ratio:16/9;border:0;background:#000"><source src="${escapeHtml(directVideoUrl)}"></video>`;
+    container.innerHTML = `<video controls playsinline preload="metadata" style="display:block;width:100%;aspect-ratio:16/9;border:0;background:#000"><source src="${escapeHtml(directVideoUrl)}"></video>${videoLinkMarkup}`;
     return true;
   }
 
