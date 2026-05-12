@@ -519,6 +519,7 @@
       gap:7px;
       min-width:0;
     }
+    .filter-group-search{grid-column:span 2}
     .filter-group label{
       font-size:.72rem;
       font-weight:700;
@@ -686,23 +687,9 @@
     .property-page-topbar{
       display:flex;
       align-items:center;
-      justify-content:space-between;
+      justify-content:flex-end;
       gap:16px;
       flex-wrap:wrap;
-    }
-    .property-page-brand{
-      display:inline-flex;
-      align-items:center;
-      width:max-content;
-      padding:14px 20px;
-      border-radius:22px;
-      background:rgba(255,255,255,.96);
-      border:1px solid rgba(15,43,91,.08);
-      box-shadow:var(--shadow-soft);
-    }
-    .property-page-brand .logo-mark{
-      height:44px;
-      max-width:min(280px, 55vw);
     }
     .property-page-back{
       display:inline-flex;
@@ -746,11 +733,115 @@
       overflow:hidden;
       background:var(--navy-2);
     }
+    .property-page-main-button{
+      width:100%;
+      height:100%;
+      border:none;
+      padding:0;
+      background:transparent;
+      cursor:zoom-in;
+    }
     .property-page-main img{width:100%;height:100%;object-fit:cover}
+    .property-page-gallery-nav{
+      position:absolute;
+      inset:50% 14px auto 14px;
+      display:flex;
+      justify-content:space-between;
+      transform:translateY(-50%);
+      pointer-events:none;
+    }
+    .property-page-gallery-nav button,
+    .property-page-thumbs-arrow{
+      border:none;
+      border-radius:50%;
+      background:rgba(10,31,66,.88);
+      box-shadow:0 10px 25px rgba(0,0,0,.28);
+      color:var(--white);
+      cursor:pointer;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      transition:transform .18s,background .18s,opacity .18s;
+    }
+    .property-page-gallery-nav button{
+      pointer-events:auto;
+      width:54px;
+      height:54px;
+      font-size:1.8rem;
+      font-weight:700;
+    }
+    .property-page-gallery-nav button:hover,
+    .property-page-thumbs-arrow:hover{
+      background:rgba(10,31,66,.96);
+      transform:scale(1.05);
+    }
+    .property-page-gallery-nav button:disabled,
+    .property-page-thumbs-arrow:disabled{
+      opacity:.38;
+      cursor:default;
+      transform:none;
+    }
+    .property-page-gallery-count{
+      position:absolute;
+      left:14px;
+      bottom:14px;
+      padding:7px 12px;
+      border-radius:999px;
+      background:rgba(10,31,66,.72);
+      color:var(--white);
+      font-size:.8rem;
+      font-weight:700;
+    }
+    .property-page-gallery-zoom{
+      position:absolute;
+      top:14px;
+      right:14px;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      min-height:40px;
+      padding:0 14px;
+      border:none;
+      border-radius:999px;
+      background:rgba(10,31,66,.82);
+      color:var(--white);
+      font-weight:700;
+      font-size:.82rem;
+      letter-spacing:.06em;
+      text-transform:uppercase;
+      cursor:pointer;
+      box-shadow:0 10px 24px rgba(0,0,0,.24);
+    }
+    .property-page-gallery-zoom svg{
+      width:16px;
+      height:16px;
+      stroke:currentColor;
+      fill:none;
+      stroke-width:2;
+    }
+    .property-page-thumbs-shell{
+      display:grid;
+      grid-template-columns:auto minmax(0,1fr) auto;
+      gap:12px;
+      align-items:center;
+    }
     .property-page-thumbs{
       display:grid;
-      grid-template-columns:repeat(auto-fit,minmax(110px,1fr));
+      grid-auto-flow:column;
+      grid-auto-columns:minmax(110px, 140px);
       gap:12px;
+      overflow-x:auto;
+      padding-bottom:4px;
+      scrollbar-width:none;
+      scroll-behavior:smooth;
+      overscroll-behavior-x:contain;
+    }
+    .property-page-thumbs::-webkit-scrollbar{display:none}
+    .property-page-thumbs-arrow{
+      width:42px;
+      height:42px;
+      font-size:1.35rem;
+      flex-shrink:0;
     }
     .property-page-thumb{
       border:none;
@@ -1706,7 +1797,8 @@
       letter-spacing:.08em;
     }
     .modal-video iframe{display:block;width:100%;aspect-ratio:16/9;border:0}
-    #detailMap{height:280px;width:100%}
+    #detailMap,
+    #propertyDetailMap{height:280px;width:100%}
     .detail-map-note{
       padding:12px 18px 18px;
       color:var(--muted);
@@ -1792,14 +1884,56 @@
       color:var(--ink);
       line-height:1.55;
     }
-    .modal-feature::before{
-      content:'';
-      width:9px;height:9px;
+    .modal-feature-dot{
+      flex-shrink:0;
+      width:12px;
+      height:12px;
       border-radius:50%;
       background:var(--gold);
-      flex-shrink:0;
       margin-top:7px;
     }
+    .modal-feature-text{
+      flex:1;
+      min-width:0;
+    }
+    .property-page-detail-block{
+      display:grid;
+      gap:18px;
+      margin-bottom:24px;
+    }
+    .property-page-address{
+      border:1px solid rgba(15,43,91,.08);
+      border-radius:18px;
+      background:#fcfaf6;
+      overflow:hidden;
+    }
+    .property-page-address summary{
+      list-style:none;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:14px;
+      padding:16px 18px;
+      cursor:pointer;
+      font-weight:700;
+      color:var(--navy);
+    }
+    .property-page-address summary::-webkit-details-marker{display:none}
+    .property-page-address summary span:last-child{
+      font-size:.82rem;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+      color:var(--muted);
+    }
+    .property-page-address[open] summary{
+      border-bottom:1px solid rgba(15,43,91,.08);
+    }
+    .property-page-address-body{
+      padding:16px 18px 18px;
+      color:var(--ink);
+      line-height:1.7;
+    }
+    .property-page-address-body p{margin:0}
     .modal-cta-wrap{
       position:sticky;
       bottom:-1px;
@@ -1913,6 +2047,7 @@
       .price-display-top{justify-content:flex-start;justify-items:start}
       .price-display-note{text-align:left}
       .filter-grid{grid-template-columns:repeat(4,minmax(0,1fr))}
+      .filter-group-search{grid-column:span 2}
       .filter-actions{grid-column:span 4;justify-content:stretch}
       .filter-actions .btn-primary,
       .filter-actions .btn-ghost{flex:1}
@@ -1987,6 +2122,7 @@
       .price-display-buttons button{flex:1;min-width:0}
       .price-display-note{text-align:left}
       .filter-grid{grid-template-columns:1fr}
+      .filter-group-search{grid-column:auto}
       .filter-actions{grid-column:auto}
       .filter-actions .btn-primary,
       .filter-actions .btn-ghost{width:100%}
@@ -1995,9 +2131,12 @@
       .prop-cta-row{flex-direction:column}
       .property-page{padding:calc(var(--nav-height) + 18px) 4vw 60px}
       .property-page-topbar{align-items:stretch}
-      .property-page-brand,
       .property-page-back{width:100%;justify-content:center}
       .property-page-main{min-height:320px}
+      .property-page-gallery-nav button{width:48px;height:48px;font-size:1.55rem}
+      .property-page-gallery-zoom{min-height:36px;padding:0 12px;font-size:.75rem}
+      .property-page-thumbs{grid-auto-columns:minmax(92px, 120px)}
+      .property-page-thumbs-arrow{width:38px;height:38px;font-size:1.15rem}
       .property-page-panel{position:static;padding:22px}
       .property-page-name{font-size:2.2rem}
       .property-page-price{font-size:2.2rem}
@@ -2015,7 +2154,8 @@
       .modal-gallery{min-height:250px}
       .modal-name{font-size:1.7rem}
       .modal-price{font-size:2rem}
-      #detailMap{height:240px}
+      #detailMap,
+      #propertyDetailMap{height:240px}
       .modal-gallery-nav button{width:48px;height:48px;font-size:1.55rem}
       .modal-gallery-zoom{min-height:36px;padding:0 12px;font-size:.75rem}
       .lightbox-nav{width:50px;height:50px;font-size:1.65rem}
@@ -2031,6 +2171,8 @@
       .results-bar{align-items:flex-start}
       .prop-attrs{gap:8px}
       .prop-attr{padding:10px 8px}
+      .property-page-thumbs-shell{grid-template-columns:1fr}
+      .property-page-thumbs-arrow{display:none}
       .wa-btn{right:14px;bottom:14px;width:54px;height:54px}
     }
   </style>
@@ -2150,6 +2292,10 @@
         </div>
       </div>
       <div class="filter-grid">
+        <div class="filter-group filter-group-search">
+          <label for="homeFBuscar">Buscar</label>
+          <input id="homeFBuscar" class="filter-control" type="text" placeholder="Código, región, comuna, casa, departamento..."/>
+        </div>
         <div class="filter-group">
           <label for="homeFRegion">Región</label>
           <select id="homeFRegion" class="filter-control"></select>
@@ -2357,7 +2503,6 @@
         <div class="filter-top">
           <div>
             <div class="filter-title">Buscador de propiedades</div>
-            <p class="filter-helper">Primero selecciona región y comuna para evitar combinaciones inválidas. Cuando tengas listos los filtros, presiona <strong>Buscar</strong>.</p>
           </div>
           <div class="filter-tools">
             <div class="filter-status" id="filterStatus">Mostrando la búsqueda actual</div>
@@ -2374,6 +2519,10 @@
           </div>
         </div>
         <div class="filter-grid">
+          <div class="filter-group filter-group-search">
+            <label for="fBuscar">Buscar</label>
+            <input id="fBuscar" class="filter-control" type="text" placeholder="Código, región, comuna, casa, departamento..."/>
+          </div>
           <div class="filter-group">
             <label for="fRegion">Región</label>
             <select id="fRegion" class="filter-control"></select>
@@ -2452,9 +2601,6 @@
   <section class="property-page" id="propertyPage">
     <div class="property-page-shell">
       <div class="property-page-topbar">
-        <a class="property-page-brand" href="/" onclick="goHome(event)" aria-label="Volver al inicio">
-          <img class="logo-mark" src="LOGO AQUI CASAS.png" alt="Aquí Casas"/>
-        </a>
         <a class="property-page-back" href="/" onclick="goHome(event)">← Volver al inicio</a>
       </div>
       <div class="property-page-empty" id="propertyPageEmpty" style="display:none">
@@ -2466,9 +2612,24 @@
         <div class="property-page-grid">
           <div class="property-page-media">
             <div class="property-page-main">
-              <img id="pImg" src="" alt=""/>
+              <button class="property-page-main-button" type="button" onclick="openImageLightbox()" aria-label="Ver foto en grande">
+                <img id="pImg" src="" alt=""/>
+              </button>
+              <div class="property-page-gallery-nav">
+                <button type="button" id="propertyGalleryPrev" onclick="changePropertyPageGallery(-1)" aria-label="Imagen anterior">‹</button>
+                <button type="button" id="propertyGalleryNext" onclick="changePropertyPageGallery(1)" aria-label="Imagen siguiente">›</button>
+              </div>
+              <div class="property-page-gallery-count" id="propertyGalleryCount">1 / 1</div>
+              <button class="property-page-gallery-zoom" type="button" onclick="openImageLightbox()" aria-label="Ampliar foto">
+                <svg viewBox="0 0 24 24"><path d="M15 3h6v6"/><path d="M9 21H3v-6"/><path d="M21 3l-7 7"/><path d="M3 21l7-7"/></svg>
+                <span>Ver grande</span>
+              </button>
             </div>
-            <div class="property-page-thumbs" id="propertyPageThumbs"></div>
+            <div class="property-page-thumbs-shell">
+              <button class="property-page-thumbs-arrow" type="button" id="propertyThumbsPrev" onclick="scrollPropertyThumbs(-1)" aria-label="Desplazar miniaturas a la izquierda">‹</button>
+              <div class="property-page-thumbs" id="propertyPageThumbs"></div>
+              <button class="property-page-thumbs-arrow" type="button" id="propertyThumbsNext" onclick="scrollPropertyThumbs(1)" aria-label="Desplazar miniaturas a la derecha">›</button>
+            </div>
           </div>
           <div class="property-page-panel">
             <div class="property-page-head">
@@ -2489,18 +2650,36 @@
             <div class="property-page-actions">
               <button class="btn-primary" type="button" id="pCtaBtn">Me interesa esta propiedad</button>
               <button class="btn-secondary property-calculator-toggle" type="button" id="pMortgageToggleBtn">Calcula el dividendo de esta propiedad</button>
-              <button class="btn-ghost" type="button" id="pShareBtn">Copiar enlace</button>
+              <button class="btn-ghost" type="button" id="pShareBtn">Escríbenos por mensaje</button>
             </div>
           </div>
         </div>
         <div class="property-page-description">
           <div>
-            <div class="property-page-section-title">Descripción</div>
-            <p id="pDesc"></p>
-          </div>
-          <div>
             <div class="property-page-section-title">Características</div>
             <div class="modal-features" id="pFeatures"></div>
+          </div>
+          <div class="property-page-detail-block">
+            <div class="property-page-address" id="pAddressBlock" style="display:none">
+              <div class="property-page-section-title">Dirección</div>
+              <div class="property-page-address-body" id="pDireccion"></div>
+            </div>
+            <details class="property-page-address" id="pDescriptionBlock">
+              <summary>
+                <span>Descripción</span>
+                <span>Ver detalle</span>
+              </summary>
+              <div class="property-page-address-body">
+                <p id="pDesc"></p>
+              </div>
+            </details>
+          </div>
+          <div class="modal-map-block" id="propertyMapBlock" style="display:none">
+            <div class="modal-section-head">
+              <strong>Mapa del barrio</strong>
+            </div>
+            <div id="propertyDetailMap"></div>
+            <p class="detail-map-note" id="propertyDetailMapNote"></p>
           </div>
           <div class="modal-video" id="propertyVideoBlock" style="display:none">
             <div class="modal-section-head">
@@ -2508,20 +2687,13 @@
             </div>
             <div id="propertyVideoContainer"></div>
           </div>
-          <div class="modal-map-block" id="propertyMapBlock" style="display:none">
-            <div class="modal-section-head">
-              <strong>Ubicación referencial</strong>
-            </div>
-            <div id="propertyDetailMap"></div>
-            <p class="detail-map-note" id="propertyDetailMapNote"></p>
-          </div>
           <div class="property-mortgage" id="propertyMortgageCalculator">
             <div class="mortgage-header">
               <div class="mortgage-title">Calculadora de dividendo</div>
               <div class="mortgage-subtitle">Usa el precio de esta propiedad como base y ajusta pie, tasa y plazo para simular tu crédito.</div>
               <div class="mortgage-mode-switch" id="mortgageModeButtons">
-                <button class="active" type="button" data-mortgage-mode="UF">UF</button>
-                <button type="button" data-mortgage-mode="CLP">Pesos</button>
+                <button type="button" data-mortgage-mode="UF">UF</button>
+                <button class="active" type="button" data-mortgage-mode="CLP">Pesos</button>
               </div>
             </div>
             <div class="mortgage-grid">
@@ -3534,6 +3706,143 @@ function normalizeComunaLabel(value) {
     .join(' ');
 }
 
+function humanizeFeatureKey(key) {
+  const normalized = String(key ?? '').trim();
+  if (!normalized) return '';
+  const withSpaces = normalized
+    .replace(/([a-z0-9])([A-Z])/g, '$1 $2')
+    .replace(/[_-]+/g, ' ')
+    .trim();
+
+  return withSpaces.charAt(0).toUpperCase() + withSpaces.slice(1);
+}
+
+function getFirstDefinedValue(source, keys = []) {
+  for (const key of keys) {
+    if (source && Object.prototype.hasOwnProperty.call(source, key) && source[key] !== undefined && source[key] !== null && String(source[key]).trim() !== '') {
+      return source[key];
+    }
+  }
+  return undefined;
+}
+
+function hasAnyOwnKey(source, keys = []) {
+  return keys.some(key => source && Object.prototype.hasOwnProperty.call(source, key));
+}
+
+function pushFeatureEntry(features, icon, label, value, options = {}) {
+  const { treatAsBoolean = false, hideWhenFalse = false } = options;
+  if (value === undefined || value === null || value === '') return;
+
+  if (treatAsBoolean) {
+    const enabled = toBooleanFlag(value);
+    if (!enabled && hideWhenFalse) return;
+    features.push({
+      icon,
+      label: `${label}: ${enabled ? 'Sí' : 'No'}`
+    });
+    return;
+  }
+
+  const normalizedValue = String(value).trim();
+  if (!normalizedValue) return;
+  features.push({
+    icon,
+    label: `${label}: ${normalizedValue}`
+  });
+}
+
+function collectStructuredFeatureEntries(raw, tipo, operacion) {
+  const features = [];
+
+  pushFeatureEntry(features, '🏊', 'Piscina', getFirstDefinedValue(raw, ['Piscina', 'piscina', 'TienePiscina', 'tienePiscina']), { treatAsBoolean: true });
+  pushFeatureEntry(features, '🏘️', 'Condominio', getFirstDefinedValue(raw, ['Condominio', 'condominio', 'EnCondominio', 'enCondominio']), { treatAsBoolean: true });
+  pushFeatureEntry(features, '🧭', 'Orientación', getFirstDefinedValue(raw, ['Orientacion', 'orientacion', 'Orientación']));
+  pushFeatureEntry(features, '🏢', 'Pisos', getFirstDefinedValue(raw, ['NumeroPisos', 'numeroPisos', 'Pisos', 'pisos', 'CantidadPisos']));
+  pushFeatureEntry(features, '🚗', 'Estacionamientos', getFirstDefinedValue(raw, ['Estacionamientos', 'estacionamientos']));
+  pushFeatureEntry(features, '📦', 'Bodegas', getFirstDefinedValue(raw, ['Bodegas', 'bodegas']));
+  pushFeatureEntry(features, '🌿', 'Jardín', getFirstDefinedValue(raw, ['Jardin', 'jardin', 'TieneJardin', 'tieneJardin']), { treatAsBoolean: hasAnyOwnKey(raw, ['Jardin', 'jardin', 'TieneJardin', 'tieneJardin']) });
+  pushFeatureEntry(features, '🔥', 'Quincho', getFirstDefinedValue(raw, ['Quincho', 'quincho', 'TieneQuincho', 'tieneQuincho']), { treatAsBoolean: hasAnyOwnKey(raw, ['Quincho', 'quincho', 'TieneQuincho', 'tieneQuincho']) });
+  pushFeatureEntry(features, '🌤️', 'Terraza', getFirstDefinedValue(raw, ['Terraza', 'terraza', 'TieneTerraza', 'tieneTerraza']), { treatAsBoolean: hasAnyOwnKey(raw, ['Terraza', 'terraza', 'TieneTerraza', 'tieneTerraza']) });
+  pushFeatureEntry(features, '🧺', 'Logia', getFirstDefinedValue(raw, ['Logia', 'logia', 'TieneLogia', 'tieneLogia']), { treatAsBoolean: hasAnyOwnKey(raw, ['Logia', 'logia', 'TieneLogia', 'tieneLogia']) });
+  pushFeatureEntry(features, '🛗', 'Ascensor', getFirstDefinedValue(raw, ['Ascensor', 'ascensor', 'TieneAscensor', 'tieneAscensor']), { treatAsBoolean: hasAnyOwnKey(raw, ['Ascensor', 'ascensor', 'TieneAscensor', 'tieneAscensor']) });
+  pushFeatureEntry(features, '🛋️', 'Amoblado', getFirstDefinedValue(raw, ['Amoblado', 'amoblado', 'EsAmoblado', 'esAmoblado']), { treatAsBoolean: hasAnyOwnKey(raw, ['Amoblado', 'amoblado', 'EsAmoblado', 'esAmoblado']) });
+  pushFeatureEntry(features, '📍', 'Sector', getFirstDefinedValue(raw, ['Sector', 'sector']));
+  pushFeatureEntry(features, '🏠', 'Tipo', tipo);
+  pushFeatureEntry(features, '💼', 'Operación', operacion);
+
+  const buckets = [
+    raw?.features,
+    raw?.Caracteristicas,
+    raw?.caracteristicas,
+    raw?.CaracteristicasAdicionales,
+    raw?.caracteristicasAdicionales,
+    raw?.Especificaciones,
+    raw?.especificaciones,
+    raw?.DetalleCaracteristicas,
+    raw?.detalleCaracteristicas
+  ];
+
+  buckets.forEach(bucket => {
+    if (!bucket) return;
+
+    if (Array.isArray(bucket)) {
+      bucket.forEach(item => {
+        if (typeof item === 'string' && item.trim()) {
+          features.push({ icon: '✨', label: item.trim() });
+          return;
+        }
+
+        if (item && typeof item === 'object') {
+          const label = String(
+            item.label ??
+            item.nombre ??
+            item.Nombre ??
+            item.descripcion ??
+            item.Descripcion ??
+            item.detalle ??
+            item.Detalle ??
+            ''
+          ).trim();
+
+          if (label) {
+            features.push({ icon: '✨', label });
+          }
+        }
+      });
+      return;
+    }
+
+    if (typeof bucket === 'object') {
+      Object.entries(bucket).forEach(([key, value]) => {
+        if (value === undefined || value === null || String(value).trim() === '') return;
+        if (typeof value === 'boolean' || /^[01]$/.test(String(value).trim())) {
+          pushFeatureEntry(features, '✨', humanizeFeatureKey(key), value, { treatAsBoolean: true, hideWhenFalse: true });
+          return;
+        }
+        features.push({ icon: '✨', label: `${humanizeFeatureKey(key)}: ${String(value).trim()}` });
+      });
+      return;
+    }
+
+    if (typeof bucket === 'string' && bucket.trim()) {
+      bucket.split(/[|;]+/).map(item => item.trim()).filter(Boolean).forEach(item => {
+        features.push({ icon: '✨', label: item });
+      });
+    }
+  });
+
+  return uniqueBy(
+    features
+      .map(feature => ({
+        icon: feature.icon || '✨',
+        label: String(feature.label || '').trim()
+      }))
+      .filter(feature => feature.label),
+    feature => normalizeText(feature.label)
+  );
+}
+
 function normalizeProperty(raw) {
   const comunaSource = raw.comuna ?? raw.ComunaNombre ?? raw.Comuna ?? raw.NombreComuna ?? '';
   const comuna = normalizeComunaLabel(comunaSource);
@@ -3578,16 +3887,7 @@ function normalizeProperty(raw) {
     raw.Principal
   ].some(toBooleanFlag);
   const description = String(raw.desc ?? raw.Descripcion ?? raw.DescripcionCorta ?? raw.Observaciones ?? '').trim() || 'Sin descripción disponible.';
-  const features = [
-    ...(Array.isArray(raw.features) ? raw.features : []),
-    raw.Estacionamientos ? `${raw.Estacionamientos} estacionamiento${Number(raw.Estacionamientos) > 1 ? 's' : ''}` : '',
-    raw.Bodegas ? `${raw.Bodegas} bodega${Number(raw.Bodegas) > 1 ? 's' : ''}` : '',
-    raw.Condominio ? 'Condominio' : '',
-    raw.Sector ? `Sector ${raw.Sector}` : '',
-    raw.Orientacion ? `Orientación ${raw.Orientacion}` : '',
-    tipo,
-    operacion
-  ].filter(Boolean);
+  const features = collectStructuredFeatureEntries(raw, tipo, operacion);
 
   const normalized = {
     id: raw.id ?? raw.Id ?? raw.idPropiedad ?? raw.CodPropiedad ?? raw.NroProp ?? raw.code,
@@ -3639,7 +3939,7 @@ function normalizeProperty(raw) {
     img: gallery[0] || fallbackImage,
     gallery: gallery.length ? gallery : [fallbackImage],
     desc: description,
-    features: uniqueBy(features.map(feature => String(feature).trim()).filter(Boolean), item => normalizeText(item)),
+    features,
     video: getVideoUrl(raw),
     locationNote: comuna ? `${comuna}, ${humanizeRegionLabel(region, regionName)}` : humanizeRegionLabel(region, regionName),
     regionKey: slugify(region || humanizeRegionLabel(region, regionName)),
@@ -3943,6 +4243,7 @@ function refreshHomeComunaOptions() {
 
 function collectFiltersFromUI() {
   return {
+    buscar: document.getElementById('fBuscar').value,
     region: document.getElementById('fRegion').value,
     comuna: document.getElementById('fComuna').value,
     operacion: document.getElementById('fOperacion').value,
@@ -3957,6 +4258,7 @@ function collectFiltersFromUI() {
 
 function collectHomeFiltersFromUI() {
   return {
+    buscar: document.getElementById('homeFBuscar').value,
     region: document.getElementById('homeFRegion').value,
     comuna: document.getElementById('homeFComuna').value,
     operacion: document.getElementById('homeFOperacion').value,
@@ -3996,6 +4298,7 @@ function isCatalogRoute() {
 function getCatalogFiltersFromRoute() {
   const params = new URLSearchParams(window.location.search);
   return {
+    buscar: params.get('buscar') || '',
     region: params.get('region') || '',
     comuna: params.get('comuna') || '',
     operacion: params.get('operacion') || '',
@@ -4009,6 +4312,7 @@ function getCatalogFiltersFromRoute() {
 }
 
 function setFiltersInUI(filters = {}) {
+  document.getElementById('fBuscar').value = filters.buscar || '';
   document.getElementById('fRegion').value = filters.region || '';
   refreshComunaOptions();
   document.getElementById('fComuna').value = filters.comuna || '';
@@ -4050,6 +4354,9 @@ function markPendingFilters() {
 function getResultsContext(filters, count) {
   if (count === 0) return 'Ajusta la búsqueda o limpia los filtros para volver a explorar todas las propiedades.';
   const pieces = [];
+  if (filters.buscar) {
+    pieces.push(`"${String(filters.buscar).trim()}"`);
+  }
   if (filters.region) {
     const region = STATE.regions.find(item => item.value === filters.region);
     if (region) pieces.push(region.label);
@@ -4135,7 +4442,24 @@ function startHomePreviewCarousel() {
 }
 
 function filterProperties(filters) {
+  const normalizedQuery = normalizeText(filters.buscar || '');
+  const queryTokens = normalizedQuery ? normalizedQuery.split(/\s+/).filter(Boolean) : [];
+
   return STATE.properties.filter(property => {
+    const searchableText = normalizeText([
+      property.id,
+      property.code,
+      property.name,
+      property.loc,
+      property.direccion,
+      property.comuna,
+      property.region,
+      property.tipo,
+      property.operacion,
+      property.desc,
+      ...(property.features || []).map(feature => typeof feature === 'object' ? feature.label : feature)
+    ].filter(Boolean).join(' '));
+    const matchesQuery = !queryTokens.length || queryTokens.every(token => searchableText.includes(token));
     const matchesRegion = !filters.region || property.region === filters.region;
     const matchesComuna = !filters.comuna || property.comunaKey === filters.comuna;
     const matchesOperacion = !filters.operacion || property.operacionKey === filters.operacion;
@@ -4148,7 +4472,7 @@ function filterProperties(filters) {
     const displayPrice = getPropertyPriceForMode(property, STATE.priceDisplay).value;
     const matchesPrice = Number.isFinite(displayPrice) && displayPrice >= minPrice && displayPrice <= maxPrice;
 
-    return matchesRegion && matchesComuna && matchesOperacion && matchesTipo && matchesDorm && matchesBanos && matchesM2 && matchesPrice;
+    return matchesQuery && matchesRegion && matchesComuna && matchesOperacion && matchesTipo && matchesDorm && matchesBanos && matchesM2 && matchesPrice;
   });
 }
 
@@ -4234,7 +4558,7 @@ function setPriceDisplay(mode) {
 }
 
 function resetFilters() {
-  ['fRegion', 'fComuna', 'fOperacion', 'fTipo', 'fDorm', 'fBanos', 'fM2', 'fPrecioMin', 'fPrecioMax'].forEach(id => {
+  ['fBuscar', 'fRegion', 'fComuna', 'fOperacion', 'fTipo', 'fDorm', 'fBanos', 'fM2', 'fPrecioMin', 'fPrecioMax'].forEach(id => {
     document.getElementById(id).value = '';
   });
   refreshComunaOptions();
@@ -4242,7 +4566,7 @@ function resetFilters() {
 }
 
 function resetHomeFilters() {
-  ['homeFRegion', 'homeFComuna', 'homeFOperacion', 'homeFTipo', 'homeFDorm', 'homeFBanos', 'homeFM2', 'homePrecioMin', 'homePrecioMax'].forEach(id => {
+  ['homeFBuscar', 'homeFRegion', 'homeFComuna', 'homeFOperacion', 'homeFTipo', 'homeFDorm', 'homeFBanos', 'homeFM2', 'homePrecioMin', 'homePrecioMax'].forEach(id => {
     document.getElementById(id).value = '';
   });
   refreshHomeComunaOptions();
@@ -4258,7 +4582,7 @@ function handleHomeRegionChange() {
 }
 
 function hydrateFilterEvents() {
-  const filterIds = ['fOperacion', 'fTipo', 'fComuna', 'fDorm', 'fBanos', 'fM2', 'fPrecioMin', 'fPrecioMax'];
+  const filterIds = ['fBuscar', 'fOperacion', 'fTipo', 'fComuna', 'fDorm', 'fBanos', 'fM2', 'fPrecioMin', 'fPrecioMax'];
   filterIds.forEach(id => {
     const element = document.getElementById(id);
     element.addEventListener('change', markPendingFilters);
@@ -4280,7 +4604,7 @@ function hydrateFilterEvents() {
 }
 
 function hydrateHomeFilterEvents() {
-  const filterIds = ['homeFOperacion', 'homeFTipo', 'homeFComuna', 'homeFDorm', 'homeFBanos', 'homeFM2', 'homePrecioMin', 'homePrecioMax'];
+  const filterIds = ['homeFBuscar', 'homeFOperacion', 'homeFTipo', 'homeFComuna', 'homeFDorm', 'homeFBanos', 'homeFM2', 'homePrecioMin', 'homePrecioMax'];
   filterIds.forEach(id => {
     const element = document.getElementById(id);
     element.addEventListener('keydown', event => {
@@ -4402,6 +4726,13 @@ function renderVideoContent(container, propertyName, videoUrl) {
   return false;
 }
 
+function renderFeatureMarkup(features = []) {
+  return features.map(feature => {
+    const label = typeof feature === 'object' ? feature.label : feature;
+    return `<div class="modal-feature"><span class="modal-feature-dot" aria-hidden="true"></span><span class="modal-feature-text">${escapeHtml(label || '')}</span></div>`;
+  }).join('');
+}
+
 function renderGallery(property) {
   STATE.activeGallery = property.gallery && property.gallery.length ? property.gallery : [property.img];
   STATE.activeGalleryIndex = 0;
@@ -4496,6 +4827,10 @@ function attachGalleryEvents() {
       changeGallery(delta > 0 ? -1 : 1);
     }
   }, { passive: true });
+
+  const propertyThumbs = document.getElementById('propertyPageThumbs');
+  propertyThumbs.addEventListener('scroll', updatePropertyThumbScrollButtons, { passive: true });
+  window.addEventListener('resize', updatePropertyThumbScrollButtons);
 }
 
 function updateDetailMap(property) {
@@ -4545,8 +4880,8 @@ function updatePropertyPageMap(property) {
 
   block.style.display = 'block';
   note.textContent = property.locationNote
-    ? `Ubicación referencial: ${property.locationNote}.`
-    : 'Ubicación referencial de la propiedad.';
+    ? `Vista aproximada del barrio en ${property.locationNote}.`
+    : 'Vista aproximada del barrio de la propiedad.';
 
   requestAnimationFrame(() => {
     if (!STATE.detailMap) {
@@ -4561,7 +4896,7 @@ function updatePropertyPageMap(property) {
       STATE.detailMap.removeLayer(STATE.detailMarker);
     }
 
-    STATE.detailMap.setView([property.lat, property.lng], 14);
+    STATE.detailMap.setView([property.lat, property.lng], 16);
     STATE.detailMarker = L.marker([property.lat, property.lng], { icon: createMapIcon() }).addTo(STATE.detailMap);
     setTimeout(() => STATE.detailMap.invalidateSize(), 120);
   });
@@ -4569,8 +4904,6 @@ function updatePropertyPageMap(property) {
 
 function renderPropertyPageMedia(property) {
   const gallery = property.gallery && property.gallery.length ? property.gallery : [property.img];
-  document.getElementById('pImg').src = gallery[0] || '';
-  document.getElementById('pImg').alt = property.name;
   document.getElementById('propertyPageThumbs').innerHTML = gallery.map((image, index) => `
     <button class="property-page-thumb ${index === 0 ? 'active' : ''}" type="button" onclick="setPropertyPageImage(${index})">
       <img src="${escapeHtml(image)}" alt="Foto ${index + 1} de ${escapeHtml(property.name)}"/>
@@ -4578,16 +4911,67 @@ function renderPropertyPageMedia(property) {
   `).join('');
   STATE.activeGallery = gallery;
   STATE.activeGalleryIndex = 0;
+  updatePropertyPageImage(property.name);
+  updatePropertyThumbScrollButtons();
 }
 
 function setPropertyPageImage(index) {
   const image = STATE.activeGallery[index];
   if (!image) return;
   STATE.activeGalleryIndex = index;
+  updatePropertyPageImage();
+}
+
+function updatePropertyPageImage(propertyName = '') {
+  const image = STATE.activeGallery[STATE.activeGalleryIndex] || '';
+  const name = propertyName || document.getElementById('pName').textContent || 'propiedad';
+  const hasMultipleImages = STATE.activeGallery.length > 1;
+  const prevButton = document.getElementById('propertyGalleryPrev');
+  const nextButton = document.getElementById('propertyGalleryNext');
+
   document.getElementById('pImg').src = image;
+  document.getElementById('pImg').alt = name;
+  document.getElementById('propertyGalleryCount').textContent = `${STATE.activeGalleryIndex + 1} / ${STATE.activeGallery.length}`;
+  prevButton.style.display = hasMultipleImages ? 'inline-flex' : 'none';
+  nextButton.style.display = hasMultipleImages ? 'inline-flex' : 'none';
   document.querySelectorAll('.property-page-thumb').forEach((thumb, thumbIndex) => {
-    thumb.classList.toggle('active', thumbIndex === index);
+    thumb.classList.toggle('active', thumbIndex === STATE.activeGalleryIndex);
   });
+  const activeThumb = document.querySelectorAll('.property-page-thumb')[STATE.activeGalleryIndex];
+  if (activeThumb) {
+    activeThumb.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+  }
+  updatePropertyThumbScrollButtons();
+  if (STATE.isLightboxOpen) {
+    updateGalleryImage();
+  }
+}
+
+function changePropertyPageGallery(step) {
+  if (!STATE.activeGallery.length) return;
+  STATE.activeGalleryIndex = (STATE.activeGalleryIndex + step + STATE.activeGallery.length) % STATE.activeGallery.length;
+  updatePropertyPageImage();
+}
+
+function scrollPropertyThumbs(direction) {
+  const container = document.getElementById('propertyPageThumbs');
+  if (!container) return;
+  const amount = Math.max(container.clientWidth * 0.8, 180) * direction;
+  container.scrollBy({ left: amount, behavior: 'smooth' });
+}
+
+function updatePropertyThumbScrollButtons() {
+  const container = document.getElementById('propertyPageThumbs');
+  const prevButton = document.getElementById('propertyThumbsPrev');
+  const nextButton = document.getElementById('propertyThumbsNext');
+
+  if (!container || !prevButton || !nextButton) return;
+
+  const hasOverflow = container.scrollWidth > container.clientWidth + 4;
+  prevButton.style.visibility = hasOverflow ? 'visible' : 'hidden';
+  nextButton.style.visibility = hasOverflow ? 'visible' : 'hidden';
+  prevButton.disabled = !hasOverflow || container.scrollLeft <= 4;
+  nextButton.disabled = !hasOverflow || container.scrollLeft + container.clientWidth >= container.scrollWidth - 4;
 }
 
 function renderPropertyPageVideo(property) {
@@ -4704,7 +5088,7 @@ function renderPropertyMortgageCalculator() {
     }
   }
 
-  const requiredIncome = monthlyPayment / 0.25;
+  const requiredIncome = monthlyPayment / 0.30;
 
   document.getElementById('mortgageLoanAmount').textContent = formatMortgageValue(loanAmount, displayMode);
   document.getElementById('mortgageMonthlyPayment').textContent = formatMortgageValue(monthlyPayment, displayMode);
@@ -4716,7 +5100,7 @@ function initializePropertyMortgageCalculator(property) {
     visible: true,
     propertyId: String(property.id),
     priceUf: getPropertyPriceInUf(property),
-    displayMode: 'UF',
+    displayMode: 'CLP',
     downPaymentPercent: 20,
     annualRate: 3,
     termYears: 30
@@ -4816,6 +5200,8 @@ function showCatalogPage(filters = getCatalogFiltersFromRoute()) {
 
 function showPropertyPage(property) {
   const price = getFormattedPropertyPriceParts(property);
+  const addressBlock = document.getElementById('pAddressBlock');
+  const descriptionBlock = document.getElementById('pDescriptionBlock');
   document.getElementById('homePage').style.display = 'none';
   document.getElementById('propertyPage').classList.add('open');
   document.getElementById('propertyPageContent').style.display = 'block';
@@ -4828,29 +5214,22 @@ function showPropertyPage(property) {
   document.getElementById('pM2').textContent = `${property.m2 || 0} m2`;
   document.getElementById('pTerreno').textContent = `${property.terreno || 0} m2`;
   document.getElementById('pDesc').textContent = property.desc;
+  document.getElementById('pDireccion').textContent = property.direccion || property.loc || 'Dirección por confirmar.';
+  addressBlock.style.display = property.direccion || property.loc ? 'block' : 'none';
+  descriptionBlock.open = false;
   document.getElementById('pBadges').innerHTML = [
     property.operacion,
     property.tipo,
     property.comuna || '',
     property.code ? `Código ${property.code}` : ''
   ].filter(Boolean).map(item => `<span>${escapeHtml(item)}</span>`).join('');
-  document.getElementById('pFeatures').innerHTML = (property.features || []).map(feature => `<div class="modal-feature">${escapeHtml(feature)}</div>`).join('');
+  document.getElementById('pFeatures').innerHTML = renderFeatureMarkup(property.features || []);
   renderPropertyPageMedia(property);
   renderPropertyPageVideo(property);
   updatePropertyPageMap(property);
   initializePropertyMortgageCalculator(property);
   document.getElementById('pCtaBtn').onclick = () => openContact(property.id);
-  document.getElementById('pShareBtn').onclick = async () => {
-    try {
-      await navigator.clipboard.writeText(window.location.href);
-      document.getElementById('pShareBtn').textContent = 'Enlace copiado';
-      setTimeout(() => {
-        document.getElementById('pShareBtn').textContent = 'Copiar enlace';
-      }, 1600);
-    } catch (error) {
-      window.prompt('Copia este enlace:', window.location.href);
-    }
-  };
+  document.getElementById('pShareBtn').onclick = () => openPropertyMessage(property);
   window.scrollTo({ top: 0, behavior: 'auto' });
   syncAnchorsForRoute();
 }
@@ -4961,7 +5340,7 @@ async function openDetail(id) {
     property.comuna || '',
     property.code ? `Código ${property.code}` : ''
   ].filter(Boolean).map(item => `<span>${escapeHtml(item)}</span>`).join('');
-  document.getElementById('mFeatures').innerHTML = (property.features || []).map(feature => `<div class="modal-feature">${escapeHtml(feature)}</div>`).join('');
+  document.getElementById('mFeatures').innerHTML = renderFeatureMarkup(property.features || []);
   document.getElementById('mCtaBtn').onclick = () => {
     closeDetail();
     openContact(id);
@@ -4999,6 +5378,14 @@ function openContact(id, event) {
   document.getElementById('cMensaje').value = '';
   document.getElementById('contactOverlay').classList.add('open');
   document.body.style.overflow = 'hidden';
+}
+
+function openPropertyMessage(property) {
+  const propertyUrl = window.location.href;
+  const propertyLabel = property?.name ? ` ${property.name}` : '';
+  const message = `Hola, me interesa esta propiedad${propertyLabel}: ${propertyUrl}`;
+  const whatsappUrl = `https://wa.me/56991776069?text=${encodeURIComponent(message)}`;
+  window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
 }
 
 function closeContact() {
