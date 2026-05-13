@@ -351,7 +351,11 @@ function toEmbedVideoUrl(rawUrl) {
   const value = String(rawUrl || '').trim();
   if (!value) return '';
 
-  if (value.includes('youtube.com/embed') || value.includes('player.vimeo.com/video')) {
+  if (
+    value.includes('youtube.com/embed') ||
+    value.includes('youtube-nocookie.com/embed') ||
+    value.includes('player.vimeo.com/video')
+  ) {
     return value;
   }
 
@@ -361,11 +365,12 @@ function toEmbedVideoUrl(rawUrl) {
 
   try {
     const parsed = new URL(value);
-    if (parsed.hostname.includes('youtu.be')) {
-      const videoId = parsed.pathname.replace(/^\/+/, '');
+    const hostname = parsed.hostname.toLowerCase();
+    if (hostname.includes('youtu.be')) {
+      const videoId = parsed.pathname.split('/').filter(Boolean).pop();
       return videoId ? `https://www.youtube.com/embed/${videoId}` : '';
     }
-    if (parsed.hostname.includes('youtube.com')) {
+    if (hostname.includes('youtube.com') || hostname.includes('youtube-nocookie.com')) {
       if (parsed.pathname.startsWith('/embed/')) {
         const embedId = parsed.pathname.split('/').filter(Boolean).pop();
         return embedId ? `https://www.youtube.com/embed/${embedId}` : '';
@@ -374,12 +379,19 @@ function toEmbedVideoUrl(rawUrl) {
         const shortId = parsed.pathname.split('/').filter(Boolean).pop();
         return shortId ? `https://www.youtube.com/embed/${shortId}` : '';
       }
+      if (parsed.pathname.startsWith('/live/')) {
+        const liveId = parsed.pathname.split('/').filter(Boolean).pop();
+        return liveId ? `https://www.youtube.com/embed/${liveId}` : '';
+      }
       const videoId = parsed.searchParams.get('v');
       if (videoId) return `https://www.youtube.com/embed/${videoId}`;
       const pathId = parsed.pathname.split('/').filter(Boolean).pop();
       return pathId ? `https://www.youtube.com/embed/${pathId}` : '';
     }
-    if (parsed.hostname.includes('vimeo.com')) {
+    if (hostname.includes('vimeo.com')) {
+      if (hostname.includes('player.vimeo.com') && parsed.pathname.includes('/video/')) {
+        return value;
+      }
       const videoId = parsed.pathname.split('/').filter(Boolean).pop();
       return videoId ? `https://player.vimeo.com/video/${videoId}` : '';
     }
