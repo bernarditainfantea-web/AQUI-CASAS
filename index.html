@@ -3895,11 +3895,34 @@ function hasAnyOwnKey(source, keys = []) {
   return keys.some(key => source && Object.prototype.hasOwnProperty.call(source, key));
 }
 
+function isBooleanLikeValue(value) {
+  if (typeof value === 'boolean' || typeof value === 'number') return true;
+  const normalized = normalizeText(value);
+  return ['0', '1', 'si', 'sí', 'no', 'true', 'false', 'yes', 'activo', 'inactivo'].includes(normalized);
+}
+
+function isZeroLikeValue(value) {
+  if (typeof value === 'number') return value === 0;
+  const normalized = String(value ?? '').trim().replace(',', '.');
+  return normalized !== '' && Number(normalized) === 0;
+}
+
 function pushFeatureEntry(features, icon, label, value, options = {}) {
-  const { treatAsBoolean = false, hideWhenFalse = false } = options;
+  const { treatAsBoolean = false, hideWhenFalse = false, hideWhenZero = false } = options;
   if (value === undefined || value === null || value === '') return;
 
   if (treatAsBoolean) {
+    if (!isBooleanLikeValue(value)) {
+      const normalizedValue = String(value).trim();
+      if (!normalizedValue) return;
+      if (hideWhenZero && isZeroLikeValue(normalizedValue)) return;
+      features.push({
+        icon,
+        label: `${label}: ${normalizedValue}`
+      });
+      return;
+    }
+
     const enabled = toBooleanFlag(value);
     if (!enabled && hideWhenFalse) return;
     features.push({
@@ -3911,6 +3934,7 @@ function pushFeatureEntry(features, icon, label, value, options = {}) {
 
   const normalizedValue = String(value).trim();
   if (!normalizedValue) return;
+  if (hideWhenZero && isZeroLikeValue(normalizedValue)) return;
   features.push({
     icon,
     label: `${label}: ${normalizedValue}`
@@ -3920,19 +3944,18 @@ function pushFeatureEntry(features, icon, label, value, options = {}) {
 function collectStructuredFeatureEntries(raw, tipo, operacion) {
   const features = [];
 
-  pushFeatureEntry(features, '🏊', 'Piscina', getFirstDefinedValue(raw, ['Piscina', 'piscina', 'TienePiscina', 'tienePiscina']), { treatAsBoolean: true });
-  pushFeatureEntry(features, '🏘️', 'Condominio', getFirstDefinedValue(raw, ['Condominio', 'condominio', 'EnCondominio', 'enCondominio']), { treatAsBoolean: true });
-  pushFeatureEntry(features, '🧭', 'Orientación', getFirstDefinedValue(raw, ['Orientacion', 'orientacion', 'Orientación']));
-  pushFeatureEntry(features, '🏢', 'Pisos', getFirstDefinedValue(raw, ['NumeroPisos', 'numeroPisos', 'Pisos', 'pisos', 'CantidadPisos']));
-  pushFeatureEntry(features, '🚗', 'Estacionamientos', getFirstDefinedValue(raw, ['Estacionamientos', 'estacionamientos']));
-  pushFeatureEntry(features, '📦', 'Bodegas', getFirstDefinedValue(raw, ['Bodegas', 'bodegas']));
-  pushFeatureEntry(features, '🌿', 'Jardín', getFirstDefinedValue(raw, ['Jardin', 'jardin', 'TieneJardin', 'tieneJardin']), { treatAsBoolean: hasAnyOwnKey(raw, ['Jardin', 'jardin', 'TieneJardin', 'tieneJardin']) });
-  pushFeatureEntry(features, '🔥', 'Quincho', getFirstDefinedValue(raw, ['Quincho', 'quincho', 'TieneQuincho', 'tieneQuincho']), { treatAsBoolean: hasAnyOwnKey(raw, ['Quincho', 'quincho', 'TieneQuincho', 'tieneQuincho']) });
-  pushFeatureEntry(features, '🌤️', 'Terraza', getFirstDefinedValue(raw, ['Terraza', 'terraza', 'TieneTerraza', 'tieneTerraza']), { treatAsBoolean: hasAnyOwnKey(raw, ['Terraza', 'terraza', 'TieneTerraza', 'tieneTerraza']) });
-  pushFeatureEntry(features, '🧺', 'Logia', getFirstDefinedValue(raw, ['Logia', 'logia', 'TieneLogia', 'tieneLogia']), { treatAsBoolean: hasAnyOwnKey(raw, ['Logia', 'logia', 'TieneLogia', 'tieneLogia']) });
-  pushFeatureEntry(features, '🛗', 'Ascensor', getFirstDefinedValue(raw, ['Ascensor', 'ascensor', 'TieneAscensor', 'tieneAscensor']), { treatAsBoolean: hasAnyOwnKey(raw, ['Ascensor', 'ascensor', 'TieneAscensor', 'tieneAscensor']) });
-  pushFeatureEntry(features, '🛋️', 'Amoblado', getFirstDefinedValue(raw, ['Amoblado', 'amoblado', 'EsAmoblado', 'esAmoblado']), { treatAsBoolean: hasAnyOwnKey(raw, ['Amoblado', 'amoblado', 'EsAmoblado', 'esAmoblado']) });
-  pushFeatureEntry(features, '📍', 'Sector', getFirstDefinedValue(raw, ['Sector', 'sector']));
+  pushFeatureEntry(features, '🏊', 'Piscina', getFirstDefinedValue(raw, ['Piscina', 'piscina', 'TienePiscina', 'tienePiscina', 'PiscinaPrivada', 'piscinaPrivada']), { treatAsBoolean: true, hideWhenFalse: true, hideWhenZero: true });
+  pushFeatureEntry(features, '🏘️', 'Condominio', getFirstDefinedValue(raw, ['NombreCondominio', 'nombreCondominio', 'CondominioNombre', 'condominioNombre', 'Condominio', 'condominio', 'EnCondominio', 'enCondominio']), { treatAsBoolean: true, hideWhenFalse: true, hideWhenZero: true });
+  pushFeatureEntry(features, '🧭', 'Orientación', getFirstDefinedValue(raw, ['Orientacion', 'orientacion', 'Orientación', 'OrientacionPropiedad', 'orientacionPropiedad']), { hideWhenZero: true });
+  pushFeatureEntry(features, '🏢', 'Pisos', getFirstDefinedValue(raw, ['NumeroPisos', 'numeroPisos', 'Pisos', 'pisos', 'CantidadPisos']), { hideWhenZero: true });
+  pushFeatureEntry(features, '🚗', 'Estacionamientos', getFirstDefinedValue(raw, ['Estacionamientos', 'estacionamientos', 'NroEstacionamientos', 'nroEstacionamientos', 'CantidadEstacionamientos']), { hideWhenZero: true });
+  pushFeatureEntry(features, '🌿', 'Jardín', getFirstDefinedValue(raw, ['Jardin', 'jardin', 'TieneJardin', 'tieneJardin']), { treatAsBoolean: hasAnyOwnKey(raw, ['Jardin', 'jardin', 'TieneJardin', 'tieneJardin']), hideWhenFalse: true, hideWhenZero: true });
+  pushFeatureEntry(features, '🔥', 'Quincho', getFirstDefinedValue(raw, ['Quincho', 'quincho', 'TieneQuincho', 'tieneQuincho']), { treatAsBoolean: hasAnyOwnKey(raw, ['Quincho', 'quincho', 'TieneQuincho', 'tieneQuincho']), hideWhenFalse: true, hideWhenZero: true });
+  pushFeatureEntry(features, '🌤️', 'Terraza', getFirstDefinedValue(raw, ['Terraza', 'terraza', 'TieneTerraza', 'tieneTerraza']), { treatAsBoolean: hasAnyOwnKey(raw, ['Terraza', 'terraza', 'TieneTerraza', 'tieneTerraza']), hideWhenFalse: true, hideWhenZero: true });
+  pushFeatureEntry(features, '🧺', 'Logia', getFirstDefinedValue(raw, ['Logia', 'logia', 'TieneLogia', 'tieneLogia']), { treatAsBoolean: hasAnyOwnKey(raw, ['Logia', 'logia', 'TieneLogia', 'tieneLogia']), hideWhenFalse: true, hideWhenZero: true });
+  pushFeatureEntry(features, '🛗', 'Ascensor', getFirstDefinedValue(raw, ['Ascensor', 'ascensor', 'TieneAscensor', 'tieneAscensor']), { treatAsBoolean: hasAnyOwnKey(raw, ['Ascensor', 'ascensor', 'TieneAscensor', 'tieneAscensor']), hideWhenFalse: true, hideWhenZero: true });
+  pushFeatureEntry(features, '🛋️', 'Amoblado', getFirstDefinedValue(raw, ['Amoblado', 'amoblado', 'EsAmoblado', 'esAmoblado']), { treatAsBoolean: hasAnyOwnKey(raw, ['Amoblado', 'amoblado', 'EsAmoblado', 'esAmoblado']), hideWhenFalse: true, hideWhenZero: true });
+  pushFeatureEntry(features, '📍', 'Sector', getFirstDefinedValue(raw, ['Sector', 'sector']), { hideWhenZero: true });
   pushFeatureEntry(features, '🏠', 'Tipo', tipo);
   pushFeatureEntry(features, '💼', 'Operación', operacion);
 
@@ -3981,6 +4004,8 @@ function collectStructuredFeatureEntries(raw, tipo, operacion) {
     if (typeof bucket === 'object') {
       Object.entries(bucket).forEach(([key, value]) => {
         if (value === undefined || value === null || String(value).trim() === '') return;
+        if (normalizeText(key).includes('bodega')) return;
+        if (isZeroLikeValue(value)) return;
         if (typeof value === 'boolean' || /^[01]$/.test(String(value).trim())) {
           pushFeatureEntry(features, '✨', humanizeFeatureKey(key), value, { treatAsBoolean: true, hideWhenFalse: true });
           return;
@@ -4885,19 +4910,15 @@ function getEmbedVideoUrl(url) {
 
 function renderVideoContent(container, propertyName, videoUrl) {
   const embed = getEmbedVideoUrl(videoUrl);
-  const rawVideoUrl = String(videoUrl || '').trim();
-  const videoLinkMarkup = rawVideoUrl
-    ? `<div style="display:grid;gap:8px;margin-top:12px"><a href="${escapeHtml(rawVideoUrl)}" target="_blank" rel="noopener noreferrer" style="display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:0 18px;border-radius:999px;background:#0f2b5b;color:#fff;font-weight:700;letter-spacing:.04em;text-decoration:none;width:max-content">Abrir video en una nueva pestaña</a><p style="margin:0;font-size:.92rem;color:#5d6d7e">Si el reproductor indica "video no disponible", ábrelo directamente desde este enlace.</p></div>`
-    : '';
 
   if (embed) {
-    container.innerHTML = `<iframe src="${escapeHtml(embed)}" title="Video de ${escapeHtml(propertyName)}" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>${videoLinkMarkup}`;
+    container.innerHTML = `<iframe src="${escapeHtml(embed)}" title="Video de ${escapeHtml(propertyName)}" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>`;
     return true;
   }
 
   const directVideoUrl = normalizeMediaUrl(videoUrl);
   if (isDirectVideoUrl(directVideoUrl)) {
-    container.innerHTML = `<video controls playsinline preload="metadata" style="display:block;width:100%;aspect-ratio:16/9;border:0;background:#000"><source src="${escapeHtml(directVideoUrl)}"></video>${videoLinkMarkup}`;
+    container.innerHTML = `<video controls playsinline preload="metadata" style="display:block;width:100%;aspect-ratio:16/9;border:0;background:#000"><source src="${escapeHtml(directVideoUrl)}"></video>`;
     return true;
   }
 
