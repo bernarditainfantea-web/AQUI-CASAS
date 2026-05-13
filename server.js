@@ -301,7 +301,7 @@ async function requestLegacyPublicPropertyVideo(id) {
   return {
     responseCode: 0,
     id,
-    video: toEmbedVideoUrl(candidates[0] || '')
+    video: toCanonicalVideoUrl(candidates[0] || '')
   };
 }
 
@@ -322,7 +322,7 @@ async function requestOfinetBackofficePropertyVideo(id) {
   return {
     responseCode: 0,
     id,
-    video: toEmbedVideoUrl(candidates[0] || '')
+    video: toCanonicalVideoUrl(candidates[0] || '')
   };
 }
 
@@ -400,6 +400,51 @@ function toEmbedVideoUrl(rawUrl) {
   }
 
   return '';
+}
+
+function toCanonicalVideoUrl(rawUrl) {
+  const value = String(rawUrl || '').trim();
+  if (!value) return '';
+
+  if (/^[A-Za-z0-9_-]{11}$/.test(value)) {
+    return `https://www.youtube.com/watch?v=${value}`;
+  }
+
+  try {
+    const parsed = new URL(value);
+    const hostname = parsed.hostname.toLowerCase();
+
+    if (hostname.includes('youtu.be')) {
+      const videoId = parsed.pathname.split('/').filter(Boolean).pop();
+      return videoId ? `https://www.youtube.com/watch?v=${videoId}` : '';
+    }
+
+    if (hostname.includes('youtube.com') || hostname.includes('youtube-nocookie.com')) {
+      if (parsed.pathname.startsWith('/embed/')) {
+        const embedId = parsed.pathname.split('/').filter(Boolean).pop();
+        return embedId ? `https://www.youtube.com/watch?v=${embedId}` : '';
+      }
+      if (parsed.pathname.startsWith('/shorts/')) {
+        const shortId = parsed.pathname.split('/').filter(Boolean).pop();
+        return shortId ? `https://www.youtube.com/watch?v=${shortId}` : '';
+      }
+      if (parsed.pathname.startsWith('/live/')) {
+        const liveId = parsed.pathname.split('/').filter(Boolean).pop();
+        return liveId ? `https://www.youtube.com/watch?v=${liveId}` : '';
+      }
+      const videoId = parsed.searchParams.get('v');
+      if (videoId) return `https://www.youtube.com/watch?v=${videoId}`;
+    }
+
+    if (hostname.includes('player.vimeo.com') && parsed.pathname.includes('/video/')) {
+      const videoId = parsed.pathname.split('/').filter(Boolean).pop();
+      return videoId ? `https://vimeo.com/${videoId}` : '';
+    }
+
+    return value;
+  } catch (error) {
+    return value;
+  }
 }
 
 async function requestUfIndicator() {

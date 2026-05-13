@@ -3817,7 +3817,7 @@ function getVideoUrl(raw) {
   ).trim();
 
   if (directValue) {
-    return normalizeMediaUrl(directValue);
+    return normalizeCanonicalVideoUrl(directValue);
   }
 
   const visited = new WeakSet();
@@ -3830,7 +3830,7 @@ function getVideoUrl(raw) {
       const trimmed = node.trim();
       if (!trimmed) return '';
       if (videoHints.test(keyHint) || getEmbedVideoUrl(trimmed) || isDirectVideoUrl(trimmed)) {
-        return normalizeMediaUrl(trimmed);
+        return normalizeCanonicalVideoUrl(trimmed);
       }
       return '';
     }
@@ -3856,6 +3856,53 @@ function getVideoUrl(raw) {
   }
 
   return scanNode(raw);
+}
+
+function normalizeCanonicalVideoUrl(value) {
+  const normalizedValue = String(value || '').trim();
+  if (!normalizedValue) return '';
+
+  if (/^[A-Za-z0-9_-]{11}$/.test(normalizedValue)) {
+    return `https://www.youtube.com/watch?v=${normalizedValue}`;
+  }
+
+  const normalizedMediaUrl = normalizeMediaUrl(normalizedValue);
+
+  try {
+    const parsed = new URL(normalizedMediaUrl);
+    const hostname = parsed.hostname.toLowerCase();
+
+    if (hostname.includes('youtu.be')) {
+      const videoId = parsed.pathname.split('/').filter(Boolean).pop();
+      return videoId ? `https://www.youtube.com/watch?v=${videoId}` : normalizedMediaUrl;
+    }
+
+    if (hostname.includes('youtube.com') || hostname.includes('youtube-nocookie.com')) {
+      if (parsed.pathname.startsWith('/embed/')) {
+        const embedId = parsed.pathname.split('/').filter(Boolean).pop();
+        return embedId ? `https://www.youtube.com/watch?v=${embedId}` : normalizedMediaUrl;
+      }
+      if (parsed.pathname.startsWith('/shorts/')) {
+        const shortId = parsed.pathname.split('/').filter(Boolean).pop();
+        return shortId ? `https://www.youtube.com/watch?v=${shortId}` : normalizedMediaUrl;
+      }
+      if (parsed.pathname.startsWith('/live/')) {
+        const liveId = parsed.pathname.split('/').filter(Boolean).pop();
+        return liveId ? `https://www.youtube.com/watch?v=${liveId}` : normalizedMediaUrl;
+      }
+      const videoId = parsed.searchParams.get('v');
+      if (videoId) return `https://www.youtube.com/watch?v=${videoId}`;
+    }
+
+    if (hostname.includes('player.vimeo.com') && parsed.pathname.includes('/video/')) {
+      const videoId = parsed.pathname.split('/').filter(Boolean).pop();
+      return videoId ? `https://vimeo.com/${videoId}` : normalizedMediaUrl;
+    }
+  } catch (error) {
+    return normalizedMediaUrl;
+  }
+
+  return normalizedMediaUrl;
 }
 
 function buildLocationLabel(parts) {
