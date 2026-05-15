@@ -2251,6 +2251,7 @@
       .wa-btn{right:14px;bottom:14px;width:54px;height:54px}
     }
   </style>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 </head>
 <body>
   <noscript><img height="1" width="1" style="display:none"
@@ -5609,6 +5610,11 @@ function closeDetailOutside(event) {
   }
 }
 
+const _supabase = supabase.createClient(
+  'https://hdntatocmamcibeasypi.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhkbnRhdG9jbWFtY2liZWFzeXBpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg4NTQ2MTIsImV4cCI6MjA5NDQzMDYxMn0.sseu100zyqjWXywhPhDH9wyRMR7NGlpweaZraztTfXM'
+);
+
 let currentContactProp = 0;
 
 function openContact(id, event) {
@@ -5646,7 +5652,7 @@ function closeContactOutside(event) {
   }
 }
 
-function submitContact() {
+async function submitContact() {
   const nombre = document.getElementById('cNombre').value.trim();
   const telefono = document.getElementById('cTelefono').value.trim();
 
@@ -5655,14 +5661,27 @@ function submitContact() {
     return;
   }
 
-  console.log('Lead:', {
-    prop: currentContactProp,
-    property: STATE.propertyMap[currentContactProp] || null,
+  const property = STATE.propertyMap[currentContactProp] || null;
+
+  const lead = {
     nombre,
     telefono,
-    email: document.getElementById('cEmail').value.trim(),
-    msg: document.getElementById('cMensaje').value.trim()
-  });
+    email: document.getElementById('cEmail').value.trim() || null,
+    mensaje: document.getElementById('cMensaje').value.trim() || null,
+    propiedad_id: currentContactProp ? String(currentContactProp) : null,
+    propiedad_nombre: property?.name || null,
+    propiedad_precio: property ? formatPropertyPrice(property) : null,
+    comuna: property?.comuna || null,
+    fecha_contacto: new Date().toISOString()
+  };
+
+  const { error } = await _supabase.from('contactos').insert(lead);
+
+  if (error) {
+    console.error('Error al guardar contacto:', error);
+    alert('Hubo un error al enviar tu mensaje. Por favor intenta nuevamente.');
+    return;
+  }
 
   document.getElementById('cForm').style.display = 'none';
   document.getElementById('cSuccess').style.display = 'block';
