@@ -5671,6 +5671,8 @@ async function submitContact() {
     propiedad_id: currentContactProp ? String(currentContactProp) : null,
     propiedad_nombre: property?.name || null,
     propiedad_precio: property ? formatPropertyPrice(property) : null,
+    propiedad_imagen: property?.img || null,
+    propiedad_direccion: property?.direccion || null,
     comuna: property?.comuna || null,
     fecha_contacto: new Date().toISOString()
   };
