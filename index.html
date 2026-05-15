@@ -2109,6 +2109,99 @@
     }
     .c-success p{color:rgba(255,255,255,.72);line-height:1.7}
 
+    /* ── Visit Popup ─────────────────────────────────────────────── */
+    .visit-popup-overlay{
+      position:fixed;inset:0;z-index:530;
+      display:flex;align-items:center;justify-content:center;
+      background:rgba(10,31,66,.85);
+      opacity:0;pointer-events:none;
+      transition:opacity .35s ease;
+    }
+    .visit-popup-overlay.open{opacity:1;pointer-events:auto}
+    .visit-popup{
+      position:relative;
+      background:var(--navy-2);
+      border:2px solid var(--gold);
+      border-radius:20px;
+      padding:36px 40px 32px;
+      width:min(520px,94vw);
+      max-height:92vh;
+      overflow-y:auto;
+      transform:translateY(28px) scale(.97);
+      transition:transform .35s cubic-bezier(.22,.68,0,1.2);
+      box-shadow:0 24px 72px rgba(0,0,0,.55),0 0 0 1px rgba(212,169,64,.18);
+    }
+    .visit-popup-overlay.open .visit-popup{transform:translateY(0) scale(1)}
+    .visit-popup-badge{
+      display:inline-block;
+      background:var(--gold);
+      color:var(--navy-2);
+      font-size:.72rem;
+      font-weight:800;
+      letter-spacing:.12em;
+      text-transform:uppercase;
+      padding:4px 12px;
+      border-radius:100px;
+      margin-bottom:14px;
+    }
+    .visit-popup-close{
+      position:absolute;top:14px;right:14px;
+      background:rgba(255,255,255,.08);
+      border:none;border-radius:50%;
+      width:32px;height:32px;
+      cursor:pointer;color:rgba(255,255,255,.7);
+      display:flex;align-items:center;justify-content:center;
+      transition:background .2s,color .2s;
+    }
+    .visit-popup-close:hover{background:rgba(255,255,255,.16);color:#fff}
+    .visit-popup-close svg{width:16px;height:16px;stroke:currentColor;stroke-width:2.5;fill:none}
+    .visit-popup h3{
+      font-family:var(--display-font);
+      font-size:1.55rem;
+      color:var(--white);
+      line-height:1.25;
+      margin-bottom:8px;
+      letter-spacing:.03em;
+    }
+    .visit-popup h3 em{color:var(--gold);font-style:normal}
+    .visit-popup-sub{
+      color:rgba(255,255,255,.65);
+      font-size:.95rem;
+      line-height:1.6;
+      margin-bottom:22px;
+    }
+    .visit-popup-form .c-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .vp-submit{
+      display:block;width:100%;
+      background:var(--gold);color:var(--navy-2);
+      border:none;border-radius:10px;
+      padding:14px;
+      font-weight:800;font-size:1rem;letter-spacing:.04em;
+      cursor:pointer;margin-top:8px;
+      transition:background .2s,transform .15s;
+    }
+    .vp-submit:hover{background:var(--gold-2);color:var(--white);transform:translateY(-1px)}
+    .visit-popup-success{display:none;text-align:center;padding:16px 0 8px}
+    .visit-popup-success .vp-check{
+      width:52px;height:52px;
+      background:rgba(212,169,64,.15);
+      border-radius:50%;
+      display:flex;align-items:center;justify-content:center;
+      margin:0 auto 14px;
+    }
+    .visit-popup-success .vp-check svg{width:26px;height:26px;stroke:var(--gold);stroke-width:2.5;fill:none}
+    .visit-popup-success h4{
+      font-family:var(--display-font);
+      font-size:1.45rem;letter-spacing:.05em;
+      color:var(--white);margin-bottom:8px;
+    }
+    .visit-popup-success p{color:rgba(255,255,255,.7);line-height:1.7;font-size:.95rem}
+    @media (max-width:540px){
+      .visit-popup{padding:28px 20px 24px}
+      .visit-popup h3{font-size:1.3rem}
+      .visit-popup-form .c-row{grid-template-columns:1fr}
+    }
+
     @media (max-width:1080px){
       .hero-grid,
       .about-grid,
@@ -3069,6 +3162,45 @@
       <div class="c-success" id="cSuccess">
         <h4>Mensaje recibido</h4>
         <p>Un ejecutivo de Aquí Casas te contactará a la brevedad para continuar con tu consulta.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Visit Popup -->
+  <div class="visit-popup-overlay" id="visitPopupOverlay" onclick="closeVisitPopupOutside(event)">
+    <div class="visit-popup" role="dialog" aria-modal="true" aria-labelledby="vpHeading">
+      <button class="visit-popup-close" type="button" onclick="closeVisitPopup()" aria-label="Cerrar">
+        <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+      <div id="vpContent">
+        <div class="visit-popup-badge">Oferta especial</div>
+        <h3 id="vpHeading">Agenda una visita <em>dentro del mes</em> y te hacemos un precio especial</h3>
+        <p class="visit-popup-sub">Déjanos tus datos y un ejecutivo de Aquí Casas se contactará contigo para coordinar tu visita.</p>
+        <div class="visit-popup-form">
+          <div class="c-row">
+            <div class="c-group">
+              <label for="vpNombre">Nombre</label>
+              <input type="text" id="vpNombre" placeholder="Juan Pérez"/>
+            </div>
+            <div class="c-group">
+              <label for="vpTelefono">Teléfono</label>
+              <input type="tel" id="vpTelefono" placeholder="+56 9 xxxx xxxx"/>
+            </div>
+          </div>
+          <div class="c-group">
+            <label for="vpEmail">Email</label>
+            <input type="email" id="vpEmail" placeholder="juan@email.com"/>
+          </div>
+          <button class="vp-submit" type="button" onclick="submitVisitPopup()">Quiero agendar mi visita</button>
+          <p class="c-note">Tus datos son confidenciales.</p>
+        </div>
+      </div>
+      <div class="visit-popup-success" id="vpSuccess">
+        <div class="vp-check">
+          <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+        <h4>¡Solicitud recibida!</h4>
+        <p>Un ejecutivo de Aquí Casas te contactará pronto para coordinar tu visita y aplicar el precio especial.</p>
       </div>
     </div>
   </div>
@@ -5417,6 +5549,8 @@ function hydratePropertyMortgageCalculatorEvents() {
 }
 
 function showHomePage() {
+  _cancelVisitPopupTimer();
+  closeVisitPopup();
   STATE.activePropertyId = null;
   document.getElementById('homePage').style.display = '';
   document.getElementById('landingSections').style.display = '';
@@ -5432,6 +5566,8 @@ function showHomePage() {
 }
 
 function showCatalogPage(filters = getCatalogFiltersFromRoute()) {
+  _cancelVisitPopupTimer();
+  closeVisitPopup();
   STATE.activePropertyId = null;
   document.getElementById('homePage').style.display = '';
   document.getElementById('landingSections').style.display = 'none';
@@ -5480,6 +5616,7 @@ function showPropertyPage(property) {
   document.getElementById('pShareBtn').onclick = () => openPropertyMessage(property);
   window.scrollTo({ top: 0, behavior: 'auto' });
   syncAnchorsForRoute();
+  _startVisitPopupTimer(property.id);
 }
 
 async function goToProperty(id, options = {}) {
@@ -5689,6 +5826,85 @@ async function submitContact() {
   document.getElementById('cSuccess').style.display = 'block';
 }
 
+/* ── Visit Popup ──────────────────────────────────────────────────── */
+let _visitPopupTimer = null;
+const _visitPopupShown = new Set();
+
+function _startVisitPopupTimer(propertyId) {
+  _cancelVisitPopupTimer();
+  if (_visitPopupShown.has(String(propertyId))) return;
+  _visitPopupTimer = setTimeout(() => openVisitPopup(propertyId), 10000);
+}
+
+function _cancelVisitPopupTimer() {
+  if (_visitPopupTimer) {
+    clearTimeout(_visitPopupTimer);
+    _visitPopupTimer = null;
+  }
+}
+
+function openVisitPopup(propertyId) {
+  _visitPopupShown.add(String(propertyId));
+  document.getElementById('vpNombre').value = '';
+  document.getElementById('vpTelefono').value = '';
+  document.getElementById('vpEmail').value = '';
+  document.getElementById('vpContent').style.display = 'block';
+  document.getElementById('vpSuccess').style.display = 'none';
+  document.getElementById('visitPopupOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeVisitPopup() {
+  document.getElementById('visitPopupOverlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function closeVisitPopupOutside(event) {
+  if (event.target === document.getElementById('visitPopupOverlay')) {
+    closeVisitPopup();
+  }
+}
+
+async function submitVisitPopup() {
+  const nombre = document.getElementById('vpNombre').value.trim();
+  const telefono = document.getElementById('vpTelefono').value.trim();
+
+  if (!nombre || !telefono) {
+    alert('Por favor ingresa tu nombre y teléfono.');
+    return;
+  }
+
+  const propertyId = STATE.activePropertyId;
+  const property = propertyId ? STATE.propertyMap[propertyId] : null;
+
+  const lead = {
+    nombre,
+    telefono,
+    email: document.getElementById('vpEmail').value.trim() || null,
+    mensaje: 'Solicitud de visita con precio especial (popup)',
+    propiedad_id: propertyId ? String(propertyId) : null,
+    propiedad_nombre: property?.name || null,
+    propiedad_precio: property ? formatPropertyPrice(property) : null,
+    propiedad_imagen: property?.img || null,
+    propiedad_direccion: property?.direccion || null,
+    comuna: property?.comuna || null,
+    origen: 'popup_visita',
+    fecha_contacto: new Date().toISOString()
+  };
+
+  const { error } = await _supabase.from('contactos').insert(lead);
+
+  if (error) {
+    console.error('Error al guardar contacto de visita:', error);
+    alert('Hubo un error al enviar tu solicitud. Por favor intenta nuevamente.');
+    return;
+  }
+
+  document.getElementById('vpContent').style.display = 'none';
+  document.getElementById('vpSuccess').style.display = 'block';
+  setTimeout(() => closeVisitPopup(), 4000);
+}
+
 function bindGlobalEvents() {
   document.addEventListener('keydown', event => {
     if (event.key === 'Escape') {
@@ -5696,6 +5912,7 @@ function bindGlobalEvents() {
       closeImageLightbox();
       closeDetail();
       closeContact();
+      closeVisitPopup();
     }
     if (STATE.isLightboxOpen && event.key === 'ArrowLeft') {
       changeGallery(-1);
