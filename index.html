@@ -937,6 +937,10 @@
       line-height:1.8;
       font-size:1rem;
     }
+    .property-page-description .property-page-description-paragraph{
+      margin:0;
+      white-space:pre-line;
+    }
     .property-page-actions{
       display:flex;
       gap:12px;
@@ -2873,7 +2877,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                 <span>Ver detalle</span>
               </summary>
               <div class="property-page-address-body">
-                <p id="pDesc"></p>
+                <div id="pDesc"></div>
               </div>
             </details>
           </div>
@@ -3468,6 +3472,20 @@ function escapeHtml(value) {
     '"': '&quot;',
     "'": '&#39;'
   })[char]);
+}
+
+function renderDescriptionMarkup(value) {
+  const normalized = String(value ?? '').replace(/\r\n?/g, '\n').trim();
+  if (!normalized) {
+    return '<p class="property-page-description-paragraph">Sin descripción disponible.</p>';
+  }
+
+  return normalized
+    .split(/\n{2,}/)
+    .map(paragraph => paragraph.trim())
+    .filter(Boolean)
+    .map(paragraph => `<p class="property-page-description-paragraph">${escapeHtml(paragraph)}</p>`)
+    .join('');
 }
 
 function normalizeText(value) {
@@ -5608,7 +5626,7 @@ function showPropertyPage(property) {
   document.getElementById('pBanos').textContent = property.banos || 0;
   document.getElementById('pM2').textContent = `${property.m2 || 0} m2`;
   document.getElementById('pTerreno').textContent = `${property.terreno || 0} m2`;
-  document.getElementById('pDesc').textContent = property.desc;
+  document.getElementById('pDesc').innerHTML = renderDescriptionMarkup(property.desc);
   document.getElementById('pDireccion').textContent = property.direccion || property.loc || 'Dirección por confirmar.';
   addressBlock.style.display = property.direccion || property.loc ? 'block' : 'none';
   descriptionBlock.open = false;
@@ -5729,7 +5747,7 @@ async function openDetail(id) {
   document.getElementById('mBanos').textContent = property.banos || 0;
   document.getElementById('mM2').textContent = `${property.m2 || 0} m2`;
   document.getElementById('mTerreno').textContent = `${property.terreno || 0} m2`;
-  document.getElementById('mDesc').textContent = property.desc;
+  document.getElementById('mDesc').innerHTML = renderDescriptionMarkup(property.desc);
   document.getElementById('mBadges').innerHTML = [
     property.operacion,
     property.tipo,
