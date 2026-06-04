@@ -4387,8 +4387,15 @@ function normalizeProperty(raw) {
     legacyIdCandidates,
     isFeatured,
     reservada: (() => {
-      const n = String(raw.name ?? raw.Titulo ?? raw.Nombre ?? raw.NombrePropiedad ?? '').trim().toLowerCase();
-      return RESERVED_PROPERTIES.some(keyword => n.includes(keyword));
+      const candidates = [
+        raw.name, raw.Titulo, raw.titulo, raw.Nombre, raw.nombre,
+        raw.NombrePropiedad, raw.NombreCondominio, raw.NombreProyecto,
+        raw.Proyecto, raw.Condominio, raw.condominio,
+        raw.Sector, raw.sector, raw.Ubicacion, raw.ubicacion,
+        raw.DireccionCorta, raw.DireccionCompleta, raw.Direccion,
+        raw.desc, raw.Descripcion, raw.DescripcionCorta
+      ].map(v => String(v ?? '').trim().toLowerCase()).join(' ');
+      return RESERVED_PROPERTIES.some(keyword => candidates.includes(keyword));
     })()
   };
 
@@ -5671,8 +5678,8 @@ function showPropertyPage(property) {
   document.getElementById('pM2').textContent = `${property.m2 || 0} m2`;
   document.getElementById('pTerreno').textContent = `${property.terreno || 0} m2`;
   document.getElementById('pDesc').innerHTML = renderDescriptionMarkup(property.desc);
-  document.getElementById('pDireccion').textContent = property.direccion || 'Dirección por confirmar.';
-  addressBlock.style.display = property.direccion ? 'block' : 'none';
+  document.getElementById('pDireccion').textContent = property.direccion || property.loc || 'Dirección por confirmar.';
+  addressBlock.style.display = property.direccion || property.loc ? 'block' : 'none';
   descriptionBlock.open = false;
   document.getElementById('pBadges').innerHTML = [
     property.operacion,
