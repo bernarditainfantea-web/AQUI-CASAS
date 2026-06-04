@@ -3290,14 +3290,11 @@ const API_CONFIG = {
   }
 };
 
-const RESERVED_PROPERTIES = new Set([
-  'los geranios',
-  'el obispo',
+const RESERVED_PROPERTIES = [
   'nacimiento',
   'los jilgueros',
-  'parque central',
-  'flor del aire'
-]);
+  'parque central'
+];
 
 const SAMPLE_PROPERTIES = [
   {
@@ -4389,9 +4386,10 @@ function normalizeProperty(raw) {
     operacionKey: slugify(operacion),
     legacyIdCandidates,
     isFeatured,
-    reservada: RESERVED_PROPERTIES.has(
-      String(raw.name ?? raw.Titulo ?? raw.Nombre ?? raw.NombrePropiedad ?? '').trim().toLowerCase()
-    )
+    reservada: (() => {
+      const n = String(raw.name ?? raw.Titulo ?? raw.Nombre ?? raw.NombrePropiedad ?? '').trim().toLowerCase();
+      return RESERVED_PROPERTIES.some(keyword => n.includes(keyword));
+    })()
   };
 
   return normalized;
