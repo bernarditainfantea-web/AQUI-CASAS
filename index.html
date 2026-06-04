@@ -1414,6 +1414,20 @@
     }
     .prop-badge{left:16px;background:var(--gold);color:var(--navy)}
     .prop-tag{right:16px;background:rgba(10,31,66,.82);color:var(--white)}
+    .prop-badge-reserved{
+      position:absolute;
+      bottom:0;
+      left:0;
+      right:0;
+      background:rgba(185,28,28,.9);
+      color:#fff;
+      text-align:center;
+      padding:8px 0;
+      font-size:.75rem;
+      font-weight:800;
+      letter-spacing:.14em;
+      text-transform:uppercase;
+    }
     .prop-body{padding:20px 20px 16px}
     .prop-price{
       font-family:var(--display-font);
@@ -1933,6 +1947,10 @@
       color:var(--ink);
       font-weight:700;
       font-size:.86rem;
+    }
+    .modal-badges .badge-reserved{
+      background:rgba(185,28,28,.1);
+      color:#b91c1c;
     }
     .modal-attrs{
       margin:24px 0;
@@ -3272,6 +3290,15 @@ const API_CONFIG = {
   }
 };
 
+const RESERVED_PROPERTIES = new Set([
+  'los geranios',
+  'el obispo',
+  'nacimiento',
+  'los jilgueros',
+  'parque central',
+  'flor del aire'
+]);
+
 const SAMPLE_PROPERTIES = [
   {
     id: 1,
@@ -4346,7 +4373,10 @@ function normalizeProperty(raw) {
     tipoKey: slugify(tipo),
     operacionKey: slugify(operacion),
     legacyIdCandidates,
-    isFeatured
+    isFeatured,
+    reservada: RESERVED_PROPERTIES.has(
+      String(raw.name ?? raw.Titulo ?? raw.Nombre ?? raw.NombrePropiedad ?? '').trim().toLowerCase()
+    )
   };
 
   return normalized;
@@ -4778,6 +4808,7 @@ function buildPropertyCardsMarkup(properties) {
         <img src="${escapeHtml(property.img)}" alt="${escapeHtml(property.name)}"/>
         <span class="prop-badge">${escapeHtml(property.operacion || 'Disponible')}</span>
         <span class="prop-tag">${escapeHtml(property.tipo)}</span>
+        ${property.reservada ? '<span class="prop-badge-reserved">Reservada</span>' : ''}
       </div>
       <div class="prop-body">
         <div class="prop-price">${escapeHtml(formatPropertyPrice(property))}</div>
@@ -5635,7 +5666,8 @@ function showPropertyPage(property) {
     property.tipo,
     property.comuna || '',
     property.code ? `Código ${property.code}` : ''
-  ].filter(Boolean).map(item => `<span>${escapeHtml(item)}</span>`).join('');
+  ].filter(Boolean).map(item => `<span>${escapeHtml(item)}</span>`).join('') +
+    (property.reservada ? '<span class="badge-reserved">Reservada</span>' : '');
   document.getElementById('pFeatures').innerHTML = renderFeatureMarkup(property.features || []);
   renderPropertyPageMedia(property);
   renderPropertyPageVideo(property);
@@ -5753,7 +5785,8 @@ async function openDetail(id) {
     property.tipo,
     property.comuna || '',
     property.code ? `Código ${property.code}` : ''
-  ].filter(Boolean).map(item => `<span>${escapeHtml(item)}</span>`).join('');
+  ].filter(Boolean).map(item => `<span>${escapeHtml(item)}</span>`).join('') +
+    (property.reservada ? '<span class="badge-reserved">Reservada</span>' : '');
   document.getElementById('mFeatures').innerHTML = renderFeatureMarkup(property.features || []);
   document.getElementById('mCtaBtn').onclick = () => {
     closeDetail();
