@@ -4276,7 +4276,22 @@ function normalizeProperty(raw) {
   const region = normalizeRegionCode(raw.region ?? raw.RegionCodigo ?? raw.CodigoRegion ?? raw.Region ?? '', regionName);
   const tipo = String(raw.tipo ?? raw.TipoInmuebleNombre ?? raw.TipoInmueble ?? raw.Tipo ?? raw.Categoria ?? '').trim() || 'Propiedad';
   const operacion = normalizeOperationLabel(raw.operacion ?? raw.OperacionNombre ?? raw.Operacion ?? 'Venta');
-  const direccion = String(raw.DireccionCorta ?? raw.Direccion ?? raw.Ubicacion ?? raw.loc ?? raw.Sector ?? '').trim();
+  const callePart = String(raw.Calle ?? raw.NombreCalle ?? raw.DirCalle ?? raw.calle ?? '').trim();
+  const numeroPart = String(raw.Numero ?? raw.NumeroCalle ?? raw.DirNumero ?? raw.NumeroPropiedad ?? raw.numero ?? '').trim();
+  const calleNumero = [callePart, numeroPart].filter(Boolean).join(' Nº ');
+  const direccion = String(
+    raw.DireccionCompleta ??
+    raw.DireccionLarga ??
+    raw.DireccionCorta ??
+    raw.Direccion ??
+    raw.direccion ??
+    raw.Ubicacion ??
+    raw.ubicacion ??
+    (calleNumero || undefined) ??
+    raw.Sector ??
+    raw.sector ??
+    ''
+  ).trim();
   const gallery = getImageCandidates(raw);
   const fallbackImage = 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=1200&q=80';
   const legacyIdCandidates = uniqueBy([
@@ -5658,8 +5673,8 @@ function showPropertyPage(property) {
   document.getElementById('pM2').textContent = `${property.m2 || 0} m2`;
   document.getElementById('pTerreno').textContent = `${property.terreno || 0} m2`;
   document.getElementById('pDesc').innerHTML = renderDescriptionMarkup(property.desc);
-  document.getElementById('pDireccion').textContent = property.direccion || property.loc || 'Dirección por confirmar.';
-  addressBlock.style.display = property.direccion || property.loc ? 'block' : 'none';
+  document.getElementById('pDireccion').textContent = property.direccion || 'Dirección por confirmar.';
+  addressBlock.style.display = property.direccion ? 'block' : 'none';
   descriptionBlock.open = false;
   document.getElementById('pBadges').innerHTML = [
     property.operacion,
