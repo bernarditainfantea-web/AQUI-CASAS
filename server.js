@@ -538,7 +538,7 @@ function parseNumber(value, fallback) {
 
 function buildPropertySearchPayload(query = {}) {
   return {
-    Operacion: parseInteger(query.operacion, 1),
+    Operacion: parseInteger(query.operacion, -1),
     Region: parseInteger(query.region, -1),
     Tipo: query.tipo || '-1',
     Comuna: parseInteger(query.comuna, -1),
@@ -551,7 +551,7 @@ function buildPropertySearchPayload(query = {}) {
     DormHasta: parseInteger(query.dormHasta, 0),
     Condominio: parseInteger(query.condominio, -1),
     Ordenamiento: query.ordenamiento || 'Reciente',
-    RegPag: parseInteger(query.regPag, 50),
+    RegPag: parseInteger(query.regPag, 200),
     NumPag: parseInteger(query.numPag, 1)
   };
 }
