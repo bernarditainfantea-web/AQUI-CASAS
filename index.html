@@ -1433,8 +1433,16 @@
       font-family:var(--display-font);
       font-size:1.95rem;
       letter-spacing:.04em;
-      line-height:1;
+      line-height:1.1;
       margin-bottom:10px;
+    }
+    .price-uf-sub{
+      display:block;
+      font-size:0.5em;
+      font-weight:400;
+      opacity:0.65;
+      letter-spacing:.02em;
+      margin-top:4px;
     }
     .prop-name{
       font-size:1rem;
@@ -3661,6 +3669,14 @@ function getFormattedPropertyPriceParts(property, mode = STATE.priceDisplay) {
   };
 }
 
+function formatPropertyPriceDualHtml(property) {
+  const clpPrice = getPropertyPriceForMode(property, 'CLP');
+  const ufPrice = getPropertyPriceForMode(property, 'UF');
+  const clpFormatted = formatPrice(clpPrice.value, 'CLP');
+  const ufFormatted = formatPrice(ufPrice.value, 'UF');
+  return `${escapeHtml(clpFormatted)}<small class="price-uf-sub">${escapeHtml(ufFormatted)}</small>`;
+}
+
 function convertPriceValueBetweenModes(value, fromMode, toMode) {
   const numeric = Number(value);
   const ufValue = Number(STATE.ufIndicator.value) || 0;
@@ -4818,7 +4834,7 @@ function buildPropertyCardsMarkup(properties) {
         ${property.reservada ? '<span class="prop-badge-reserved">Reservada</span>' : ''}
       </div>
       <div class="prop-body">
-        <div class="prop-price">${escapeHtml(formatPropertyPrice(property))}</div>
+        <div class="prop-price">${formatPropertyPriceDualHtml(property)}</div>
         <div class="prop-name">${escapeHtml(property.name)}</div>
         <div class="prop-loc">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
@@ -4949,16 +4965,14 @@ function refreshActivePropertyViews() {
   if (STATE.activePropertyId && document.getElementById('propertyPage').classList.contains('open')) {
     const property = STATE.propertyMap[STATE.activePropertyId];
     if (property) {
-      const price = getFormattedPropertyPriceParts(property);
-      document.getElementById('pPrice').innerHTML = `<span>${escapeHtml(price.currency)}</span> ${escapeHtml(price.amount)}`;
+      document.getElementById('pPrice').innerHTML = formatPropertyPriceDualHtml(property);
     }
   }
 
   if (STATE.activePropertyId && document.getElementById('detailOverlay').classList.contains('open')) {
     const property = STATE.propertyMap[STATE.activePropertyId];
     if (property) {
-      const detailPrice = getFormattedPropertyPriceParts(property);
-      document.getElementById('mPrice').innerHTML = `<span>${escapeHtml(detailPrice.currency)}</span> ${escapeHtml(detailPrice.amount)}`;
+      document.getElementById('mPrice').innerHTML = formatPropertyPriceDualHtml(property);
     }
   }
 
@@ -5650,7 +5664,6 @@ function showCatalogPage(filters = getCatalogFiltersFromRoute()) {
 }
 
 function showPropertyPage(property) {
-  const price = getFormattedPropertyPriceParts(property);
   const addressBlock = document.getElementById('pAddressBlock');
   const descriptionBlock = document.getElementById('pDescriptionBlock');
   document.getElementById('homePage').style.display = 'none';
@@ -5659,7 +5672,7 @@ function showPropertyPage(property) {
   document.getElementById('propertyPageEmpty').style.display = 'none';
   document.getElementById('pName').textContent = property.name;
   document.getElementById('pLoc').textContent = property.loc;
-  document.getElementById('pPrice').innerHTML = `<span>${escapeHtml(price.currency)}</span> ${escapeHtml(price.amount)}`;
+  document.getElementById('pPrice').innerHTML = formatPropertyPriceDualHtml(property);
   document.getElementById('pDorm').textContent = property.dorm || 0;
   document.getElementById('pBanos').textContent = property.banos || 0;
   document.getElementById('pM2').textContent = `${property.m2 || 0} m2`;
@@ -5780,8 +5793,7 @@ async function openDetail(id) {
   document.getElementById('mImg').alt = property.name;
   document.getElementById('mName').textContent = property.name;
   document.getElementById('mLocText').textContent = property.loc;
-  const detailPrice = getFormattedPropertyPriceParts(property);
-  document.getElementById('mPrice').innerHTML = `<span>${escapeHtml(detailPrice.currency)}</span> ${escapeHtml(detailPrice.amount)}`;
+  document.getElementById('mPrice').innerHTML = formatPropertyPriceDualHtml(property);
   document.getElementById('mDorm').textContent = property.dorm || 0;
   document.getElementById('mBanos').textContent = property.banos || 0;
   document.getElementById('mM2').textContent = `${property.m2 || 0} m2`;
@@ -5900,9 +5912,7 @@ let _visitPopupTimer = null;
 const _visitPopupShown = new Set();
 
 function _startVisitPopupTimer(propertyId) {
-  _cancelVisitPopupTimer();
-  if (_visitPopupShown.has(String(propertyId))) return;
-  _visitPopupTimer = setTimeout(() => openVisitPopup(propertyId), 10000);
+  // popup de agenda desactivado
 }
 
 function _cancelVisitPopupTimer() {
