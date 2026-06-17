@@ -1173,6 +1173,12 @@
       font-size:.84rem;
       line-height:1.65;
     }
+    .mortgage-uf-note{
+      color:var(--muted);
+      font-size:.84rem;
+      line-height:1.45;
+      margin-bottom:6px;
+    }
     .property-page-empty{
       background:var(--white);
       border-radius:28px;
@@ -1443,6 +1449,14 @@
       opacity:0.65;
       letter-spacing:.02em;
       margin-top:4px;
+    }
+    .price-uf-note{
+      display:block;
+      font-size:0.4em;
+      font-weight:400;
+      opacity:0.55;
+      letter-spacing:.02em;
+      margin-top:2px;
     }
     .prop-name{
       font-size:1rem;
@@ -2497,7 +2511,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                 <button type="button" data-price-mode="CLP">Pesos</button>
               </div>
             </div>
-            <div class="price-display-note" id="homePriceDisplayNote">UF referencial: $ 40.784,98. Puede variar según el valor del día.</div>
+            <div class="price-display-note" id="homePriceDisplayNote">UF calculada: $ 40.784,98, puede variar.</div>
           </div>
         </div>
       </div>
@@ -2747,7 +2761,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                   <button type="button" data-price-mode="CLP">Pesos</button>
                 </div>
               </div>
-              <div class="price-display-note" id="priceDisplayNote">UF referencial: $ 40.784,98. Puede variar según el valor del día.</div>
+              <div class="price-display-note" id="priceDisplayNote">UF calculada: $ 40.784,98, puede variar.</div>
             </div>
           </div>
         </div>
@@ -2991,6 +3005,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                 </div>
               </div>
             </div>
+            <div class="mortgage-uf-note" id="mortgageUfNote"></div>
             <div class="mortgage-disclaimer">Este es un calculo referencial. Siempre consulta con tu banco o ejecutivo hipotecario para validar tu caso especifico.</div>
           </div>
           <div class="property-page-reviews">
@@ -3592,6 +3607,10 @@ function isDirectVideoUrl(url) {
   return /\.(mp4|webm|ogg|mov|m4v)(\?.*)?$/i.test(String(url || '').trim());
 }
 
+function getUfNoteText() {
+  return `UF calculada: $ ${formatDisplayAmount(STATE.ufIndicator.value, 'CLP')}, puede variar.`;
+}
+
 function formatDisplayAmount(value, currency = 'UF') {
   const numeric = Number(value);
   if (!Number.isFinite(numeric)) {
@@ -3669,12 +3688,14 @@ function getFormattedPropertyPriceParts(property, mode = STATE.priceDisplay) {
   };
 }
 
-function formatPropertyPriceDualHtml(property) {
+function formatPropertyPriceDualHtml(property, { includeNote = false } = {}) {
   const clpPrice = getPropertyPriceForMode(property, 'CLP');
   const ufPrice = getPropertyPriceForMode(property, 'UF');
   const clpFormatted = formatPrice(clpPrice.value, 'CLP');
   const ufFormatted = formatPrice(ufPrice.value, 'UF');
-  return `${escapeHtml(clpFormatted)}<small class="price-uf-sub">${escapeHtml(ufFormatted)}</small>`;
+  const ufNote = getUfNoteText();
+  const noteHtml = includeNote ? `<small class="price-uf-note">${escapeHtml(ufNote)}</small>` : '';
+  return `${escapeHtml(clpFormatted)}<small class="price-uf-sub" title="${escapeHtml(ufNote)}">${escapeHtml(ufFormatted)}</small>${noteHtml}`;
 }
 
 function convertPriceValueBetweenModes(value, fromMode, toMode) {
@@ -3729,7 +3750,7 @@ function updatePriceDisplayNote() {
     const note = document.getElementById(id);
     if (!note) return;
     note.classList.remove('error');
-    note.textContent = `UF referencial: $ ${formatDisplayAmount(STATE.ufIndicator.value, 'CLP')}. Puede variar según el valor del día.`;
+    note.textContent = getUfNoteText();
   });
 }
 
@@ -4965,14 +4986,14 @@ function refreshActivePropertyViews() {
   if (STATE.activePropertyId && document.getElementById('propertyPage').classList.contains('open')) {
     const property = STATE.propertyMap[STATE.activePropertyId];
     if (property) {
-      document.getElementById('pPrice').innerHTML = formatPropertyPriceDualHtml(property);
+      document.getElementById('pPrice').innerHTML = formatPropertyPriceDualHtml(property, { includeNote: true });
     }
   }
 
   if (STATE.activePropertyId && document.getElementById('detailOverlay').classList.contains('open')) {
     const property = STATE.propertyMap[STATE.activePropertyId];
     if (property) {
-      document.getElementById('mPrice').innerHTML = formatPropertyPriceDualHtml(property);
+      document.getElementById('mPrice').innerHTML = formatPropertyPriceDualHtml(property, { includeNote: true });
     }
   }
 
@@ -5523,6 +5544,7 @@ function renderPropertyMortgageCalculator() {
   document.getElementById('mortgagePriceScaleMin').textContent = formatPrice(priceMin, displayMode);
   document.getElementById('mortgagePriceScaleMax').textContent = formatPrice(priceMax, displayMode);
   document.getElementById('mortgageDownPaymentCurrency').textContent = displayMode === 'CLP' ? '$' : 'UF';
+  document.getElementById('mortgageUfNote').textContent = getUfNoteText();
 
   document.querySelectorAll('#mortgageModeButtons [data-mortgage-mode]').forEach(button => {
     const isActive = button.dataset.mortgageMode === displayMode;
@@ -5672,7 +5694,7 @@ function showPropertyPage(property) {
   document.getElementById('propertyPageEmpty').style.display = 'none';
   document.getElementById('pName').textContent = property.name;
   document.getElementById('pLoc').textContent = property.loc;
-  document.getElementById('pPrice').innerHTML = formatPropertyPriceDualHtml(property);
+  document.getElementById('pPrice').innerHTML = formatPropertyPriceDualHtml(property, { includeNote: true });
   document.getElementById('pDorm').textContent = property.dorm || 0;
   document.getElementById('pBanos').textContent = property.banos || 0;
   document.getElementById('pM2').textContent = `${property.m2 || 0} m2`;
@@ -5793,7 +5815,7 @@ async function openDetail(id) {
   document.getElementById('mImg').alt = property.name;
   document.getElementById('mName').textContent = property.name;
   document.getElementById('mLocText').textContent = property.loc;
-  document.getElementById('mPrice').innerHTML = formatPropertyPriceDualHtml(property);
+  document.getElementById('mPrice').innerHTML = formatPropertyPriceDualHtml(property, { includeNote: true });
   document.getElementById('mDorm').textContent = property.dorm || 0;
   document.getElementById('mBanos').textContent = property.banos || 0;
   document.getElementById('mM2').textContent = `${property.m2 || 0} m2`;
