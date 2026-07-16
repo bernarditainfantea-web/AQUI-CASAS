@@ -3328,8 +3328,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       </button>
       <div id="vpContent">
         <div class="visit-popup-badge">Oferta especial</div>
-        <h3 id="vpHeading">Agenda una visita <em>dentro del mes</em> y te hacemos un precio especial</h3>
-        <p class="visit-popup-sub">Déjanos tus datos y un ejecutivo de Aquí Casas se contactará contigo para coordinar tu visita.</p>
+        <h3 id="vpHeading">Agenda <em>dentro del mes</em> y te regalamos el IVA en tu compra</h3>
+        <p class="visit-popup-sub">Déjanos tus datos y un ejecutivo de Aquí Casas se contactará contigo para coordinar tu agenda y aplicar el beneficio.</p>
         <div class="visit-popup-form">
           <div class="c-row">
             <div class="c-group">
@@ -3345,7 +3345,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             <label for="vpEmail">Email</label>
             <input type="email" id="vpEmail" placeholder="juan@email.com"/>
           </div>
-          <button class="vp-submit" type="button" onclick="submitVisitPopup()">Quiero agendar mi visita</button>
+          <button class="vp-submit" type="button" onclick="submitVisitPopup()">Quiero agendar y obtener el beneficio</button>
           <p class="c-note">Tus datos son confidenciales.</p>
         </div>
       </div>
@@ -3354,7 +3354,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
         </div>
         <h4>¡Solicitud recibida!</h4>
-        <p>Un ejecutivo de Aquí Casas te contactará pronto para coordinar tu visita y aplicar el precio especial.</p>
+        <p>Un ejecutivo de Aquí Casas te contactará pronto para coordinar tu agenda y aplicar el regalo del IVA.</p>
       </div>
     </div>
   </div>
@@ -5767,7 +5767,6 @@ function hydratePropertyMortgageCalculatorEvents() {
 }
 
 function showHomePage() {
-  _cancelVisitPopupTimer();
   closeVisitPopup();
   STATE.activePropertyId = null;
   document.getElementById('homePage').style.display = '';
@@ -5784,7 +5783,6 @@ function showHomePage() {
 }
 
 function showCatalogPage(filters = getCatalogFiltersFromRoute()) {
-  _cancelVisitPopupTimer();
   closeVisitPopup();
   STATE.activePropertyId = null;
   document.getElementById('homePage').style.display = '';
@@ -5834,7 +5832,6 @@ function showPropertyPage(property) {
   document.getElementById('pShareBtn').onclick = () => openPropertyMessage(property);
   window.scrollTo({ top: 0, behavior: 'auto' });
   syncAnchorsForRoute();
-  _startVisitPopupTimer(property.id);
 }
 
 async function goToProperty(id, options = {}) {
@@ -6047,11 +6044,29 @@ async function submitContact() {
 }
 
 /* ── Visit Popup ──────────────────────────────────────────────────── */
+const VISIT_POPUP_DELAY_MS = 8000;
 let _visitPopupTimer = null;
-const _visitPopupShown = new Set();
+let _visitPopupStarted = false;
+let _visitPopupShown = false;
 
-function _startVisitPopupTimer(propertyId) {
-  // popup de agenda desactivado
+function _isBlockingOverlayOpen() {
+  return ['detailOverlay', 'contactOverlay', 'piePopupOverlay', 'imageLightbox']
+    .some(id => document.getElementById(id)?.classList.contains('open'));
+}
+
+function _maybeOpenVisitPopup() {
+  if (_visitPopupShown) return;
+  if (_isBlockingOverlayOpen()) {
+    _visitPopupTimer = window.setTimeout(_maybeOpenVisitPopup, 1500);
+    return;
+  }
+  openVisitPopup();
+}
+
+function _startVisitPopupTimer() {
+  if (_visitPopupStarted || _visitPopupShown) return;
+  _visitPopupStarted = true;
+  _visitPopupTimer = window.setTimeout(_maybeOpenVisitPopup, VISIT_POPUP_DELAY_MS);
 }
 
 function _cancelVisitPopupTimer() {
@@ -6061,8 +6076,9 @@ function _cancelVisitPopupTimer() {
   }
 }
 
-function openVisitPopup(propertyId) {
-  _visitPopupShown.add(String(propertyId));
+function openVisitPopup() {
+  _visitPopupShown = true;
+  _cancelVisitPopupTimer();
   document.getElementById('vpNombre').value = '';
   document.getElementById('vpTelefono').value = '';
   document.getElementById('vpEmail').value = '';
@@ -6124,14 +6140,14 @@ async function submitVisitPopup() {
     nombre,
     telefono,
     email: document.getElementById('vpEmail').value.trim() || null,
-    mensaje: 'Solicitud de visita con precio especial (popup)',
+    mensaje: 'Solicitud de agenda - IVA de regalo (popup 8s)',
     propiedad_id: propertyId ? String(propertyId) : null,
     propiedad_nombre: property?.name || null,
     propiedad_precio: property ? formatPropertyPrice(property) : null,
     propiedad_imagen: property?.img || null,
     propiedad_direccion: property?.direccion || null,
     comuna: property?.comuna || null,
-    origen: 'popup_visita',
+    origen: 'popup_iva_regalo',
     fecha_contacto: new Date().toISOString()
   };
 
@@ -6205,6 +6221,7 @@ async function bootstrap() {
 }
 
 bootstrap();
+_startVisitPopupTimer();
 </script>
 </body>
 </html>
