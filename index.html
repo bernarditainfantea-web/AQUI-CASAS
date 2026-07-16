@@ -271,6 +271,18 @@
       gap:16px;
       align-content:start;
     }
+    .hero-point-btn{
+      font-family:inherit;
+      text-align:left;
+      cursor:pointer;
+      transition:background .2s,border-color .2s,transform .18s;
+    }
+    .hero-point-btn:hover,
+    .hero-point-btn:focus-visible{
+      background:rgba(255,255,255,.14);
+      border-color:rgba(212,169,64,.5);
+      transform:translateY(-2px);
+    }
     .hero-point-icon{
       width:54px;
       height:54px;
@@ -2253,6 +2265,92 @@
       .visit-popup-form .c-row{grid-template-columns:1fr}
     }
 
+    /* ── Pie (down payment help) Popup ───────────────────────────── */
+    .pie-popup-overlay{
+      position:fixed;inset:0;z-index:530;
+      display:flex;align-items:center;justify-content:center;
+      background:rgba(10,31,66,.85);
+      opacity:0;pointer-events:none;
+      padding:24px;
+      transition:opacity .35s ease;
+    }
+    .pie-popup-overlay.open{opacity:1;pointer-events:auto}
+    .pie-popup{
+      position:relative;
+      background:var(--navy-2);
+      border:2px solid var(--gold);
+      border-radius:20px;
+      padding:40px 44px 36px;
+      width:min(880px,96vw);
+      max-height:90vh;
+      overflow-y:auto;
+      transform:translateY(28px) scale(.97);
+      transition:transform .35s cubic-bezier(.22,.68,0,1.2);
+      box-shadow:0 24px 72px rgba(0,0,0,.55),0 0 0 1px rgba(212,169,64,.18);
+    }
+    .pie-popup-overlay.open .pie-popup{transform:translateY(0) scale(1)}
+    .pie-popup-close{
+      position:absolute;top:14px;right:14px;
+      background:rgba(255,255,255,.08);
+      border:none;border-radius:50%;
+      width:32px;height:32px;
+      cursor:pointer;color:rgba(255,255,255,.7);
+      display:flex;align-items:center;justify-content:center;
+      transition:background .2s,color .2s;
+    }
+    .pie-popup-close:hover{background:rgba(255,255,255,.16);color:#fff}
+    .pie-popup-close svg{width:16px;height:16px;stroke:currentColor;stroke-width:2.5;fill:none}
+    .pie-popup-badge{
+      display:inline-block;
+      background:var(--gold);
+      color:var(--navy-2);
+      font-size:.72rem;
+      font-weight:800;
+      letter-spacing:.12em;
+      text-transform:uppercase;
+      padding:4px 12px;
+      border-radius:100px;
+      margin-bottom:14px;
+    }
+    .pie-popup h3{
+      font-family:var(--display-font);
+      font-size:1.7rem;
+      color:var(--white);
+      line-height:1.28;
+      margin-bottom:10px;
+      letter-spacing:.03em;
+      max-width:560px;
+    }
+    .pie-popup h3 em{color:var(--gold);font-style:normal}
+    .pie-popup-sub{
+      color:rgba(255,255,255,.68);
+      font-size:.98rem;
+      line-height:1.7;
+      max-width:560px;
+      margin-bottom:22px;
+    }
+    .pie-popup-contact-btn{margin-bottom:8px}
+    .pie-popup-props{
+      margin-top:30px;
+      padding-top:26px;
+      border-top:1px solid rgba(255,255,255,.12);
+    }
+    .pie-popup-props-head{
+      font-family:var(--display-font);
+      font-size:.85rem;
+      font-weight:800;
+      letter-spacing:.12em;
+      text-transform:uppercase;
+      color:var(--gold);
+      margin-bottom:16px;
+    }
+    .pie-popup-props .props-carousel{padding-bottom:6px}
+    .pie-popup-props .prop-card{background:var(--white)}
+    @media (max-width:640px){
+      .pie-popup{padding:30px 20px 26px}
+      .pie-popup h3{font-size:1.35rem}
+    }
+
     @media (max-width:1080px){
       .hero-grid,
       .about-grid,
@@ -2455,12 +2553,12 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             </div>
             <strong>Atención cercana</strong>
           </div>
-          <div class="hero-point">
+          <button class="hero-point hero-point-btn" type="button" onclick="openPiePopup()">
             <div class="hero-point-icon" aria-hidden="true">
               <svg viewBox="0 0 24 24"><path d="M12 3v18"/><path d="M17 8.5c0-1.9-2.2-3.5-5-3.5S7 6.6 7 8.5 9.2 12 12 12s5 1.6 5 3.5S14.8 19 12 19s-5-1.6-5-3.5"/></svg>
             </div>
             <strong>Te ayudamos con el pie</strong>
-          </div>
+          </button>
         </div>
         <div class="hero-actions">
           <button class="btn-primary" onclick="goToCatalog()">Ver propiedades</button>
@@ -3257,6 +3355,23 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         </div>
         <h4>¡Solicitud recibida!</h4>
         <p>Un ejecutivo de Aquí Casas te contactará pronto para coordinar tu visita y aplicar el precio especial.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Pie (down payment help) Popup -->
+  <div class="pie-popup-overlay" id="piePopupOverlay" onclick="closePiePopupOutside(event)">
+    <div class="pie-popup" role="dialog" aria-modal="true" aria-labelledby="piePopupHeading">
+      <button class="pie-popup-close" type="button" onclick="closePiePopup()" aria-label="Cerrar">
+        <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+      <div class="pie-popup-badge">Te ayudamos con el pie</div>
+      <h3 id="piePopupHeading">Compra tu propiedad <em>sin pagar cuota inicial</em></h3>
+      <p class="pie-popup-sub">Te ayudamos con el proceso para que puedas comprar sin problemas. Contáctanos y resolveremos tus dudas.</p>
+      <button class="btn-primary pie-popup-contact-btn" type="button" onclick="closePiePopup();openContact(0);">Contáctanos</button>
+      <div class="pie-popup-props">
+        <div class="pie-popup-props-head">Propiedades destacadas</div>
+        <div class="props-carousel" id="piePopupPropsGrid"></div>
       </div>
     </div>
   </div>
@@ -5739,6 +5854,7 @@ async function goToProperty(id, options = {}) {
   STATE.activePropertyId = String(id);
   closeMobileMenu();
   closeDetail();
+  closePiePopup();
   showPropertyPage(property);
 }
 
@@ -5782,6 +5898,7 @@ function goToCatalog(filters = {}, options = {}) {
     history.pushState({ catalog: true }, '', nextPath);
   }
   closeMobileMenu();
+  closePiePopup();
   showCatalogPage(filters);
 }
 
@@ -5966,6 +6083,31 @@ function closeVisitPopupOutside(event) {
   }
 }
 
+function renderPiePopupProperties() {
+  const container = document.getElementById('piePopupPropsGrid');
+  if (!container) return;
+  const featuredItems = STATE.properties.filter(property => property.isFeatured);
+  const items = (featuredItems.length ? featuredItems : STATE.properties).slice(0, 6);
+  container.innerHTML = buildPropertyCardsMarkup(items);
+}
+
+function openPiePopup() {
+  renderPiePopupProperties();
+  document.getElementById('piePopupOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closePiePopup() {
+  document.getElementById('piePopupOverlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function closePiePopupOutside(event) {
+  if (event.target === document.getElementById('piePopupOverlay')) {
+    closePiePopup();
+  }
+}
+
 async function submitVisitPopup() {
   const nombre = document.getElementById('vpNombre').value.trim();
   const telefono = document.getElementById('vpTelefono').value.trim();
@@ -6014,6 +6156,7 @@ function bindGlobalEvents() {
       closeDetail();
       closeContact();
       closeVisitPopup();
+      closePiePopup();
     }
     if (STATE.isLightboxOpen && event.key === 'ArrowLeft') {
       changeGallery(-1);
