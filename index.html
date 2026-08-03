@@ -3316,7 +3316,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       </button>
       <div id="vpContent">
         <div class="visit-popup-badge">Oferta especial</div>
-        <h3 id="vpHeading">Agenda <em>dentro de Julio</em> y te regalamos el IVA en tu compra</h3>
+        <h3 id="vpHeading">Agenda <em>dentro de Agosto</em> y obtén un precio especial en tu compra</h3>
         <p class="visit-popup-sub">Déjanos tus datos y un ejecutivo de Aquí Casas se contactará contigo para coordinar tu agenda y aplicar el beneficio.</p>
         <div class="visit-popup-form">
           <div class="c-row">
@@ -3342,7 +3342,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
         </div>
         <h4>¡Solicitud recibida!</h4>
-        <p>Un ejecutivo de Aquí Casas te contactará pronto para coordinar tu agenda y aplicar el regalo del IVA.</p>
+        <p>Un ejecutivo de Aquí Casas te contactará pronto para coordinar tu agenda y aplicar tu precio especial.</p>
       </div>
     </div>
   </div>
@@ -6127,14 +6127,14 @@ async function submitVisitPopup() {
     nombre,
     telefono,
     email: document.getElementById('vpEmail').value.trim() || null,
-    mensaje: 'Solicitud de agenda - IVA de regalo (popup 8s)',
+    mensaje: 'Solicitud de agenda - Precio especial Agosto (popup 8s)',
     propiedad_id: propertyId ? String(propertyId) : null,
     propiedad_nombre: property?.name || null,
     propiedad_precio: property ? formatPropertyPrice(property) : null,
     propiedad_imagen: property?.img || null,
     propiedad_direccion: property?.direccion || null,
     comuna: property?.comuna || null,
-    origen: 'popup_iva_regalo',
+    origen: 'popup_precio_especial_agosto',
     fecha_contacto: new Date().toISOString()
   };
 
