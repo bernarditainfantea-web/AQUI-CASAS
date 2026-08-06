@@ -3315,8 +3315,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
       </button>
       <div id="vpContent">
-        <div class="visit-popup-badge">Oferta especial</div>
-        <h3 id="vpHeading">Agenda <em>dentro de Julio</em> y te regalamos el IVA en tu compra</h3>
+        <div class="visit-popup-badge">Precio especial</div>
+        <h3 id="vpHeading">Agenda <em>dentro de Agosto</em> y te hacemos un precio especial</h3>
         <p class="visit-popup-sub">Déjanos tus datos y un ejecutivo de Aquí Casas se contactará contigo para coordinar tu agenda y aplicar el beneficio.</p>
         <div class="visit-popup-form">
           <div class="c-row">
@@ -3342,7 +3342,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
         </div>
         <h4>¡Solicitud recibida!</h4>
-        <p>Un ejecutivo de Aquí Casas te contactará pronto para coordinar tu agenda y aplicar el regalo del IVA.</p>
+        <p>Un ejecutivo de Aquí Casas te contactará pronto para coordinar tu agenda y aplicar tu precio especial.</p>
       </div>
     </div>
   </div>
@@ -5937,12 +5937,14 @@ async function openDetail(id) {
 
   document.getElementById('detailOverlay').classList.add('open');
   document.body.style.overflow = 'hidden';
+  _startVisitPopupTimer();
 }
 
 function closeDetail() {
   document.getElementById('detailOverlay').classList.remove('open');
   closeImageLightbox();
   document.body.style.overflow = '';
+  _cancelVisitPopupTimer();
 }
 
 function closeDetailOutside(event) {
@@ -6037,12 +6039,17 @@ let _visitPopupStarted = false;
 let _visitPopupShown = false;
 
 function _isBlockingOverlayOpen() {
-  return ['detailOverlay', 'contactOverlay', 'piePopupOverlay', 'imageLightbox']
+  return ['contactOverlay', 'piePopupOverlay', 'imageLightbox']
     .some(id => document.getElementById(id)?.classList.contains('open'));
+}
+
+function _isDetailOpen() {
+  return document.getElementById('detailOverlay')?.classList.contains('open');
 }
 
 function _maybeOpenVisitPopup() {
   if (_visitPopupShown) return;
+  if (!_isDetailOpen()) return;
   if (_isBlockingOverlayOpen()) {
     _visitPopupTimer = window.setTimeout(_maybeOpenVisitPopup, 1500);
     return;
@@ -6051,7 +6058,8 @@ function _maybeOpenVisitPopup() {
 }
 
 function _startVisitPopupTimer() {
-  if (_visitPopupStarted || _visitPopupShown) return;
+  if (_visitPopupShown) return;
+  _cancelVisitPopupTimer();
   _visitPopupStarted = true;
   _visitPopupTimer = window.setTimeout(_maybeOpenVisitPopup, VISIT_POPUP_DELAY_MS);
 }
@@ -6208,7 +6216,6 @@ async function bootstrap() {
 }
 
 bootstrap();
-_startVisitPopupTimer();
 </script>
 </body>
 </html>
