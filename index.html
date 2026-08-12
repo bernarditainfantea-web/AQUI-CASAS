@@ -5755,6 +5755,7 @@ function hydratePropertyMortgageCalculatorEvents() {
 
 function showHomePage() {
   closeVisitPopup();
+  _cancelVisitPopupTimer();
   STATE.activePropertyId = null;
   document.getElementById('homePage').style.display = '';
   document.getElementById('landingSections').style.display = '';
@@ -5771,6 +5772,7 @@ function showHomePage() {
 
 function showCatalogPage(filters = getCatalogFiltersFromRoute()) {
   closeVisitPopup();
+  _cancelVisitPopupTimer();
   STATE.activePropertyId = null;
   document.getElementById('homePage').style.display = '';
   document.getElementById('landingSections').style.display = 'none';
@@ -5819,6 +5821,7 @@ function showPropertyPage(property) {
   document.getElementById('pShareBtn').onclick = () => openPropertyMessage(property);
   window.scrollTo({ top: 0, behavior: 'auto' });
   syncAnchorsForRoute();
+  _startVisitPopupTimer();
 }
 
 async function goToProperty(id, options = {}) {
@@ -6044,7 +6047,7 @@ function _isBlockingOverlayOpen() {
 }
 
 function _isDetailOpen() {
-  return document.getElementById('detailOverlay')?.classList.contains('open');
+  return document.getElementById('propertyPage')?.classList.contains('open');
 }
 
 function _maybeOpenVisitPopup() {
