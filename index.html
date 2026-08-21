@@ -5079,6 +5079,10 @@ function applyFilters(options = {}) {
   updateResultsUI(filtered, filters);
   markPendingFilters();
 
+  if (isCatalogRoute()) {
+    history.replaceState({ catalog: true }, '', buildCatalogPath(filters));
+  }
+
   if (scrollToResults) {
     scrollToCatalog();
   }
