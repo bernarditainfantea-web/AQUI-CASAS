@@ -5210,8 +5210,8 @@ function createMapIcon() {
 
 function initMainMap() {
   STATE.mainMap = L.map('map', { scrollWheelZoom: false }).setView([-33.55, -70.8], 7);
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-    attribution: '© OpenStreetMap © CARTO',
+  L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
     maxZoom: 19
   }).addTo(STATE.mainMap);
 }
@@ -5439,8 +5439,8 @@ function updateDetailMap(property) {
   requestAnimationFrame(() => {
     if (!STATE.detailMap) {
       STATE.detailMap = L.map('detailMap', { zoomControl: true, scrollWheelZoom: false });
-      L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-        attribution: '© OpenStreetMap © CARTO',
+      L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
         maxZoom: 19
       }).addTo(STATE.detailMap);
     }
@@ -5474,8 +5474,8 @@ function updatePropertyPageMap(property) {
   requestAnimationFrame(() => {
     if (!STATE.detailMap) {
       STATE.detailMap = L.map('propertyDetailMap', { zoomControl: true, scrollWheelZoom: false });
-      L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-        attribution: '© OpenStreetMap © CARTO',
+      L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
         maxZoom: 19
       }).addTo(STATE.detailMap);
     }
