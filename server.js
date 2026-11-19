@@ -447,9 +447,10 @@ function toCanonicalVideoUrl(rawUrl) {
   }
 }
 
-const UF_CACHE_TTL_MS = 60 * 60 * 1000;
+const UF_RETRY_AFTER_FAILURE_MS = 15 * 60 * 1000;
 const UF_FETCH_TIMEOUT_MS = 6000;
 let ufCache = null;
+let ufLastFailedAt = 0;
 
 function getChileDateParts(date = new Date()) {
   const parts = new Intl.DateTimeFormat('en-CA', {
@@ -513,8 +514,14 @@ async function fetchUfFromSii() {
 
 async function requestUfIndicator() {
   const today = getChileIsoDate();
-  if (ufCache && ufCache.fecha === today && Date.now() - ufCache.fetchedAt < UF_CACHE_TTL_MS) {
+  // La UF cambia una vez al día: si ya tenemos la de hoy, no se vuelve a consultar.
+  if (ufCache && ufCache.payload.fecha === today) {
     return ufCache.payload;
+  }
+  // Si la última consulta falló, esperar antes de reintentar para no saturar las fuentes.
+  if (Date.now() - ufLastFailedAt < UF_RETRY_AFTER_FAILURE_MS) {
+    if (ufCache) return { ...ufCache.payload, desactualizado: true };
+    throw new Error('Fuentes de UF no disponibles; se reintentará en unos minutos.');
   }
 
   const errors = [];
@@ -529,13 +536,15 @@ async function requestUfIndicator() {
         ...result,
         desactualizado: result.fecha !== today
       };
-      ufCache = { fecha: today, fetchedAt: Date.now(), payload };
+      ufCache = { payload };
+      if (payload.desactualizado) ufLastFailedAt = Date.now();
       return payload;
     } catch (error) {
       errors.push(error.message);
     }
   }
 
+  ufLastFailedAt = Date.now();
   if (ufCache) {
     return { ...ufCache.payload, desactualizado: true };
   }
