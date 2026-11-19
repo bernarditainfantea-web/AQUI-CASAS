@@ -449,7 +449,6 @@ function toCanonicalVideoUrl(rawUrl) {
 
 const UF_RETRY_AFTER_FAILURE_MS = 15 * 60 * 1000;
 const UF_FETCH_TIMEOUT_MS = 6000;
-let ufCache = null;
 let ufLastFailedAt = 0;
 
 function getChileDateParts(date = new Date()) {
@@ -472,6 +471,14 @@ async function fetchWithTimeout(url, options = {}) {
   return fetch(url, { ...options, signal: AbortSignal.timeout(UF_FETCH_TIMEOUT_MS) });
 }
 
+// Valores de UF conocidos por fecha (YYYY-MM-DD). El SII publica por adelantado hasta el día 9
+// del mes siguiente, así que con una sola lectura exitosa quedan cubiertos los próximos días.
+const ufValuesByDate = new Map();
+
+function rememberUfValue(fecha, valor, fuente) {
+  if (fecha && Number.isFinite(valor) && valor > 0) ufValuesByDate.set(fecha, { valor, fuente });
+}
+
 async function fetchUfFromMindicador() {
   const response = await fetchWithTimeout('https://mindicador.cl/api/uf', {
     headers: { Accept: 'application/json' }
@@ -482,74 +489,91 @@ async function fetchUfFromMindicador() {
     throw new Error(data?.message || `mindicador.cl respondió HTTP ${response.status}`);
   }
 
-  const latest = Array.isArray(data?.serie) ? data.serie[0] : null;
-  if (!latest || typeof latest.valor !== 'number' || latest.valor <= 0) {
-    throw new Error('mindicador.cl no entregó un valor de UF válido.');
-  }
-
-  return { fecha: getChileIsoDate(new Date(latest.fecha)), valor: latest.valor, fuente: 'mindicador.cl' };
+  const serie = Array.isArray(data?.serie) ? data.serie : [];
+  serie.forEach(item => {
+    if (typeof item?.valor === 'number') rememberUfValue(getChileIsoDate(new Date(item.fecha)), item.valor, 'mindicador.cl');
+  });
+  if (!serie.length) throw new Error('mindicador.cl no entregó valores de UF.');
 }
 
 const SII_MONTHS = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
 
 async function fetchUfFromSii() {
-  const { year, month, day } = getChileDateParts();
+  const { year } = getChileDateParts();
   const response = await fetchWithTimeout(`https://www.sii.cl/valores_y_fechas/uf/uf${year}.htm`);
   if (!response.ok) throw new Error(`sii.cl respondió HTTP ${response.status}`);
 
   const html = Buffer.from(await response.arrayBuffer()).toString('latin1');
-  const monthId = `id='mes_${SII_MONTHS[Number(month) - 1]}'`;
-  const monthStart = html.indexOf(monthId);
-  if (monthStart === -1) throw new Error('No se encontró el mes actual en la tabla del SII.');
-  const nextMonth = html.indexOf("id='mes_", monthStart + monthId.length);
-  const monthHtml = html.slice(monthStart, nextMonth === -1 ? undefined : nextMonth);
+  let found = 0;
 
-  const dayPattern = new RegExp(`<strong>${Number(day)}</strong></th>\\s*<td[^>]*>([^<]*)</td>`);
-  const rawValue = monthHtml.match(dayPattern)?.[1]?.trim() || '';
-  const valor = Number(rawValue.replace(/\./g, '').replace(',', '.'));
-  if (!Number.isFinite(valor) || valor <= 0) throw new Error('El SII no tiene publicado el valor de la UF de hoy.');
+  SII_MONTHS.forEach((monthName, index) => {
+    const monthId = `id='mes_${monthName}'`;
+    const monthStart = html.indexOf(monthId);
+    if (monthStart === -1) return;
+    const nextMonth = html.indexOf("id='mes_", monthStart + monthId.length);
+    const monthHtml = html.slice(monthStart, nextMonth === -1 ? undefined : nextMonth);
+    const month = String(index + 1).padStart(2, '0');
 
-  return { fecha: `${year}-${month}-${day}`, valor, fuente: 'sii.cl' };
+    for (const [, day, rawValue] of monthHtml.matchAll(/<strong>(\d+)<\/strong><\/th>\s*<td[^>]*>([^<]*)<\/td>/g)) {
+      const valor = Number(rawValue.trim().replace(/\./g, '').replace(',', '.'));
+      if (!rawValue.trim() || !Number.isFinite(valor) || valor <= 0) continue;
+      rememberUfValue(`${year}-${month}-${day.padStart(2, '0')}`, valor, 'sii.cl');
+      found++;
+    }
+  });
+
+  if (!found) throw new Error('No se pudieron leer valores de UF en la tabla del SII.');
+}
+
+function buildUfPayload(fecha, today) {
+  const { valor, fuente } = ufValuesByDate.get(fecha);
+  return {
+    responseCode: 0,
+    codigo: 'uf',
+    nombre: 'Unidad de fomento (UF)',
+    unidad_medida: 'Pesos',
+    fecha,
+    valor,
+    fuente,
+    desactualizado: fecha !== today
+  };
+}
+
+function getLatestKnownUfDate(today) {
+  // Fecha más reciente que no sea futura: hoy si existe, si no el día anterior disponible.
+  let latest = null;
+  for (const fecha of ufValuesByDate.keys()) {
+    if (fecha <= today && (!latest || fecha > latest)) latest = fecha;
+  }
+  return latest;
 }
 
 async function requestUfIndicator() {
   const today = getChileIsoDate();
   // La UF cambia una vez al día: si ya tenemos la de hoy, no se vuelve a consultar.
-  if (ufCache && ufCache.payload.fecha === today) {
-    return ufCache.payload;
-  }
+  if (ufValuesByDate.has(today)) return buildUfPayload(today, today);
+
   // Si la última consulta falló, esperar antes de reintentar para no saturar las fuentes.
-  if (Date.now() - ufLastFailedAt < UF_RETRY_AFTER_FAILURE_MS) {
-    if (ufCache) return { ...ufCache.payload, desactualizado: true };
-    throw new Error('Fuentes de UF no disponibles; se reintentará en unos minutos.');
-  }
-
+  const canRetry = Date.now() - ufLastFailedAt >= UF_RETRY_AFTER_FAILURE_MS;
   const errors = [];
-  for (const source of [fetchUfFromMindicador, fetchUfFromSii]) {
-    try {
-      const result = await source();
-      const payload = {
-        responseCode: 0,
-        codigo: 'uf',
-        nombre: 'Unidad de fomento (UF)',
-        unidad_medida: 'Pesos',
-        ...result,
-        desactualizado: result.fecha !== today
-      };
-      ufCache = { payload };
-      if (payload.desactualizado) ufLastFailedAt = Date.now();
-      return payload;
-    } catch (error) {
-      errors.push(error.message);
+
+  if (canRetry) {
+    for (const source of [fetchUfFromSii, fetchUfFromMindicador]) {
+      try {
+        await source();
+        if (ufValuesByDate.has(today)) return buildUfPayload(today, today);
+      } catch (error) {
+        errors.push(error.message);
+      }
     }
+    ufLastFailedAt = Date.now();
   }
 
-  ufLastFailedAt = Date.now();
-  if (ufCache) {
-    return { ...ufCache.payload, desactualizado: true };
-  }
+  // Sin la UF de hoy: usar la del día anterior más reciente que tengamos.
+  const fallbackDate = getLatestKnownUfDate(today);
+  if (fallbackDate) return buildUfPayload(fallbackDate, today);
 
-  throw new Error(`No se pudo obtener la UF. ${errors.join(' | ')}`);
+  throw new Error(`No se pudo obtener la UF. ${errors.join(' | ') || 'Se reintentará en unos minutos.'}`);
 }
 
 async function proxyRemoteMedia(res, rawUrl) {
