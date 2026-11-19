@@ -3467,6 +3467,7 @@ const STATE = {
   isLightboxOpen: false,
   priceDisplay: 'UF',
   ufIndicator: {
+    // Valor de respaldo (SII 19-11-2026). Se reemplaza al cargar con /api/indicators/uf.
     value: 41364.17,
     date: '2026-11-19',
     source: 'referencial',
@@ -3579,6 +3580,27 @@ function isDirectVideoUrl(url) {
 
 function getUfNoteText() {
   return `UF calculada: $ ${formatDisplayAmount(STATE.ufIndicator.value, 'CLP')}, puede variar.`;
+}
+
+async function loadUfIndicator() {
+  try {
+    const response = await fetch('/api/indicators/uf', { headers: { Accept: 'application/json' } });
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    const data = await response.json();
+    const value = Number(data?.valor);
+    if (!Number.isFinite(value) || value <= 0) throw new Error('Respuesta de UF sin valor válido');
+
+    STATE.ufIndicator = {
+      value,
+      date: data.fecha || '',
+      source: data.fuente || 'api',
+      available: true
+    };
+    updatePriceDisplayNote();
+    if (STATE.propertiesReady) refreshDisplayedPrices();
+  } catch (error) {
+    console.warn('No se pudo actualizar la UF del día. Se usa el valor de respaldo.', error);
+  }
 }
 
 function formatDisplayAmount(value, currency = 'UF') {
@@ -5963,6 +5985,7 @@ async function bootstrap() {
   syncPriceDisplayButtons();
   syncPriceFilterUI();
   updatePriceDisplayNote();
+  const ufReady = loadUfIndicator();
 
   try {
     await loadCatalogs();
@@ -5973,11 +5996,13 @@ async function bootstrap() {
   }
 
   STATE.propertyMap = Object.fromEntries(STATE.properties.map(property => [String(property.id), property]));
+  STATE.propertiesReady = true;
   buildPropertyIndexes();
   syncFilterOptions();
   renderHomePreviewProperties();
   applyFilters();
   await handleRouteChange();
+  await ufReady;
 }
 
 bootstrap();

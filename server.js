@@ -447,33 +447,100 @@ function toCanonicalVideoUrl(rawUrl) {
   }
 }
 
-async function requestUfIndicator() {
-  const response = await fetch('https://mindicador.cl/api/uf', {
-    headers: {
-      Accept: 'application/json'
-    }
+const UF_CACHE_TTL_MS = 60 * 60 * 1000;
+const UF_FETCH_TIMEOUT_MS = 6000;
+let ufCache = null;
+
+function getChileDateParts(date = new Date()) {
+  const parts = new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'America/Santiago',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit'
+  }).formatToParts(date);
+  const get = type => parts.find(part => part.type === type)?.value;
+  return { year: get('year'), month: get('month'), day: get('day') };
+}
+
+function getChileIsoDate(date = new Date()) {
+  const { year, month, day } = getChileDateParts(date);
+  return `${year}-${month}-${day}`;
+}
+
+async function fetchWithTimeout(url, options = {}) {
+  return fetch(url, { ...options, signal: AbortSignal.timeout(UF_FETCH_TIMEOUT_MS) });
+}
+
+async function fetchUfFromMindicador() {
+  const response = await fetchWithTimeout('https://mindicador.cl/api/uf', {
+    headers: { Accept: 'application/json' }
   });
   const data = await parseJsonResponse(response);
 
   if (!response.ok) {
-    const message = data?.message || `Error HTTP ${response.status}`;
-    throw new Error(message);
+    throw new Error(data?.message || `mindicador.cl respondió HTTP ${response.status}`);
   }
 
   const latest = Array.isArray(data?.serie) ? data.serie[0] : null;
-  if (!latest || typeof latest.valor !== 'number') {
-    throw new Error('No se pudo obtener el valor actual de la UF.');
+  if (!latest || typeof latest.valor !== 'number' || latest.valor <= 0) {
+    throw new Error('mindicador.cl no entregó un valor de UF válido.');
   }
 
-  return {
-    responseCode: 0,
-    codigo: 'uf',
-    nombre: 'Unidad de fomento (UF)',
-    unidad_medida: 'Pesos',
-    fecha: latest.fecha,
-    valor: latest.valor,
-    fuente: 'mindicador.cl'
-  };
+  return { fecha: getChileIsoDate(new Date(latest.fecha)), valor: latest.valor, fuente: 'mindicador.cl' };
+}
+
+const SII_MONTHS = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
+
+async function fetchUfFromSii() {
+  const { year, month, day } = getChileDateParts();
+  const response = await fetchWithTimeout(`https://www.sii.cl/valores_y_fechas/uf/uf${year}.htm`);
+  if (!response.ok) throw new Error(`sii.cl respondió HTTP ${response.status}`);
+
+  const html = Buffer.from(await response.arrayBuffer()).toString('latin1');
+  const monthId = `id='mes_${SII_MONTHS[Number(month) - 1]}'`;
+  const monthStart = html.indexOf(monthId);
+  if (monthStart === -1) throw new Error('No se encontró el mes actual en la tabla del SII.');
+  const nextMonth = html.indexOf("id='mes_", monthStart + monthId.length);
+  const monthHtml = html.slice(monthStart, nextMonth === -1 ? undefined : nextMonth);
+
+  const dayPattern = new RegExp(`<strong>${Number(day)}</strong></th>\\s*<td[^>]*>([^<]*)</td>`);
+  const rawValue = monthHtml.match(dayPattern)?.[1]?.trim() || '';
+  const valor = Number(rawValue.replace(/\./g, '').replace(',', '.'));
+  if (!Number.isFinite(valor) || valor <= 0) throw new Error('El SII no tiene publicado el valor de la UF de hoy.');
+
+  return { fecha: `${year}-${month}-${day}`, valor, fuente: 'sii.cl' };
+}
+
+async function requestUfIndicator() {
+  const today = getChileIsoDate();
+  if (ufCache && ufCache.fecha === today && Date.now() - ufCache.fetchedAt < UF_CACHE_TTL_MS) {
+    return ufCache.payload;
+  }
+
+  const errors = [];
+  for (const source of [fetchUfFromMindicador, fetchUfFromSii]) {
+    try {
+      const result = await source();
+      const payload = {
+        responseCode: 0,
+        codigo: 'uf',
+        nombre: 'Unidad de fomento (UF)',
+        unidad_medida: 'Pesos',
+        ...result,
+        desactualizado: result.fecha !== today
+      };
+      ufCache = { fecha: today, fetchedAt: Date.now(), payload };
+      return payload;
+    } catch (error) {
+      errors.push(error.message);
+    }
+  }
+
+  if (ufCache) {
+    return { ...ufCache.payload, desactualizado: true };
+  }
+
+  throw new Error(`No se pudo obtener la UF. ${errors.join(' | ')}`);
 }
 
 async function proxyRemoteMedia(res, rawUrl) {
@@ -733,10 +800,11 @@ app.get('/api/ofinet/propiedades/:id/legacy-video', async (req, res) => {
 
 app.get('/api/indicators/uf', async (_req, res) => {
   try {
+    res.set('Cache-Control', 'public, max-age=900');
     res.json(await requestUfIndicator());
   } catch (error) {
     makeErrorResponse(res, error.message, 502, {
-      provider: 'mindicador',
+      provider: 'mindicador+sii',
       resource: 'uf'
     });
   }
